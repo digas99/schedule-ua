@@ -1,13 +1,5 @@
-#main {
-    margin: 20px;
-}
-
 #main > div {
     margin: 5px 0; 
-}
-
-#main * {
-    color: var(--black);
 }
 
 #login-wrapper > input {
