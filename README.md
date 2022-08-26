@@ -1,5 +1,9 @@
 # schedule-ua
 
-## SchedUA
+<img width="275px" src="/images/logo-text.png">
 
-Browser Extension for easy access to your Schedule from Universidade de Aveiro.
+## SchedUA - Schedule for Universidade de Aveiro
+
+Browser Extension for easy access to your Schedule from Universidade de Aveiro. This extension uses the [PACO-UA API](https://github.com/digas99/paco-ua-api) to fetch the data from the schedule and present it in the Extension Popup.
+
+![logo](/images/logo_48x48.png)
