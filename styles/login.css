@@ -1,0 +1,47 @@
+#main {
+    margin: 20px;
+}
+
+#main > div {
+    margin: 5px 0; 
+}
+
+#login-wrapper > input {
+    border: none;
+    border-bottom: 1px solid silver;
+    padding: 10px 5px;
+}
+
+#login-wrapper > input:focus {
+    outline: none !important;
+    border: none;
+    border-bottom: 1px solid rgb(50, 180, 50);
+    background-color: rgb(234, 255, 234);
+}
+
+#small-info {
+    font-size: 9px;
+    color: #8f8f8f;
+}
+
+.button {
+    padding: 7px 15px;
+    border: 1px solid silver;
+    border-radius: 20px;
+    margin: 10px auto;
+    text-align: center;
+}
+
+.button:hover {
+    background-color: rgb(172, 255, 172); 
+}
+
+.button-inactive {
+    color: silver !important;
+    cursor: not-allowed !important;
+    background-color: unset !important;
+}
+
+.clickable {
+    cursor: pointer;
+}
