@@ -35,7 +35,7 @@ if (loginWrapper && send) {
                         const text = document.getElementById("main").querySelector("div");
                         if (text) {
                             text.innerText = "Wrong credentials. Please try again.";
-                            text.style.color = "red";
+                            text.style.color = "#f56161";
                         }
                     }
                 });

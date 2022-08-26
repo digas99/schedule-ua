@@ -6,10 +6,15 @@
     margin: 5px 0; 
 }
 
+#main * {
+    color: var(--black);
+}
+
 #login-wrapper > input {
     border: none;
     border-bottom: 1px solid silver;
     padding: 10px 5px;
+    width: 95%;
 }
 
 #login-wrapper > input:focus {
@@ -22,6 +27,8 @@
 #small-info {
     font-size: 9px;
     color: #8f8f8f;
+    margin-bottom: 15px !important;
+    text-align: justify;
 }
 
 .button {

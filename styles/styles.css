@@ -1,0 +1,23 @@
+:root {
+    --black: #585858;
+}
+
+body {
+    margin: unset;
+    min-width: 300px;
+}
+
+#logo {
+    margin: 15px auto;
+    width: fit-content;
+}
+
+#logo > img {
+    width: 150px;
+}
+
+.separator {
+    background-color: silver;
+    width: 100%;
+    height: 1px;
+}
