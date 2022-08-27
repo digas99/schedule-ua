@@ -7,7 +7,10 @@ chrome.storage.sync.get([...STORAGE_KEYS, "email"], result => {
             const inputs = loginWrapper.querySelectorAll("input");
             if (inputs) {
                 // put email if it is saved
-                if (result["email"]) inputs[0].value = result["email"];
+                if (result["email"]) {
+                    inputs[0].value = result["email"];
+                    document.getElementById("remember-email").querySelector("input").checked = true;
+                }
 
                 // activate send button
                 Array.from(inputs).forEach(elem => {

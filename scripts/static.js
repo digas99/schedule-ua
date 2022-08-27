@@ -9,3 +9,13 @@ const DAYS_INDEX = {
 }
 
 const STORAGE_KEYS = ["schedule", "school_year", "semester"];
+
+const SUBJECT_COLORS = [
+    "#e1c358",
+    "#7694e9",
+    "#f16b6b",
+    "#6fb792",
+    "#cf77b0",
+    "#a274df",
+    "#62c1d1"
+];

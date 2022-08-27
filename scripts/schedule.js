@@ -1,6 +1,6 @@
 let schedule = {}, school_year, semester;
 
-chrome.storage.sync.get([...STORAGE_KEYS, "trimmed"], result => {
+chrome.storage.sync.get([...STORAGE_KEYS, "expanded", "subject_colors"], result => {
     // if schedule data exists
     if (STORAGE_KEYS.every(key => Object.keys(result).includes(key))) {
         schedule = result["schedule"];
@@ -19,6 +19,25 @@ chrome.storage.sync.get([...STORAGE_KEYS, "trimmed"], result => {
                 row.appendChild(document.createTextNode(value));
             });
         }
+
+        let subjectColors = result["subject_colors"];
+        if (!subjectColors) {
+            subjectColors = {};
+            const subjects = [...new Set(Object.entries(schedule).map(([key, value]) => value.map(obj => obj["subject"]["abbrev"])).flat(1))];
+            let indexes = [], counter = 0;
+            while (indexes.length < subjects.length) {
+                const index = Math.floor(Math.random() * SUBJECT_COLORS.length-1) + 1;
+                if (indexes.indexOf(index) === -1) {
+                    indexes.push(index);
+                    subjectColors[subjects[counter++]] = SUBJECT_COLORS[index];
+                }
+            }
+            chrome.storage.sync.set({"subject_colors": subjectColors});
+        }
+
+        // remove "Sábado" if it has no classes
+        if (schedule["Sábado"].length == 0)
+            document.querySelectorAll("#main table tr").forEach(row => row.children[6].style.display = "none");
 
         matrix = scheduleMatrix();
 
@@ -57,6 +76,7 @@ chrome.storage.sync.get([...STORAGE_KEYS, "trimmed"], result => {
                         if (rowspan > 2)
                             spans[currentTableIndex+1].push(j+2);                
 
+                        cell.style.backgroundColor = subjectColors[subject["subject"]["abbrev"]];
                         const infoWrapper = document.createElement("div");
                         cell.appendChild(infoWrapper);
                         const subjectName = document.createElement("div");
@@ -97,7 +117,7 @@ chrome.storage.sync.get([...STORAGE_KEYS, "trimmed"], result => {
             }
         }
 
-        if (result["trimmed"]) document.getElementById("shrink")?.click();
+        if (!result["expanded"]) document.getElementById("shrink")?.click();
     }
 });
 
@@ -125,9 +145,9 @@ window.addEventListener("click", e => {
         elem.title = "Expand Schedule";
         const image = elem.querySelector("img");
         image.src = "images/icons/expand.png";
-        chrome.storage.sync.set({"trimmed":true});
+        chrome.storage.sync.set({"expanded":false});
 
-        const tableRows = document.querySelectorAll(`#main table tr`);
+        const tableRows = document.querySelectorAll("#main table tr");
         if(tableRows) {
             // top to bottom
             for (let i = 1; i < tableRows.length; i++) {
@@ -151,7 +171,7 @@ window.addEventListener("click", e => {
         elem.title = "Trim Schedule";
         const image = elem.querySelector("img");
         image.src = "images/icons/shrink.png";
-        chrome.storage.sync.set({"trimmed":false});
+        chrome.storage.sync.set({"expanded":true});
 
         const table = document.querySelector(`#main table`);
         if(table)
