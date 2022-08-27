@@ -51,39 +51,6 @@ table > tbody > tr > td > div > div:nth-child(1) {
     font-weight: bold;
 }
 
-#navbar {
-    position: fixed;
-    right: 0;
-    width: 50px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding-top: 10px;
-    height: 100%;
-    border-left: 1px solid silver;
-}
-
-#navbar > img {
-    width: 30px;
-    margin-bottom: 10px;
-}
-
-#navbar > div > img {
-    width: 23px;
-    opacity: 0.5;
-    margin-left: -2px;
-}
-
-#navbar > div:not(:first-child, .separator) {
-    width: 100%;
-    text-align: center;
-    padding: 10px 0;
-}
-
-#navbar > div:not(:first-child):hover,.selectors > div:hover {
-    background-color: #e1e1e1;
-}
-
 #title {
     letter-spacing: 1px;
     font-size: 14px;

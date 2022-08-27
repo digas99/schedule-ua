@@ -10,6 +10,16 @@ chrome.storage.sync.get([...STORAGE_KEYS, "trimmed"], result => {
         const title = document.getElementById("title");
         if (title) title.innerText += ` ${school_year} ${semester}`;
         
+        const navbarBottom = document.getElementById("navbar-bottom");
+        if (navbarBottom) {
+            const [year1, year2] = school_year.split("/");
+            [year1.slice(2)+"/"+year2.slice(2), semester].forEach(value => {
+                const row = document.createElement("div");
+                navbarBottom.appendChild(row);
+                row.appendChild(document.createTextNode(value));
+            });
+        }
+
         matrix = scheduleMatrix();
 
         // fill in the schedule matrix
@@ -101,9 +111,6 @@ const scheduleMatrix = () => {
 
 window.addEventListener("click", e => {
     const target = e.target;
-
-    if (target.closest("#exit"))
-        chrome.storage.sync.remove(STORAGE_KEYS).then(() => window.location.href = "/popup.html");
 
     if (target.closest("#download")) {
         const blob = new Blob([JSON.stringify(schedule, null, 2)], {type: "application/json"});

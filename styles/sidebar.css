@@ -1,0 +1,45 @@
+#navbar {
+    position: fixed;
+    right: 0;
+    width: 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 10px;
+    height: 100%;
+    border-left: 1px solid silver;
+}
+
+#navbar > img {
+    width: 30px;
+    margin-bottom: 10px;
+}
+
+#navbar > div > img {
+    width: 23px;
+    opacity: 0.5;
+    margin-left: -2px;
+}
+
+#navbar > div:not(:first-child, .separator) {
+    width: 100%;
+    text-align: center;
+    padding: 10px 0;
+}
+
+#navbar > div:not(:first-child, :last-child):hover,.selectors > div:hover {
+    background-color: #e1e1e1;
+}
+
+#navbar-bottom {
+    position: absolute;
+    bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    row-gap: 7px;
+    font-size: 10px;
+}
+
+#navbar-bottom > div {
+    color: #8f8f8f;
+}
