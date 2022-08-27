@@ -1,5 +1,6 @@
 body {
     min-width: 500px !important;
+    margin-right: 50px;
 }
 
 table {
@@ -12,10 +13,6 @@ table, th, td {
     padding: 10px;
     width: 100%;
     text-align: center;
-}
-
-body {
-    margin-right: 50px;
 }
 
 table > tbody > tr > th:nth-child(1), table > tbody > tr > th:nth-child(8) {

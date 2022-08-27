@@ -32,7 +32,7 @@ chrome.storage.sync.get([...STORAGE_KEYS, "expanded", "subject_colors"], result 
                     subjectColors[subjects[counter++]] = SUBJECT_COLORS[index];
                 }
             }
-            chrome.storage.sync.set({"subject_colors": subjectColors});
+            chrome.storage.sync.set({"subject_colors": subjectColors, "subjects": subjects});
         }
 
         // remove "Sábado" if it has no classes

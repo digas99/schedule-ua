@@ -4,11 +4,16 @@
 
 body {
     margin: unset;
-    min-width: 300px;
+    min-width: 350px !important;
 }
 
 body * {
     color: var(--black);
+}
+
+h2 {
+    margin: 0;
+    margin-bottom: 5px;
 }
 
 .separator {
@@ -17,12 +22,20 @@ body * {
     height: 1px;
 }
 
-.clickable {
-    cursor: pointer;
+.clickable, .clickable-light {
+    cursor: pointer !important;
 }
 
 .clickable:hover {
-    opacity: 0.7;
+    opacity: 0.7 !important;
+}
+
+.clickable-light:hover {
+    opacity: 0.4 !important;
+}
+
+.clickable:focus-within {
+    opacity: 1 !important;
 }
 
 .button-inactive {
