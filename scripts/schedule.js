@@ -1,6 +1,6 @@
 let schedule = {}, school_year, semester;
 
-chrome.storage.sync.get(STORAGE_KEYS, result => {
+chrome.storage.sync.get([...STORAGE_KEYS, "trimmed"], result => {
     // if schedule data exists
     if (STORAGE_KEYS.every(key => Object.keys(result).includes(key))) {
         schedule = result["schedule"];
@@ -34,6 +34,9 @@ chrome.storage.sync.get(STORAGE_KEYS, result => {
                 for (let j = 0; j <= 5; j++) {
                     const subject = subjects[j];
                     if (subject) {
+                        tableRow.setAttribute("filled", "true");
+                        if (tableRow.nextElementSibling) tableRow.nextElementSibling.setAttribute("filled", "true");
+
                         const cell = tableRow.querySelector(`td:nth-child(${j+2})`);
                         cell.classList.add("clickable", "class");
 
@@ -63,6 +66,10 @@ chrome.storage.sync.get(STORAGE_KEYS, result => {
             if (spans[i].length > 0) {
                 const tableRow = document.querySelector(`#main table tr:nth-of-type(${i+1})`);
                 if (tableRow) {
+                    // identify row as indirectly filled
+                    tableRow.setAttribute("filled", "true");
+                    if (tableRow.nextElementSibling) tableRow.nextElementSibling.setAttribute("filled", "true");
+
                     let counter = 0, control = 0;
                     while(1) {
                         const cell = tableRow.querySelector(`td:nth-child(${spans[i][counter]})`);
@@ -79,6 +86,8 @@ chrome.storage.sync.get(STORAGE_KEYS, result => {
                 }
             }
         }
+
+        if (result["trimmed"]) document.getElementById("shrink")?.click();
     }
 });
 
@@ -100,5 +109,45 @@ window.addEventListener("click", e => {
         const blob = new Blob([JSON.stringify(schedule, null, 2)], {type: "application/json"});
         
         saveAs(blob, `schedua-schedule_${school_year}_${semester}.json`);
+    }
+
+    // trim schedule ui
+    if (target.closest("#shrink")) {
+        const elem = target.closest("#shrink"); 
+        elem.id = "expand";
+        elem.title = "Expand Schedule";
+        const image = elem.querySelector("img");
+        image.src = "images/icons/expand.png";
+        chrome.storage.sync.set({"trimmed":true});
+
+        const tableRows = document.querySelectorAll(`#main table tr`);
+        if(tableRows) {
+            // top to bottom
+            for (let i = 1; i < tableRows.length; i++) {
+                // if row is empty
+                if (!tableRows[i].getAttribute("filled")) tableRows[i].style.display = "none";
+                else break;
+            }
+
+            // bottom to top
+            for (let i = tableRows.length-1; i > 0; i--) {
+                // if row is empty
+                if (!tableRows[i].getAttribute("filled")) tableRows[i].style.display = "none";
+                else break;
+            }
+         }
+    }
+    // expand schedule
+    else if (target.closest("#expand")) {
+        const elem = target.closest("#expand"); 
+        elem.id = "shrink";
+        elem.title = "Trim Schedule";
+        const image = elem.querySelector("img");
+        image.src = "images/icons/shrink.png";
+        chrome.storage.sync.set({"trimmed":false});
+
+        const table = document.querySelector(`#main table`);
+        if(table)
+            Array.from(table.querySelectorAll("tr[style='display: none;']")).forEach(cell => cell.style.removeProperty("display"));
     }
 });
