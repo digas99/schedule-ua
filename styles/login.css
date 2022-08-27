@@ -3,7 +3,7 @@
 }
 
 #main > div {
-    margin: 5px 0; 
+    margin: 10px 0; 
 }
 
 #logo {
@@ -15,25 +15,38 @@
     width: 150px;
 }
 
-#login-wrapper > input {
+#login-wrapper > div {
+    display: flex;
+    align-items: center;
+}
+
+#login-wrapper > div > input {
     border: none;
     border-bottom: 1px solid silver;
     padding: 10px 5px;
     width: 95%;
+    padding-right: 40px;
 }
 
-#login-wrapper > input:focus {
+#login-wrapper > div > input:focus {
     outline: none !important;
     border: none;
     border-bottom: 1px solid rgb(50, 180, 50);
     background-color: rgb(234, 255, 234);
 }
 
+#login-wrapper > div > img {
+    width: 21px;
+    position: absolute;
+    opacity: 0.6;
+    right: 30px;
+}
+
 #small-info {
     font-size: 9px;
     color: #8f8f8f;
     margin-bottom: 15px !important;
-    text-align: justify;
+    text-align: center;
 }
 
 .button {
@@ -46,12 +59,6 @@
 
 .button:hover {
     background-color: rgb(172, 255, 172); 
-}
-
-.button-inactive {
-    color: silver !important;
-    cursor: not-allowed !important;
-    background-color: unset !important;
 }
 
 .loading > div:nth-child(1) {
@@ -86,4 +93,14 @@
     bottom: 0;
     width: fit-content;
     height: fit-content;
+}
+
+#remember-email {
+    display: flex;
+    align-items: center;
+    column-gap: 4px;
+}
+
+#remember-email > div {
+    font-size: 10px;
 }

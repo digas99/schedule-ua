@@ -1,16 +1,22 @@
+let schedule = {}, school_year, semester;
+
 chrome.storage.sync.get(STORAGE_KEYS, result => {
     // if schedule data exists
-    if (Object.keys(result).length === 3) {
+    if (STORAGE_KEYS.every(key => Object.keys(result).includes(key))) {
+        schedule = result["schedule"];
+        school_year = result["school_year"];
+        semester = result["semester"];
+
         const title = document.getElementById("title");
-        if (title) title.innerText += ` ${result["school_year"]} ${result["semester"]}`;
+        if (title) title.innerText += ` ${school_year} ${semester}`;
         
-        schedule = scheduleMatrix();
+        matrix = scheduleMatrix();
 
         // fill in the schedule matrix
-        Object.entries(result["schedule"]).forEach(([day, subjects]) => {
+        Object.entries(schedule).forEach(([day, subjects]) => {
             subjects.forEach(subject => {
                 const start = Number(subject["start"].replace("h", ""));
-                schedule[start][DAYS_INDEX[day]] = subject;
+                matrix[start][DAYS_INDEX[day]] = subject;
             });
         });
 
@@ -19,7 +25,7 @@ chrome.storage.sync.get(STORAGE_KEYS, result => {
         for (let i = 1; i <= 19*2+1; i++) {
             spans[i] = [];
         }
-        Object.entries(Object.entries(schedule)).forEach(([i, [hour, subjects]]) => {
+        Object.entries(Object.entries(matrix)).forEach(([i, [hour, subjects]]) => {
             const currentTableIndex = (Number(i)+1)*2;
             const tableRow = document.querySelector(`#main table tr:nth-of-type(${currentTableIndex})`);
             if (tableRow) {
@@ -29,7 +35,7 @@ chrome.storage.sync.get(STORAGE_KEYS, result => {
                     const subject = subjects[j];
                     if (subject) {
                         const cell = tableRow.querySelector(`td:nth-child(${j+2})`);
-                        cell.classList.add("clickable", subject["class"].charAt(0) == "T" ? "theoretical-class" : "practical-class");
+                        cell.classList.add("clickable", "class");
 
                         // number of rows the subject will fill
                         const rowspan = parseFloat(subject["duration"].replace("h", "").replace(",", "."))*2;
@@ -42,7 +48,7 @@ chrome.storage.sync.get(STORAGE_KEYS, result => {
                         cell.appendChild(infoWrapper);
                         const subjectName = document.createElement("div");
                         infoWrapper.appendChild(subjectName);
-                        subjectName.appendChild(document.createTextNode(subject["subject"]["abbrev"]));
+                        subjectName.appendChild(document.createTextNode(`${subject["subject"]["abbrev"]} - ${subject["class"]}`));
                         const roomName = document.createElement("div");
                         infoWrapper.appendChild(roomName);
                         roomName.appendChild(document.createTextNode(subject["room"]));
@@ -84,7 +90,15 @@ const scheduleMatrix = () => {
     return matrix;
 }
 
-// click on Exit
-document.getElementById("exit").addEventListener("click", () => {
-    chrome.storage.sync.remove(STORAGE_KEYS).then(() => window.location.href = "/popup.html");
+window.addEventListener("click", e => {
+    const target = e.target;
+
+    if (target.closest("#exit"))
+        chrome.storage.sync.remove(STORAGE_KEYS).then(() => window.location.href = "/popup.html");
+
+    if (target.closest("#download")) {
+        const blob = new Blob([JSON.stringify(schedule, null, 2)], {type: "application/json"});
+        
+        saveAs(blob, `schedua-schedule_${school_year}_${semester}.json`);
+    }
 });

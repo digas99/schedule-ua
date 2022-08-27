@@ -14,6 +14,10 @@ table, th, td {
     text-align: center;
 }
 
+body {
+    margin-right: 50px;
+}
+
 table > tbody > tr > th:nth-child(1), table > tbody > tr > th:nth-child(8) {
     width: 15px;
 }
@@ -47,20 +51,37 @@ table > tbody > tr > td > div > div:nth-child(1) {
     font-weight: bold;
 }
 
-#main {
-    margin: 5px;
-}
-
-#top {
-    margin: 6px auto;
-    width: fit-content;
+#navbar {
+    position: fixed;
+    right: 0;
+    width: 50px;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    column-gap: 40px;
+    padding-top: 10px;
+    height: 100%;
+    border-left: 1px solid silver;
 }
 
-#top > img {
-    width: 90px;
+#navbar > img {
+    width: 30px;
+    margin-bottom: 10px;
+}
+
+#navbar > div > img {
+    width: 23px;
+    opacity: 0.5;
+    margin-left: -2px;
+}
+
+#navbar > div:not(:first-child, .separator) {
+    width: 100%;
+    text-align: center;
+    padding: 10px 0;
+}
+
+#navbar > div:not(:first-child):hover,.selectors > div:hover {
+    background-color: #e1e1e1;
 }
 
 #title {
@@ -71,20 +92,21 @@ table > tbody > tr > td > div > div:nth-child(1) {
     color: silver;
 }
 
-#exit {
-    font-weight: bold;
-    font-size: 13px;
-    padding: 5px;
-}
-
-.practical-class {
-    background-color: #5fad85;
-}
-
-.theoretical-class {
-    background-color: #6a96c5;
-}
-
-.practical-class div, .theoretical-class div {
+.class {
     color: white;
+}
+
+.selectors {
+    display: flex;
+}
+
+.selectors > div {
+    font-size: 15px;
+    padding: 10px;
+    width: 100%;
+    text-align: center;
+}
+
+.selectors > div:not(:last-child) {
+    border-right: 1px solid silver;
 }

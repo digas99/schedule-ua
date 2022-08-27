@@ -8,10 +8,17 @@
 	<link rel="stylesheet" href="styles/schedule.css">
 </head>
 <body style="font-family: sans-serif">
-	<div id="top">
-		<img src="images/logo-text.png">
-		<div id="title">Schedule</div>
-		<div id="exit" class="clickable">Exit</div>
+	<div id="navbar">
+		<img title="SchedUA" src="images/logo.png">
+		<div class="separator"></div>
+		<div title="Schedule" id="schedule" class="button-inactive"><img style="width: 25px;" src="images/icons/schedule.png"></div>
+		<div title="Reduce Schedule" id="reduce" class="clickable"><img src="images/icons/reduce.png"></div>
+		<div title="Download Schedule Configuration" id="download" class="clickable"><img src="images/icons/download.png"></div>
+		<div class="separator"></div>
+		<!-- <div title="Settings" id="settings" class="clickable"><img src="images/icons/settings.png"></div>
+		<div title="Stats" id="stats" class="clickable"><img src="images/icons/graph.png"></div>
+		<div title="About" id="about" class="clickable"><img src="images/icons/about.png"></div> -->
+		<div title="Exit" id="exit" class="clickable"><img style="padding-left: 6px;" src="images/icons/exit.png"></div>
 	</div>
 	<div class="separator"></div>
 	<div id="main">
@@ -81,8 +88,15 @@
 				<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
             </table>
         </div>
+		<div class="selectors">
+			<div class="clickable">Week</div>
+			<div class="clickable">Today</div>
+			<div class="clickable">Tomorrow</div>
+			<div class="clickable">Yesterday</div>
+		</div>
 	</div>
 
+	<script src="lib/FileSaver.js"></script>
 	<script src="scripts/static.js"></script>
 	<script src="scripts/schedule.js"></script>
 </body>

@@ -1,11 +1,14 @@
-chrome.storage.sync.get(STORAGE_KEYS, result => {
+chrome.storage.sync.get([...STORAGE_KEYS, "email"], result => {
     // if schedule does not exist
-    if (Object.keys(result).length === 0) {
+    if (!STORAGE_KEYS.some(key => Object.keys(result).includes(key))) {
         const loginWrapper = document.getElementById("login-wrapper");
         const send = document.getElementById("send");
         if (loginWrapper && send) {
             const inputs = loginWrapper.querySelectorAll("input");
             if (inputs) {
+                // put email if it is saved
+                if (result["email"]) inputs[0].value = result["email"];
+
                 // activate send button
                 Array.from(inputs).forEach(elem => {
                     elem.addEventListener("input", () => {
@@ -30,9 +33,14 @@ chrome.storage.sync.get(STORAGE_KEYS, result => {
                             }
                         }).then(response => response.json())
                         .then(data => {
-                            console.log(data);
-                            if (data["data"] && Object.keys(data["data"]).length > 0)
+                            if (data["data"] && Object.keys(data["data"]).length > 0) {
+                                // save email if asked
+                                const remember = document.getElementById("remember-email")?.querySelector("input").checked;
+                                if (remember) data["data"]["email"] = email;
+                                else chrome.storage.sync.remove("email");
+
                                 chrome.storage.sync.set(data["data"], () => window.location.href = "/home.html");
+                            }
                             else {
                                 document.querySelector(".loading").remove();
                                 const text = document.getElementById("main").querySelector("div");
@@ -75,4 +83,20 @@ chrome.storage.sync.get(STORAGE_KEYS, result => {
     }
     else
         window.location.href = "/home.html";
+});
+
+window.addEventListener("click", e => {
+    const target = e.target;
+
+    if (target.closest("#show-pwd")) {
+        const passwordInput = document.getElementById("login-wrapper")?.getElementsByTagName("input")[1];
+        if (passwordInput.getAttribute("type") === "password") {
+            passwordInput.setAttribute("type", "text");
+            target.src = "images/icons/not-view.png";
+        }
+        else {
+            passwordInput.setAttribute("type", "password");
+            target.src = "images/icons/view.png";
+        }
+    }
 });

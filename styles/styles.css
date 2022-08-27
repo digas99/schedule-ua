@@ -24,3 +24,9 @@ body * {
 .clickable:hover {
     opacity: 0.7;
 }
+
+.button-inactive {
+    opacity: 0.5;
+    cursor: not-allowed !important;
+    background-color: unset !important;
+}
