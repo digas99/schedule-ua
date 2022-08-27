@@ -45,7 +45,7 @@ table > tbody > tr > td > div {
 }
 
 #top {
-    margin: 12px auto;
+    margin: 6px auto;
     width: fit-content;
     display: flex;
     align-items: center;
@@ -62,4 +62,10 @@ table > tbody > tr > td > div {
     margin: 0;
     text-align: center;
     color: silver;
+}
+
+#exit {
+    font-weight: bold;
+    font-size: 13px;
+    padding: 5px;
 }

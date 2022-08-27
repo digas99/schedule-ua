@@ -7,3 +7,5 @@ const DAYS_INDEX = {
     "Sábado": 5,
     "Domingo": 6
 }
+
+const STORAGE_KEYS = ["schedule", "school_year", "semester"];

@@ -1,4 +1,4 @@
-chrome.storage.sync.get(["schedule", "school_year", "semester"], result => {
+chrome.storage.sync.get(STORAGE_KEYS, result => {
     // if schedule does not exist
     if (Object.keys(result).length === 0) {
         const loginWrapper = document.getElementById("login-wrapper");

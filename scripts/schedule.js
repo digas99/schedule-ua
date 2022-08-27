@@ -1,4 +1,4 @@
-chrome.storage.sync.get(["schedule", "school_year", "semester"], result => {
+chrome.storage.sync.get(STORAGE_KEYS, result => {
     // if schedule data exists
     if (Object.keys(result).length === 3) {
         const title = document.getElementById("title");
@@ -7,7 +7,6 @@ chrome.storage.sync.get(["schedule", "school_year", "semester"], result => {
         schedule = scheduleMatrix();
 
         // fill in the schedule matrix
-        console.log(DAYS_INDEX);
         Object.entries(result["schedule"]).forEach(([day, subjects]) => {
             subjects.forEach(subject => {
                 const start = Number(subject["start"].replace("h", ""));
@@ -15,11 +14,14 @@ chrome.storage.sync.get(["schedule", "school_year", "semester"], result => {
             });
         });
 
-        console.log(schedule);
-
         // iterate through filled matrix
+        const spans = {};
+        for (let i = 1; i <= 19*2+1; i++) {
+            spans[i] = [];
+        }
         Object.entries(Object.entries(schedule)).forEach(([i, [hour, subjects]]) => {
-            const tableRow = document.querySelector(`#main table tr:nth-of-type(${((Number(i)+1)*2)})`);
+            const currentTableIndex = (Number(i)+1)*2;
+            const tableRow = document.querySelector(`#main table tr:nth-of-type(${currentTableIndex})`);
             //console.log(tableRow, i, subjects);
             if (tableRow) {
                 // fill the row with the subjects
@@ -30,18 +32,11 @@ chrome.storage.sync.get(["schedule", "school_year", "semester"], result => {
                         const cell = tableRow.querySelector(`td:nth-child(${j+2})`);
                         
                         // number of rows the subject will fill
-                        const rowspan = Number(subject["duration"].replace("h", ""))*2;
+                        const rowspan = parseFloat(subject["duration"].replace("h", "").replace(",", "."))*2;
                         cell.setAttribute("rowspan", rowspan);
 
-                        // hide certain cells to compensate for the space taken by the rowspan
-                        if (rowspan > 2) {
-                            const nextHourRow = tableRow.nextElementSibling?.nextElementSibling;
-                            if (nextHourRow) {
-                                const cell = nextHourRow.querySelector(`td:nth-child(${j+3})`);
-                                if (cell) cell.style.display = "none";
-                            }
-                        }
-                        
+                        if (rowspan > 2)
+                            spans[currentTableIndex+1].push(j+2);                
 
                         const subjectName = document.createElement("div");
                         cell.appendChild(subjectName);
@@ -51,6 +46,28 @@ chrome.storage.sync.get(["schedule", "school_year", "semester"], result => {
                 }
             }
         });
+
+        // hide certain cells to compensate for the space taken by the rowspan
+        for (let i = 1; i <= 19*2+1; i++) {
+            if (spans[i].length > 0) {
+                const tableRow = document.querySelector(`#main table tr:nth-of-type(${i+1})`);
+                if (tableRow) {
+                    let counter = 0, control = 0;
+                    while(1) {
+                        const cell = tableRow.querySelector(`td:nth-child(${spans[i][counter]})`);
+                        // only hide cells that are empty
+                        if (cell && !cell.innerText) {
+                            cell.style.display = "none";
+                            counter++;
+                        }             
+                        
+                        // break loop if the correct number os cells have been hidden
+                        // (or when there aren't any more cells left, to prevent an infinite loop)
+                        if (spans[i].length == counter || control++ >= tableRow.childElementCount) break;
+                    }
+                }
+            }
+        }
     }
 });
 
@@ -61,3 +78,7 @@ const scheduleMatrix = () => {
     }
     return matrix;
 }
+
+document.getElementById("exit").addEventListener("click", () => {
+    chrome.storage.sync.remove(STORAGE_KEYS).then(() => window.location.href = "/popup.html");
+});
