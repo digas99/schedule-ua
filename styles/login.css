@@ -2,6 +2,15 @@
     margin: 5px 0; 
 }
 
+#logo {
+    margin: 15px auto;
+    width: fit-content;
+}
+
+#logo > img {
+    width: 150px;
+}
+
 #login-wrapper > input {
     border: none;
     border-bottom: 1px solid silver;
