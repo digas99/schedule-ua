@@ -3,12 +3,8 @@ body {
     margin-right: 50px;
 }
 
-#main {
-    padding: 20px;
-}
-
-#main > div {
-    margin: 10px 0; 
+#main > div:not(.separator) {
+    margin: 20px;
 }
 
 #settings-subjects-colors {
@@ -71,4 +67,52 @@ body {
     color: white;
     font-weight: bold;
     pointer-events: none;
+}
+
+.item-check {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.item-check > label {
+    width: 100%;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.checkbox_wrapper {
+	text-align: right;
+	position: relative;
+    cursor: pointer;
+}
+
+.checkbox_wrapper > div {
+	pointer-events: none;
+}
+
+.custom-checkbox-back {
+	width: 33px;
+    height: 16px;
+    border-radius: 10px;
+    background-color: #cbc9c9;
+}
+
+.custom-checkbox-ball {
+	width: 18px;
+    height: 18px;
+    background-color: gray;
+    border-radius: 10px;
+    position: absolute;
+    top: -1px;
+	transition: 0.4s;
+}
+
+.checkbox-enabled > .custom-checkbox-back {
+	background-color: #7a7a7a;
+}
+
+.checkbox-enabled > .custom-checkbox-ball {
+    margin-left: 16px;
+    background-color: #5e5e5e;
 }

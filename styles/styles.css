@@ -22,7 +22,7 @@ h2 {
     height: 1px;
 }
 
-.clickable, .clickable-light {
+.clickable, .clickable-light, .clickable *, .clickable-light * {
     cursor: pointer !important;
 }
 

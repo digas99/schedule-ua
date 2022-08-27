@@ -1,6 +1,6 @@
 let subjects, subjectColors;
 
-chrome.storage.sync.get(["subject_colors", "subjects"], result => {
+chrome.storage.sync.get(["subject_colors", "subjects", "email"], result => {
     subjectColors = result["subject_colors"];
     subjects = result["subjects"];
     const subjectColorsElem = document.getElementById("subjects-colors");
@@ -24,6 +24,8 @@ chrome.storage.sync.get(["subject_colors", "subjects"], result => {
             });
         });
     }
+
+    if (result["email"] == null) document.getElementById("remember-email").click();
 });
 
 window.addEventListener("click", e => {
@@ -31,7 +33,6 @@ window.addEventListener("click", e => {
 
     if (subjects && subjectColors) {
         if (target.closest("#subjects-colors-refresh")) {
-            console.log("a");
             let indexes = [], counter = 0;
             while (indexes.length < subjects.length) {
                 const index = Math.floor(Math.random() * SUBJECT_COLORS.length-1) + 1;
@@ -51,5 +52,27 @@ window.addEventListener("click", e => {
                 });
             }
         }
+    }
+
+    // checkbox animation
+    if (target.closest("input[type='checkbox']")) {
+        const checkbox = target.closest("input[type='checkbox']");
+        const checkboxWrapper = checkbox.parentElement;
+        if (checkboxWrapper) {
+            if (!checkbox.checked)
+                checkboxWrapper.classList.remove("checkbox-enabled");
+            else
+                checkboxWrapper.classList.add("checkbox-enabled");
+        }
+    }
+    else if (target.closest(".checkbox_wrapper")) target.closest(".checkbox_wrapper").children[0].click();
+
+    // settings remember email
+    if (target.closest("#remember-email")) {
+        const checkbox = target.closest("#remember-email");
+        if (checkbox.checked)
+            chrome.storage.sync.set({"email": ""});
+        else
+            chrome.storage.sync.remove("email");
     }
 });
