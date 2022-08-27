@@ -30,7 +30,7 @@ table > tbody > tr > td {
     position: relative;
 }
 
-table > tbody > tr > td > div {
+table > tbody > tr > td > div:nth-child(1) {
     position: absolute;
     left: 0;
     right: 0;
@@ -38,6 +38,13 @@ table > tbody > tr > td > div {
     bottom: 0;
     height: fit-content;
     margin: auto;
+    display: flex;
+    flex-direction: column;
+    row-gap: 6px;
+}
+
+table > tbody > tr > td > div > div:nth-child(1) {
+    font-weight: bold;
 }
 
 #main {
@@ -68,4 +75,16 @@ table > tbody > tr > td > div {
     font-weight: bold;
     font-size: 13px;
     padding: 5px;
+}
+
+.practical-class {
+    background-color: #5fad85;
+}
+
+.theoretical-class {
+    background-color: #6a96c5;
+}
+
+.practical-class div, .theoretical-class div {
+    color: white;
 }

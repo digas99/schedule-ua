@@ -22,7 +22,6 @@ chrome.storage.sync.get(STORAGE_KEYS, result => {
         Object.entries(Object.entries(schedule)).forEach(([i, [hour, subjects]]) => {
             const currentTableIndex = (Number(i)+1)*2;
             const tableRow = document.querySelector(`#main table tr:nth-of-type(${currentTableIndex})`);
-            //console.log(tableRow, i, subjects);
             if (tableRow) {
                 // fill the row with the subjects
                 // iterate cells
@@ -30,7 +29,8 @@ chrome.storage.sync.get(STORAGE_KEYS, result => {
                     const subject = subjects[j];
                     if (subject) {
                         const cell = tableRow.querySelector(`td:nth-child(${j+2})`);
-                        
+                        cell.classList.add("clickable", subject["class"].charAt(0) == "T" ? "theoretical-class" : "practical-class");
+
                         // number of rows the subject will fill
                         const rowspan = parseFloat(subject["duration"].replace("h", "").replace(",", "."))*2;
                         cell.setAttribute("rowspan", rowspan);
@@ -38,9 +38,14 @@ chrome.storage.sync.get(STORAGE_KEYS, result => {
                         if (rowspan > 2)
                             spans[currentTableIndex+1].push(j+2);                
 
+                        const infoWrapper = document.createElement("div");
+                        cell.appendChild(infoWrapper);
                         const subjectName = document.createElement("div");
-                        cell.appendChild(subjectName);
+                        infoWrapper.appendChild(subjectName);
                         subjectName.appendChild(document.createTextNode(subject["subject"]["abbrev"]));
+                        const roomName = document.createElement("div");
+                        infoWrapper.appendChild(roomName);
+                        roomName.appendChild(document.createTextNode(subject["room"]));
                     }
 
                 }
@@ -79,6 +84,7 @@ const scheduleMatrix = () => {
     return matrix;
 }
 
+// click on Exit
 document.getElementById("exit").addEventListener("click", () => {
     chrome.storage.sync.remove(STORAGE_KEYS).then(() => window.location.href = "/popup.html");
 });
