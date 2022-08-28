@@ -34,6 +34,8 @@ chrome.storage.sync.get([...STORAGE_KEYS, "expanded", "subject_colors", "selecte
         mySchedule.create();
         mySchedule.removeSaturday();
 
+        document.querySelector("#main").style.removeProperty("display");
+
         if (!subjectColors)
             chrome.storage.sync.set({"subject_colors": mySchedule.subjectColors});
 
@@ -63,41 +65,50 @@ window.addEventListener("click", e => {
     if (target.closest("#shrink")) {
         updateExpandButton("shrink");
         mySchedule.trim();
+        const infoPanel = document.querySelector(".info-panel");
+        if (infoPanel)
+            infoPanel.style.height = infoPanel.getAttribute("default-height");
     }
     // expand schedule
     else if (target.closest("#expanded")) {
         updateExpandButton("expanded");
         mySchedule.expand();
+        const infoPanel = document.querySelector(".info-panel");
+        if (infoPanel)
+            infoPanel.style.height = (mySchedule.table.offsetHeight-40)+"px";
     }
 
     // take picture of schedule
     if (target.closest("#picture")) {
-        // printscreen animation
-        mySchedule.table.style.filter = "brightness(2)";
-        setTimeout(() => mySchedule.table.style.removeProperty("filter"), 150);
+        const area = mySchedule.table.parentElement;
+        if (area) {
+            // printscreen animation
+            area.style.filter = "brightness(2)";
+            setTimeout(() => area.style.removeProperty("filter"), 150);
 
-        html2canvas(mySchedule.table).then(canvas => canvas.toBlob(blob => saveAs(blob, `schedua-schedule_${school_year}_${semester}.png`), "image/png"));
+            html2canvas(area).then(canvas => canvas.toBlob(blob => saveAs(blob, `schedua-schedule_${school_year}_${semester}.png`), "image/png"));
+        }
     }
 
     // schedule selectors
     if (target.closest(".selectors")) {
         const scheduleWrapper = document.querySelector("#main > div");
         if (scheduleWrapper && !target.classList.contains("selector-active")) {
-            scheduleWrapper.firstChild?.remove();
-            
-            document.querySelector(".selector-active").classList.replace("selector-active", "clickable");
+            document.querySelector(".selector-active")?.classList.replace("selector-active", "clickable");
             target.classList.replace("clickable", "selector-active");
 
-            const trimmed = mySchedule.trimmed;
             const selected = target.innerText; 
             switch(selected) {
                 case "Week":
+                    scheduleWrapper.firstChild?.remove();
+                    scheduleWrapper.querySelector(".info-panel")?.remove();
+
                     mySchedule = new Schedule(scheduleWrapper, {
                         "hours": defaultHours,
                         "days": defaultDays,
                         "schedule": schedule,
                         "colors": subjectColors,
-                        "trimmed": trimmed
+                        "trimmed": mySchedule.trimmed
                     });
 
                     mySchedule.create();
@@ -107,34 +118,73 @@ window.addEventListener("click", e => {
                 case "Today":
                 case "Tomorrow":
                 case "Yesterday":
-                    let day;
-                    if (selected == "Today")
-                        day = getDayFromIndex(new Date().getDay());
-                    else if (selected == "Tomorrow")
-                        day = getDayFromIndex(getNewDate(1).getDay());
+                    let day = getDayFromIndex(new Date().getDay());
+                    if (selected == "Tomorrow")
+                        day = getWeekDay(day, 1);
                     else if (selected == "Yesterday")
-                        day = getDayFromIndex(getNewDate(-1).getDay());
+                        day = getWeekDay(day, -1);
 
-                    mySchedule = new Schedule(scheduleWrapper, {
-                        "hours": defaultHours,
-                        "days": [day],
-                        "schedule": {[day]: schedule[day]},
-                        "colors": subjectColors,
-                        "trimmed": trimmed
-                    });
+                    createDaySchedule(scheduleWrapper, day);
 
-                    mySchedule.create();
-                    mySchedule.fixSpanningCollapse();
-                    
                     break;
             }
 
             chrome.storage.sync.set({"selected": selected});
         }
     }
+
+    // table week day header
+    if (target.closest("table th")) {
+        // only enable clicking if there are several days
+        if (target.closest("table tr").children.length > 3) {
+            const weekday = target.closest("table th").innerText;
+            const scheduleWrapper = document.querySelector("#main > div");
+            if (weekday && Object.keys(DAYS_INDEX).includes(weekday) && scheduleWrapper) {
+                document.querySelector(".selector-active")?.classList.replace("selector-active", "clickable");
+                createDaySchedule(scheduleWrapper, weekday);
+            }
+        }
+    }
 });
 
-updateExpandButton = state => {
+const createDaySchedule = (scheduleWrapper, scheduleDay) => {
+    scheduleWrapper.firstChild?.remove();
+    scheduleWrapper.querySelector(".info-panel")?.remove();
+
+    mySchedule = new Schedule(scheduleWrapper, {
+        "hours": defaultHours,
+        "days": [scheduleDay],
+        "schedule": {[scheduleDay]: schedule[scheduleDay]},
+        "colors": subjectColors,
+        "trimmed": mySchedule.trimmed
+    });
+
+    mySchedule.create();
+    mySchedule.fixSpanningCollapse();
+
+    scheduleWrapper.appendChild(infoPanel(mySchedule.schedule));
+
+    // add arrows
+    const [leftArrowWrapper, dayHeader, rightArrowWrapper] = mySchedule.table.querySelectorAll("th");
+    leftArrowWrapper.classList.add("clickable");
+    leftArrowWrapper.innerText = "<";
+    leftArrowWrapper.addEventListener("click", () => {
+        document.querySelector(".selector-active")?.classList.replace("selector-active", "clickable");
+        createDaySchedule(scheduleWrapper, getWeekDay(scheduleDay, -1));
+    });
+     
+    rightArrowWrapper.classList.add("clickable");
+    rightArrowWrapper.innerText = ">";
+    rightArrowWrapper.addEventListener("click", () => {
+        document.querySelector(".selector-active")?.classList.replace("selector-active", "clickable");
+        createDaySchedule(scheduleWrapper, getWeekDay(scheduleDay, 1));
+    });
+
+    // make day header go back to Week
+    mySchedule.table.querySelector("th:nth-of-type(2)").addEventListener("click", () => document.querySelector(".selectors > div").click());
+}
+
+const updateExpandButton = state => {
     const button = document.getElementById(state);
     if (state == "shrink") {
         button.id = "expanded";
@@ -151,4 +201,72 @@ updateExpandButton = state => {
         image.src = "images/icons/shrink.png";
         chrome.storage.sync.set({"expanded":true});
     }
+}
+
+const infoPanel = schedule => {
+    const wrapper = document.createElement("div");
+    wrapper.classList.add("info-panel");
+    wrapper.setAttribute("default-height", wrapper.style.height);
+
+    const title = document.createElement("h2");
+    wrapper.appendChild(title);
+    title.appendChild(document.createTextNode("Your classes"));
+    
+    // general data
+    const genDataWrapper = document.createElement("div");
+    wrapper.appendChild(genDataWrapper);
+
+    const subjectsWrapper = document.createElement("div");
+    wrapper.appendChild(subjectsWrapper);
+    const subjects = Object.values(schedule).flat(1);
+    let pract = 0, theor = 0, hoursTotal = 0;
+    if (subjects) {
+        subjects.forEach(subject => {
+            if (subject) {
+                const subjectWrapper = document.createElement("div");
+                subjectsWrapper.appendChild(subjectWrapper);
+                subjectWrapper.classList.add("subject-info");
+                const classTitle = document.createElement("div");
+                subjectWrapper.appendChild(classTitle);
+                classTitle.appendChild(document.createTextNode(`${subject["subject"]["abbrev"]} - ${subject["subject"]["name"]}`));
+                classTitle.style.backgroundColor = subjectColors[subject["subject"]["abbrev"]];
+                const infoWrapper = document.createElement("div");
+                subjectWrapper.appendChild(infoWrapper);
+                const classNumberWrapper = document.createElement("div");
+                infoWrapper.appendChild(classNumberWrapper);
+                const classNumber = document.createElement("div");
+                classNumberWrapper.appendChild(classNumber);
+                classNumber.appendChild(document.createTextNode(subject["class"]));
+                const info = document.createElement("div");
+                infoWrapper.appendChild(info);
+                ["duration", "room", "capacity"].forEach(type => {
+                    const rowWrapper = document.createElement("div");
+                    info.appendChild(rowWrapper);
+                    const rowTitle = document.createElement("b");
+                    rowWrapper.appendChild(rowTitle);
+                    rowTitle.appendChild(document.createTextNode(type.charAt(0).toUpperCase()+type.slice(1)));
+                    const rowContent = document.createElement("div");
+                    rowWrapper.appendChild(rowContent);
+                    rowContent.appendChild(document.createTextNode(subject[type]));
+                });
+    
+                if (subject["class"].charAt(0) == "P") pract++;
+                else theor++;
+    
+                hoursTotal += parseFloat(subject["duration"].replace(",", "."));
+            }
+        });
+    }
+
+    const data = [pract+theor, pract, theor, hoursTotal+"h"];
+    ["Classes", "Pract.", "Theor.", "Hours Total"].forEach((title, i) => {
+        const wrapper = document.createElement("div");
+        genDataWrapper.appendChild(wrapper);
+        const titleElem = document.createElement("b");
+        wrapper.appendChild(titleElem);
+        titleElem.appendChild(document.createTextNode(title));
+        wrapper.appendChild(document.createTextNode(` ${data[i]}`));
+    });
+
+    return wrapper;
 }

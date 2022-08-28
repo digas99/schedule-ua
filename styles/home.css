@@ -1,0 +1,109 @@
+body {
+    margin-right: 50px;
+}
+
+#main > div:nth-of-type(1) {
+    display: flex;
+}
+
+.selectors {
+    display: flex;
+    border-top: 1px solid silver;
+}
+
+.selectors > div {
+    font-size: 15px;
+    padding: 10px;
+    width: 100%;
+    text-align: center;
+}
+
+.selectors > div:not(:last-child) {
+    border-right: 1px solid silver;
+}
+
+.selector-active {
+    background-color: #9c9c9c;
+    color: white;
+    cursor: not-allowed;
+}
+
+.selectors > div:not(.selector-active):hover, table > tbody > tr > th:not(:first-child, :last-child):hover {
+    background-color: #e1e1e1;
+}
+
+table > tbody > tr:nth-child(13) {
+    border-bottom: 2px solid #cccccc;
+}
+
+table > tbody > tr > th:not(:first-child, :last-child) {
+    cursor: pointer;
+}
+
+.info-panel {
+    width: 1020px;
+    padding: 20px 10px;
+    overflow: auto;
+}
+
+.info-panel > *:not(:last-child) {
+    margin-bottom: 20px;
+}
+
+.info-panel > h2 {
+    text-align: center;
+}
+
+.info-panel > div {
+    display: flex;
+    flex-direction: column;
+    row-gap: 10px;
+}
+
+.info-panel > div:nth-of-type(1) {
+    width: fit-content;
+    display: flex;
+    flex-direction: row;
+    column-gap: 10px;
+    margin: 10px auto;
+}
+
+.subject-info > div:nth-child(1) {
+    color: white;
+    padding: 9px;
+    font-weight: bold;
+}
+
+.subject-info > div:nth-child(2) {
+    display: flex;
+    align-items: center;
+    border: 1px solid silver;
+}
+
+.subject-info > div:nth-child(2) > div:nth-child(1) {
+    font-size: 20px;
+    background-color: #646262;
+    width: 90px;
+    height: 58px;
+    display: flex;
+    align-items: center;
+}
+
+.subject-info > div:nth-child(2) > div:nth-child(1) > div {
+    color: white;
+    width: 100%;
+    text-align: center;
+}
+
+.subject-info > div:nth-child(2) > div:nth-child(2) {
+    padding: 5px 9px;
+    display: flex;
+    flex-direction: column;
+    row-gap: 3px;
+    width: 100%;
+}
+
+.subject-info > div:nth-child(2) > div:nth-child(2) > div {
+    display: flex;
+    column-gap: 5px;
+}

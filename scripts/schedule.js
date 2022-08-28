@@ -231,7 +231,13 @@ const DAYS_INDEX = {
 
 const getDayFromIndex = index => Object.entries(DAYS_INDEX).filter(([day, i]) => i == index)[0][0];
 
-const getNewDate = increment => new Date(new Date().setDate(new Date().getDate() + increment));
+const getWeekDay = (day, increment) => {
+    let index = DAYS_INDEX[day]+increment;
+    if (index == 7) index = 0;
+    else if (index == -1) index = 6;
+
+    return Object.entries(DAYS_INDEX).filter(([d, i]) => i == index)[0][0];
+}
 
 const SUBJECT_COLORS = [
     "#e1c358",

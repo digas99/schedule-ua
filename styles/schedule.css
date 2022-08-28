@@ -1,7 +1,3 @@
-body {
-    margin-right: 50px;
-}
-
 table {
     table-layout: fixed;
 }
@@ -20,10 +16,6 @@ table > tbody > tr > th:nth-child(1), table > tbody > tr > th:last-child {
 
 table > tbody > tr > td:nth-child(1), table > tbody > tr > td:last-child {
     padding: 5px;
-}
-
-table > tbody > tr:nth-child(13) {
-    border-bottom: 2px solid #cccccc;
 }
 
 table > tbody > tr > td {
@@ -47,39 +39,6 @@ table > tbody > tr > td > div > div:nth-child(1) {
     font-weight: bold;
 }
 
-#title {
-    letter-spacing: 1px;
-    font-size: 14px;
-    margin: 0;
-    text-align: center;
-    color: silver;
-}
-
 .class div {
     color: white;
-}
-
-.selectors {
-    display: flex;
-}
-
-.selectors > div {
-    font-size: 15px;
-    padding: 10px;
-    width: 100%;
-    text-align: center;
-}
-
-.selectors > div:not(:last-child) {
-    border-right: 1px solid silver;
-}
-
-.selector-active {
-    background-color: #9c9c9c;
-    color: white;
-    cursor: not-allowed;
-}
-
-.selectors > div:not(.selector-active):hover {
-    background-color: #e1e1e1;
 }
