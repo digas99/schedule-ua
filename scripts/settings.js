@@ -33,14 +33,7 @@ window.addEventListener("click", e => {
 
     if (subjects && subjectColors) {
         if (target.closest("#subjects-colors-refresh")) {
-            let indexes = [], counter = 0;
-            while (indexes.length < subjects.length) {
-                const index = Math.floor(Math.random() * SUBJECT_COLORS.length-1) + 1;
-                if (indexes.indexOf(index) === -1) {
-                    indexes.push(index);
-                    subjectColors[subjects[counter++]] = SUBJECT_COLORS[index];
-                }
-            }
+            subjectColors = shuffleColors(subjects, SUBJECT_COLORS);
             chrome.storage.sync.set({"subject_colors": subjectColors});
 
             // update colors in popup
