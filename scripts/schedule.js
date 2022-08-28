@@ -177,4 +177,8 @@ window.addEventListener("click", e => {
         if(table)
             Array.from(table.querySelectorAll("tr[style='display: none;']")).forEach(cell => cell.style.removeProperty("display"));
     }
+
+    // take picture of schedule
+    if (target.closest("#picture"))
+        html2canvas(document.querySelector("#main table")).then(canvas => canvas.toBlob(blob => saveAs(blob, `schedua-schedule_${school_year}_${semester}.png`), "image/png"));
 });
