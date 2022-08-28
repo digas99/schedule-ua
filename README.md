@@ -9,3 +9,7 @@ Browser Extension for easy access to your Schedule from Universidade de Aveiro. 
 ![logo](/images/logo_48x48.png)
 
 ###### Idea for this project: [jtsimoes](https://github.com/jtsimoes)
+
+## Pictures
+
+![picture1](/images/picture1.jpg)

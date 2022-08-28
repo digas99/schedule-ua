@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">	
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width">
+	<title>SchedUA</title>
+	<link rel="stylesheet" href="styles/styles.css">
+	<link rel="stylesheet" href="styles/sidebar.css">
+    <link rel="stylesheet" href="styles/about.css">
+</head>
+<body style="font-family: sans-serif">
+	<div id="navbar">
+		<img title="SchedUA" src="images/logo.png">
+		<div class="separator"></div>
+		<div title="Schedule" id="schedule" class="clickable"><img style="width: 25px;" src="images/icons/schedule.png"></div>
+		<div title="Settings" id="settings" class="clickable"><img src="images/icons/settings.png"></div>
+		<!-- <div title="Stats" id="stats" class="clickable"><img src="images/icons/graph.png"></div> -->
+		<div title="About" id="about" class="button-inactive"><img src="images/icons/about.png"></div>
+		<div title="Exit" id="exit" class="clickable"><img style="padding-left: 6px;" src="images/icons/exit.png"></div>
+		<div id="navbar-bottom"></div>
+	</div>
+	<div class="separator"></div>
+	<div id="main">
+        <div id="presentation">
+            <img src="images/logo-text.png">
+            <h1>SchedUA - Schedule for Universidade de Aveiro</h1>
+            <div>Browser Extension for easy access to your Schedule from Universidade de Aveiro.</div>
+            <div>
+                <a title="Code Repository" class="clickable-light" target="_blank" href="https://github.com/digas99/schedule-ua"><img src="images/github-logo.png"></a>
+                <a title="Contact me" class="clickable-light" target="_blank" href="mailto:digas_correia@hotmail.com"><img src="images/icons/email.png"></a>
+            </div>
+            <div id="version" style="color: silver;">v0.0.0</div>
+        </div>
+        <div class="separator"></div>
+        <div id="contributors">
+            <h2>Contributors</h2>
+            <ul>
+                <li>Diogo Correia - <a target="_blank" href="https://github.com/digas99">digas99</a></li>
+                <li>João Tomás - <a target="_blank" href="https://github.com/jtsimoes">jtsimoes</a></li>
+            </ul>
+        </div>
+        <div class="separator"></div>
+        <div id="resources">
+            <h2>Resources</h2>
+            <div>Third party resources used in this app</div>
+            <div>
+                <a target="_blank" href="https://github.com/digas99/paco-ua-api" class="third-party-app">
+                    <img src="images/paco-api-logo.png">
+                    <div>
+                        <div>PACO-UA API</div>
+                        <div>Unofficial API for Portal Académico Online - Universidade de Aveiro</div>
+                    </div>
+                </a>
+            </div>
+            <div>
+                <a target="_blank" href="https://github.com/eligrey/FileSaver.js" class="third-party-app">
+                    <img src="images/github-logo.png">
+                    <div>
+                        <div>FileSaver.js</div>
+                        <div>An HTML5 saveAs() FileSaver implementation</div>
+                    </div>
+                </a>
+            </div>
+            <div>
+                <a target="_blank" href="https://github.com/niklasvh/html2canvas" class="third-party-app">
+                    <img id="html2canvas-logo" src="images/html2canvas.svg">
+                    <div>
+                        <div>html2canvas</div>
+                        <div>Screenshots with JavaScript</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+	<script src="scripts/static.js"></script>
+	<script src="scripts/sidebar.js"></script>
+	<script src="scripts/about.js"></script>
+</body>
+</html>
