@@ -14,11 +14,11 @@ table, th, td {
     text-align: center;
 }
 
-table > tbody > tr > th:nth-child(1), table > tbody > tr > th:nth-child(8) {
+table > tbody > tr > th:nth-child(1), table > tbody > tr > th:last-child {
     width: 15px;
 }
 
-table > tbody > tr > td:nth-child(1), table > tbody > tr > td:nth-child(8) {
+table > tbody > tr > td:nth-child(1), table > tbody > tr > td:last-child {
     padding: 5px;
 }
 
@@ -72,4 +72,14 @@ table > tbody > tr > td > div > div:nth-child(1) {
 
 .selectors > div:not(:last-child) {
     border-right: 1px solid silver;
+}
+
+.selector-active {
+    background-color: #9c9c9c;
+    color: white;
+    cursor: not-allowed;
+}
+
+.selectors > div:not(.selector-active):hover {
+    background-color: #e1e1e1;
 }

@@ -2,10 +2,14 @@ const Schedule = function(container, config) {
     this.container = container;
 
     this.hours = config["hours"];
+    // added extra dummy column to prevent visual bug (it is hidden below)
     this.days = config["days"];
     this.schedule = config["schedule"];
     this.subjectColors = config["colors"];
-    
+    this.trimmed = config["trimmed"];
+
+    if (Object.values(this.schedule)[0] == undefined || Object.values(this.schedule).flat(1).length == 0) this.empty = true;
+
     this.matrix = scheduleMatrix(this.hours, this.days.length);
 }
 
@@ -15,7 +19,8 @@ Schedule.prototype = {
         if (!this.subjectColors) this.setColors();
         this.populateMatrix();
         this.fill();
-        this.fix();
+        this.fixSpanning();
+        if (this.trimmed) this.trim();
     },
     createTable: function() {
         this.table = document.createElement("table");
@@ -66,12 +71,13 @@ Schedule.prototype = {
         this.container.appendChild(this.table);
     },
     populateMatrix: function() {
-        Object.entries(this.schedule).forEach(([day, subjects]) => {
-            subjects.forEach(subject => {
-                const start = Number(subject["start"].replace("h", ""));
-                this.matrix[start][DAYS_INDEX[day]] = subject;
+        Object.entries(this.schedule).sort(([a_day, a_subject], [b_day, b_subject]) => DAYS_INDEX[a_day] - DAYS_INDEX[b_day])
+            .forEach(([day, subjects], i) => {
+                subjects?.forEach(subject => {
+                    const start = Number(subject["start"].replace("h", ""));
+                    this.matrix[start][i] = subject;
+                });
             });
-        });
     },
     setColors: function() {
         this.subjects = [...new Set(Object.entries(this.schedule).map(([key, value]) => value.map(obj => obj["subject"]["abbrev"])).flat(1))];
@@ -90,7 +96,7 @@ Schedule.prototype = {
             if (tableRow) {
                 // fill the row with the subjects
                 // iterate cells
-                for (let j = 0; j <= 5; j++) {
+                for (let j = 0; j < subjects.length; j++) {
                     const subject = subjects[j];
                     if (subject) {
                         tableRow.setAttribute("filled", "true");
@@ -121,8 +127,8 @@ Schedule.prototype = {
             }
         });
     },
-    // hide certain cells to compensate for the space taken by the rowspan
-    fix: function() {
+    fixSpanning: function() {
+        // hide certain cells to compensate for the space taken by the rowspan
         for (let i = 1; i <= this.hours.length*2+1; i++) {
             if (this.spans[i].length > 0) {
                 const tableRow = this.table.querySelector(`tr:nth-of-type(${i+1})`);
@@ -147,6 +153,49 @@ Schedule.prototype = {
                 }
             }
         }
+    },
+    fixSpanningCollapse: function() {
+        // add fixed height to cells with spanning that collapse
+        const rows = this.table.querySelectorAll("tr[filled='true']");
+        if (rows) {
+            Array.from(rows).forEach(row => {
+                Array.from(row.querySelectorAll("td")).forEach(cell => {
+                    const cellHeight = parseInt(getComputedStyle(cell)["height"]);
+                    if (cellHeight > 0 && cellHeight < 21) cell.style.height = "21px";
+                });
+            });
+        }
+    },
+    removeSaturday: function() {
+        // remove "Sábado" if it has no classes
+        if (this.schedule["Sábado"] && this.schedule["Sábado"].length == 0)
+            this.table.querySelectorAll("tr").forEach(row => row.children[Object.keys(this.schedule).length].style.display = "none");
+    },
+    trim: function(force=false) {
+        if (!this.empty || force) {
+            const tableRows = this.table.querySelectorAll("tr");
+            if(tableRows) {
+                // top to bottom
+                for (let i = 1; i < tableRows.length; i++) {
+                    // if row is empty
+                    if (!tableRows[i].getAttribute("filled")) tableRows[i].style.display = "none";
+                    else break;
+                }
+    
+                // bottom to top
+                for (let i = tableRows.length-1; i > 0; i--) {
+                    // if row is empty
+                    if (!tableRows[i].getAttribute("filled")) tableRows[i].style.display = "none";
+                    else break;
+                }
+            }
+        }
+
+        this.trimmed = true;
+    },
+    expand: function() {
+        Array.from(this.table.querySelectorAll("tr[style='display: none;']")).forEach(cell => cell.style.removeProperty("display"));
+        this.trimmed = false;
     }
 }
 
@@ -171,14 +220,18 @@ const shuffleColors = (subjects, colors) => {
 }
 
 const DAYS_INDEX = {
-    "Segunda": 0,
-    "Terça": 1,
-    "Quarta": 2,
-    "Quinta": 3,
-    "Sexta": 4,
-    "Sábado": 5,
-    "Domingo": 6
+    "Domingo": 0,
+    "Segunda": 1,
+    "Terça": 2,
+    "Quarta": 3,
+    "Quinta": 4,
+    "Sexta": 5,
+    "Sábado": 6
 }
+
+const getDayFromIndex = index => Object.entries(DAYS_INDEX).filter(([day, i]) => i == index)[0][0];
+
+const getNewDate = increment => new Date(new Date().setDate(new Date().getDate() + increment));
 
 const SUBJECT_COLORS = [
     "#e1c358",

@@ -27,7 +27,7 @@
     padding: 10px 0;
 }
 
-#navbar > div:not(:first-child, :last-child):hover,.selectors > div:hover {
+#navbar > div:not(:first-child, :last-child):hover {
     background-color: #e1e1e1;
 }
 
