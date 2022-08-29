@@ -2,8 +2,15 @@ body {
     margin-right: 50px;
 }
 
-#main > div:not(.separator) {
+.settings-section {
     margin: 20px;
+}
+
+.settings-section > div {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    row-gap: 15px;
 }
 
 #settings-subjects-colors {
@@ -11,13 +18,13 @@ body {
 }
 
 #settings-subjects-colors > div:nth-of-type(1) {
-    color: silver;
+    font-size: 14px;
 }
 
 #settings-subjects-colors > div:nth-of-type(2) {
     position: absolute;
-    right: 2px;
-    top: -2px;
+    right: 0px;
+    top: -6px;
     opacity: 0.6;
     padding: 5px;
 }
@@ -114,4 +121,16 @@ body {
 .checkbox-enabled > .custom-checkbox-ball {
     margin-left: 16px;
     background-color: #5e5e5e;
+}
+
+select {
+    background: #5c5c5c;
+    color: white;
+    width: 100px;
+    padding: 2px 6px;
+    cursor: pointer;
+}
+
+select > option {
+    color: white;
 }

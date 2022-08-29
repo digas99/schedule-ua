@@ -1,6 +1,6 @@
 let subjects, subjectColors;
 
-chrome.storage.sync.get(["subject_colors", "subjects", "email"], result => {
+chrome.storage.sync.get(["subject_colors", "subjects", "email", "selected"], result => {
     subjectColors = result["subject_colors"];
     subjects = result["subjects"];
     const subjectColorsElem = document.getElementById("subjects-colors");
@@ -15,6 +15,7 @@ chrome.storage.sync.get(["subject_colors", "subjects", "email"], result => {
             subjectName.appendChild(document.createTextNode(subject));
             const colorPicker = document.createElement("input");
             colorPickerWrapper.appendChild(colorPicker);
+            colorPicker.title = "Select new color for "+subject;
             colorPicker.type = "color";
             colorPicker.value = color;
 
@@ -24,6 +25,12 @@ chrome.storage.sync.get(["subject_colors", "subjects", "email"], result => {
             });
         });
     }
+
+    const selected = result["selected"];
+    const scheduleStartup = document.getElementById("schedule-startup");
+    if (selected && scheduleStartup)
+        scheduleStartup.value = selected;
+
 
     if (result["email"] == null) document.getElementById("remember-email").click();
 });
@@ -68,4 +75,11 @@ window.addEventListener("click", e => {
         else
             chrome.storage.sync.remove("email");
     }
+});
+
+window.addEventListener("input", e => {
+    const target = e.target;
+
+    if (target.closest("#schedule-startup"))
+        chrome.storage.sync.set({"selected": target.value});
 });

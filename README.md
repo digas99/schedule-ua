@@ -12,4 +12,5 @@ Browser Extension for easy access to your Schedule from Universidade de Aveiro. 
 
 ## Pictures
 
-![picture1](/images/picture1.jpg)
+<img align="left" width="350px" src="/images/picture1.jpg">
+<img width="350px" src="/images/picture2.jpg">
