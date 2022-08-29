@@ -6,6 +6,9 @@ const Schedule = function(container, config) {
     this.schedule = config["schedule"];
     this.subjectColors = config["colors"];
     this.trimmed = config["trimmed"];
+    this.limitTrimming = config["limitTrimming"];
+    this.soonest = config["soonest"];
+    this.latest = config["latest"];
 
     if (Object.values(this.schedule)[0] == undefined || Object.values(this.schedule).flat(1).length == 0) this.empty = true;
 
@@ -194,20 +197,31 @@ Schedule.prototype = {
             this.table.querySelectorAll("tr").forEach(row => row.children[Object.keys(this.schedule).length].style.display = "none");
     },
     trim: function(force=false) {
-        if (!this.empty || force) {
+        console.log(this.limitTrimming, this.soonest, this.latest);
+        if (!this.empty || force || this.limitTrimming) {
             const tableRows = this.table.querySelectorAll("tr");
             if(tableRows) {
                 // top to bottom
                 for (let i = 1; i < tableRows.length; i++) {
+                    const row = tableRows[i];
+
+                    if (this.limitTrimming && parseFloat(row.children[0].innerText) == this.soonest)
+                        break;
+
                     // if row is empty
-                    if (!tableRows[i].getAttribute("filled")) tableRows[i].style.display = "none";
+                    if (!row.getAttribute("filled")) row.style.display = "none";
                     else break;
                 }
     
                 // bottom to top
                 for (let i = tableRows.length-1; i > 0; i--) {
+                    const row = tableRows[i];
+
+                    if (this.limitTrimming && parseFloat(row.children[0].innerText) == this.latest)
+                        break;
+
                     // if row is empty
-                    if (!tableRows[i].getAttribute("filled")) tableRows[i].style.display = "none";
+                    if (!row.getAttribute("filled")) row.style.display = "none";
                     else break;
                 }
             }

@@ -26,7 +26,7 @@
 		<div class="settings-section">
 			<h2>Schedule</h2>
 			<div>
-				<div class="item-check">
+				<div title="Choose which type of schedule should show when opening the extension." class="item-check">
 					<label for="schedule-startup">Schedule on Startup</label>
 					<select id="schedule-startup">
 						<option>Week</option>
@@ -35,14 +35,14 @@
 						<option>Tomorrow</option>
 					</select>
 				</div>
-				<div id="settings-subjects-colors">
+				<div title="Customize the colors of each subject." id="settings-subjects-colors">
 					<div>Subjects Colors</div>
 					<div title="New Random Colors" id="subjects-colors-refresh" class="clickable-light"><img src="images/icons/refresh.png"></div>
 					<div>
 						<div id="subjects-colors"></div>
 					</div>
 				</div>
-				<div class="item-check">
+				<div title="Highlight the cell in the schedule that corresponds to the current time." class="item-check">
 					<label for="highlight-now">Highlight Cell of Now</label>
 					<div class="checkbox_wrapper checkbox-enabled">
 						<input checked type="checkbox" id="highlight-now" style="display: none;">
@@ -50,7 +50,7 @@
 						<div class="custom-checkbox-back"></div>
 					</div>
 				</div>
-				<div class="item-check">
+				<div title="Limit min and max hours of the trim. This values are taken from the schedule itself." class="item-check">
 					<label for="limit-trimming">Limit Schedule Trim</label>
 					<div class="checkbox_wrapper checkbox-enabled">
 						<input checked type="checkbox" id="limit-trimming" style="display: none;">
@@ -64,7 +64,7 @@
 		<div class="settings-section">
 			<h2>Account</h2>
 			<div>
-				<div class="item-check">
+				<div title="Remember email the next time you logout." class="item-check">
 					<label for="remember-email">Remember Email (saved in local storage)</label>
 					<div class="checkbox_wrapper checkbox-enabled">
 						<input checked type="checkbox" id="remember-email" style="display: none;">
@@ -78,7 +78,7 @@
 		<div class="settings-section">
 			<h2>PACO</h2>
 			<div>
-				<div class="item-check">
+				<div title="Extra buttons above the schedule in the schedule page in PACO - Secretaria Virtual." class="item-check">
 					<label for="paco-download-upload">Download and Upload buttons</label>
 					<div class="checkbox_wrapper checkbox-enabled">
 						<input checked type="checkbox" id="paco-download-upload" style="display: none;">

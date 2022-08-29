@@ -1,6 +1,6 @@
 let subjects, subjectColors;
 
-chrome.storage.sync.get(["subject_colors", "subjects", "email", "selected", "paco_buttons", "highlight_now"], result => {
+chrome.storage.sync.get(["subject_colors", "subjects", "email", "selected", "paco_buttons", "highlight_now", "limit_trimming"], result => {
     subjectColors = result["subject_colors"];
     subjects = result["subjects"];
     const subjectColorsElem = document.getElementById("subjects-colors");
@@ -34,8 +34,9 @@ chrome.storage.sync.get(["subject_colors", "subjects", "email", "selected", "pac
 
     // handle checkboxes
     if (result["email"] == null) document.getElementById("remember-email").click();
-    if (result["paco_buttons"] == false) document.getElementById("paco-download-upload").click();
-    if (result["highlight_now"] == false) document.getElementById("highlight-now").click();
+    ["paco_buttons", "highlight_now", "limit_trimming"].forEach(key => {
+        if (result[key] == false) document.getElementById(key.replace("_", "-"))?.click();
+    });
 });
 
 window.addEventListener("click", e => {
@@ -92,6 +93,14 @@ window.addEventListener("click", e => {
             chrome.storage.sync.set({"highlight_now": true});
         else
             chrome.storage.sync.set({"highlight_now": false});
+    }
+
+    if (target.closest("#limit-trimming")) {
+        const checkbox = target.closest("#limit-trimming");
+        if (checkbox.checked)
+            chrome.storage.sync.set({"limit_trimming": true});
+        else
+            chrome.storage.sync.set({"limit_trimming": false});
     }
 });
 

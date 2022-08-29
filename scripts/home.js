@@ -1,7 +1,7 @@
 let mySchedule, schedule, school_year, semester, subjectColors, highlightNow;
 const defaultHours = [8,9,10,11,12,13,14,15,16,17,18,19], defaultDays = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
 
-chrome.storage.sync.get([...STORAGE_KEYS, "trimmed", "subject_colors", "selected", "highlight_now"], result => {
+chrome.storage.sync.get([...STORAGE_KEYS, "trimmed", "subject_colors", "selected", "highlight_now", "limit_trimming"], result => {
     // if schedule data exists
     if (STORAGE_KEYS.every(key => Object.keys(result).includes(key))) {
         schedule = result["schedule"];
@@ -13,13 +13,20 @@ chrome.storage.sync.get([...STORAGE_KEYS, "trimmed", "subject_colors", "selected
         const title = document.getElementById("title");
         if (title) title.innerText += ` ${school_year} ${semester}`;
 
+        let allHours;
+        if (result["limit_trimming"] !== false)
+            allHours = Object.values(schedule).map(subjects => subjects.map(subject => [parseFloat(subject["start"]), parseFloat(subject["start"])+parseFloat(subject["duration"])])).flat(2);
+
         // create schedule table
         mySchedule = new Schedule(document.querySelector("#main > div"), {
             "hours": defaultHours,
             "days": defaultDays,
             "schedule": schedule,
             "colors": subjectColors,
-            "trimmed": result["trimmed"]
+            "trimmed": result["trimmed"],
+            "limitTrimming": result["limit_trimming"] !== false,
+            "soonest": allHours ? Math.min.apply(Math, allHours) : null,
+            "latest": allHours ? Math.max.apply(Math, allHours)-1 : null
         });
 
         mySchedule.create();
@@ -108,7 +115,10 @@ window.addEventListener("click", e => {
                         "days": defaultDays,
                         "schedule": schedule,
                         "colors": mySchedule.subjectColors,
-                        "trimmed": mySchedule.trimmed
+                        "trimmed": mySchedule.trimmed,
+                        "limitTrimming": mySchedule.limitTrimming,
+                        "soonest": mySchedule.soonest,
+                        "latest": mySchedule.latest
                     });
 
                     mySchedule.create();
@@ -174,7 +184,10 @@ window.addEventListener("click", e => {
                 "days": days,
                 "schedule": newSchedule,
                 "colors": mySchedule.subjectColors,
-                "trimmed": mySchedule.trimmed
+                "trimmed": mySchedule.trimmed,
+                "limitTrimming": mySchedule.limitTrimming,
+                "soonest": mySchedule.soonest,
+                "latest": mySchedule.latest
             });
         
             mySchedule.create();
@@ -249,7 +262,10 @@ const createDaySchedule = (scheduleWrapper, scheduleDay) => {
         "days": [scheduleDay],
         "schedule": {[scheduleDay]: schedule[scheduleDay]},
         "colors": mySchedule.subjectColors,
-        "trimmed": mySchedule.trimmed
+        "trimmed": mySchedule.trimmed,
+        "limitTrimming": mySchedule.limitTrimming,
+        "soonest": mySchedule.soonest,
+        "latest": mySchedule.latest
     });
 
     mySchedule.create();
@@ -365,15 +381,24 @@ const infoPanel = schedule => {
     return wrapper;
 }
 
-const highlightNowCell = () => {
+const highlightNowCell = (day, hours, minutes) => {
     if (highlightNow !== false) {
         const now = new Date();
-        const cell = mySchedule.highlightCell(now.getDay(), now.getHours(), now.getMinutes(), "You're here");
+        day = day ? day : now.getDay();
+        hours = hours ? hours : now.getHours();
+        minutes = minutes ? minutes : now.getMinutes();
+
+        let cell = mySchedule.highlightCell(day, hours, minutes, "You're here");
         
+        if (!cell) return;
+
         if (cell && cell.classList.contains("class")) {
             const liveClass = document.createElement("div");
             cell.appendChild(liveClass);
             liveClass.classList.add("live-class");
         }
+        
+        if (cell.style.display == "none")
+            return highlightNowCell(day, minutes >= 30 ? hours : hours - 1, minutes >= 30 ? 0 : 30);
     }
 }
