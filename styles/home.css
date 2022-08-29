@@ -32,6 +32,10 @@ body {
     background-color: #e1e1e1;
 }
 
+.shadowed-class {
+    background-color: #9c9c9c !important;
+}
+
 table > tbody > tr:nth-child(13) {
     border-bottom: 2px solid #cccccc;
 }

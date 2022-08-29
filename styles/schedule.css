@@ -39,6 +39,10 @@ table > tbody > tr > td > div > div:nth-child(1) {
     font-weight: bold;
 }
 
+.class {
+    cursor: pointer;
+}
+
 .class div {
     color: white;
 }

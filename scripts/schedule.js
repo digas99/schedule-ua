@@ -1,6 +1,8 @@
 const Schedule = function(container, config) {
     this.container = container;
 
+    console.log(config);
+
     this.hours = config["hours"];
     // added extra dummy column to prevent visual bug (it is hidden below)
     this.days = config["days"];
@@ -16,11 +18,20 @@ const Schedule = function(container, config) {
 Schedule.prototype = {
     create: function() {
         this.createTable();
-        if (!this.subjectColors) this.setColors();
+
+        if (!this.subjectColors)
+            this.setColors();
+
         this.populateMatrix();
         this.fill();
+
         this.fixSpanning();
-        if (this.trimmed) this.trim();
+
+        if (this.trimmed)
+            this.trim();
+
+        if (this.days.length == 1)
+            this.fixSpanningCollapse();
     },
     createTable: function() {
         this.table = document.createElement("table");
@@ -103,7 +114,9 @@ Schedule.prototype = {
                         if (tableRow.nextElementSibling) tableRow.nextElementSibling.setAttribute("filled", "true");
 
                         const cell = tableRow.querySelector(`td:nth-child(${j+2})`);
-                        cell.classList.add("clickable", "class");
+                        cell.classList.add("class");
+                        cell.setAttribute("subject", subject["subject"]["abbrev"]);
+                        cell.setAttribute("day", getDayFromIndex(j+1));
 
                         // number of rows the subject will fill
                         const rowspan = parseFloat(subject["duration"].replace("h", "").replace(",", "."))*2;
@@ -229,7 +242,10 @@ const DAYS_INDEX = {
     "Sábado": 6
 }
 
-const getDayFromIndex = index => Object.entries(DAYS_INDEX).filter(([day, i]) => i == index)[0][0];
+const getDayFromIndex = index => {
+    console.log(index);
+    return Object.entries(DAYS_INDEX).filter(([day, i]) => i == index)[0][0];
+}
 
 const getWeekDay = (day, increment) => {
     let index = DAYS_INDEX[day]+increment;

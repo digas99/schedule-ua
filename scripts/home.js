@@ -135,7 +135,7 @@ window.addEventListener("click", e => {
 
     // table week day header
     if (target.closest("table th")) {
-        // only enable clicking if there are several days
+        // only enable action if there are several days
         if (target.closest("table tr").children.length > 3) {
             const weekday = target.closest("table th").innerText;
             const scheduleWrapper = document.querySelector("#main > div");
@@ -143,6 +143,95 @@ window.addEventListener("click", e => {
                 document.querySelector(".selector-active")?.classList.replace("selector-active", "clickable");
                 createDaySchedule(scheduleWrapper, weekday);
             }
+        }
+    }
+
+    if (target.closest(".class")) {
+        const targetSubject = target.closest(".class").innerText.split(" - ")[0];
+        const days = Object.entries(schedule)
+            .filter(([day, subjects]) => subjects.some(subject => subject["subject"]["abbrev"] == targetSubject))
+            .map(entry => entry[0])
+            .sort((a, b) => DAYS_INDEX[a] - DAYS_INDEX[b]);
+
+        if (days) {
+            document.querySelector(".selector-active")?.classList.replace("selector-active", "clickable");
+
+            const scheduleWrapper = document.querySelector("#main > div");
+            scheduleWrapper.firstChild?.remove();
+            scheduleWrapper.querySelector(".info-panel")?.remove();
+        
+            // adjust schedule
+            const newSchedule = JSON.parse(JSON.stringify(schedule)); // deep clone schedule
+            Object.keys(DAYS_INDEX).forEach(day => {
+                if (!days.includes(day))
+                    delete newSchedule[day];
+            });
+
+            mySchedule = new Schedule(scheduleWrapper, {
+                "hours": defaultHours,
+                "days": days,
+                "schedule": newSchedule,
+                "colors": subjectColors,
+                "trimmed": mySchedule.trimmed
+            });
+        
+            mySchedule.create();
+        }
+    }
+});
+
+window.addEventListener("mouseover", e => {
+    const target = e.target;
+    
+    if (target.closest(".class")) {
+        const targetSubject = target.closest(".class").innerText.split(" - ")[0];
+        Array.from(mySchedule.table.querySelectorAll(".class")).forEach(subject => {
+            if (subject.getAttribute("subject") !== targetSubject)
+                subject.classList.add("shadowed-class");
+        });
+    }
+
+    if (target.closest("table th")) {
+        // only enable action if there are several days
+        const targetElem = target.closest("table th");
+        const weekday = targetElem.innerText;
+        if (Object.keys(DAYS_INDEX).includes(weekday)) {
+            if (target.closest("table tr").children.length > 3)
+                Array.from(mySchedule.table.querySelectorAll(".class")).forEach(subject => {
+                    if (subject.getAttribute("day") !== weekday)
+                        subject.classList.add("shadowed-class");
+                });
+            else {
+                targetElem.setAttribute("day", weekday);
+                targetElem.innerText = "Week";
+            }
+        }
+    }
+});
+
+window.addEventListener("mouseout", e => {
+    const target = e.target;
+    
+    if (target.closest(".class")) {
+        const targetSubject = target.closest(".class").innerText.split(" - ")[0];
+        Array.from(mySchedule.table.querySelectorAll(".class")).forEach(subject => {
+            if (subject.getAttribute("subject") !== targetSubject)
+                subject.classList.remove("shadowed-class");
+        });
+    }
+
+    if (target.closest("table th")) {
+        // only enable action if there are several days
+        const targetElem = target.closest("table th");
+        const weekday = targetElem.innerText;
+        if (target.closest("table tr").children.length > 3)
+            Array.from(mySchedule.table.querySelectorAll(".class")).forEach(subject => {
+                if (subject.getAttribute("day") !== weekday)  
+                    subject.classList.remove("shadowed-class");
+            });
+        else {
+            if (targetElem.getAttribute("day"))
+                targetElem.innerText = targetElem.getAttribute("day");
         }
     }
 });
@@ -160,7 +249,6 @@ const createDaySchedule = (scheduleWrapper, scheduleDay) => {
     });
 
     mySchedule.create();
-    mySchedule.fixSpanningCollapse();
 
     scheduleWrapper.appendChild(infoPanel(mySchedule.schedule));
 
