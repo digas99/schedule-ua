@@ -4,7 +4,7 @@
     "version": "1.0.0",
     "manifest_version": 3,
     "action": {
-        "default_popup": "popup.html"
+        "default_popup": "login.html"
     },
     "content_scripts": [{
         "matches": ["https://paco.ua.pt/secvirtual/horarios/c_horario_aluno.asp"],

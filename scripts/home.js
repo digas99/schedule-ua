@@ -1,13 +1,14 @@
-let mySchedule, schedule, school_year, semester, subjectColors;
+let mySchedule, schedule, school_year, semester, subjectColors, highlightNow;
 const defaultHours = [8,9,10,11,12,13,14,15,16,17,18,19], defaultDays = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
 
-chrome.storage.sync.get([...STORAGE_KEYS, "expanded", "subject_colors", "selected"], result => {
+chrome.storage.sync.get([...STORAGE_KEYS, "trimmed", "subject_colors", "selected", "highlight_now"], result => {
     // if schedule data exists
     if (STORAGE_KEYS.every(key => Object.keys(result).includes(key))) {
         schedule = result["schedule"];
         school_year = result["school_year"];
         semester = result["semester"];
         subjectColors = result["subject_colors"];
+        highlightNow = result["highlight_now"];
 
         const title = document.getElementById("title");
         if (title) title.innerText += ` ${school_year} ${semester}`;
@@ -28,18 +29,20 @@ chrome.storage.sync.get([...STORAGE_KEYS, "expanded", "subject_colors", "selecte
             "days": defaultDays,
             "schedule": schedule,
             "colors": subjectColors,
-            "trimmed": !result["expanded"]
+            "trimmed": result["trimmed"]
         });
 
         mySchedule.create();
         mySchedule.removeSaturday();
+
+        highlightNowCell();
 
         document.querySelector("#main").style.removeProperty("display");
 
         if (!subjectColors)
             chrome.storage.sync.set({"subject_colors": mySchedule.subjectColors});
 
-        if (!result["expanded"]) updateExpandButton("shrink");
+        if (result["trimmed"]) updateExpandButton("shrink");
 
 
         if (result["selected"]) {
@@ -50,6 +53,8 @@ chrome.storage.sync.get([...STORAGE_KEYS, "expanded", "subject_colors", "selecte
             }
         }
     }
+    else
+        window.location.href = "/login.html";
 });
 
 window.addEventListener("click", e => {
@@ -119,6 +124,8 @@ window.addEventListener("click", e => {
                     mySchedule.create();
                     mySchedule.removeSaturday();
 
+                    highlightNowCell();
+
                     break;
                 case "Today":
                 case "Tomorrow":
@@ -181,6 +188,8 @@ window.addEventListener("click", e => {
             });
         
             mySchedule.create();
+            
+            highlightNowCell();
         }
     }
 });
@@ -254,6 +263,8 @@ const createDaySchedule = (scheduleWrapper, scheduleDay) => {
     });
 
     mySchedule.create();
+   
+    highlightNowCell();
 
     scheduleWrapper.appendChild(infoPanel(mySchedule.schedule));
 
@@ -284,7 +295,7 @@ const updateExpandButton = state => {
         button.title = "Expand Schedule";
         const image = button.querySelector("img");
         image.src = "images/icons/expand.png";
-        chrome.storage.sync.set({"expanded":false});
+        chrome.storage.sync.set({"trimmed":true});
     }
     // expand schedule
     else {
@@ -292,7 +303,7 @@ const updateExpandButton = state => {
         button.title = "Trim Schedule";
         const image = button.querySelector("img");
         image.src = "images/icons/shrink.png";
-        chrome.storage.sync.set({"expanded":true});
+        chrome.storage.sync.set({"trimmed":false});
     }
 }
 
@@ -362,4 +373,17 @@ const infoPanel = schedule => {
     });
 
     return wrapper;
+}
+
+const highlightNowCell = () => {
+    if (highlightNow !== false) {
+        const now = new Date();
+        const cell = mySchedule.highlightCell(now.getDay(), now.getHours(), now.getMinutes(), "You're here");
+        
+        if (cell.classList.contains("class")) {
+            const liveClass = document.createElement("div");
+            cell.appendChild(liveClass);
+            liveClass.classList.add("live-class");
+        }
+    }
 }

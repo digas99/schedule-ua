@@ -22,13 +22,12 @@ Schedule.prototype = {
         this.populateMatrix();
         this.fill();
 
-        this.fixSpanning();
+        //this.fixSpanning();
 
         if (this.trimmed)
             this.trim();
 
-        if (this.days.length == 1)
-            this.fixSpanningCollapse();
+        this.fixSpanningCollapse();
     },
     createTable: function() {
         this.table = document.createElement("table");
@@ -118,6 +117,18 @@ Schedule.prototype = {
                         // number of rows the subject will fill
                         const rowspan = parseFloat(subject["duration"].replace("h", "").replace(",", "."))*2;
                         cell.setAttribute("rowspan", rowspan);
+                        // hide cells below covered by the span
+                        for (let k = 1; k < rowspan; k++) {
+                            const rowOffset = currentTableIndex+k;
+                            const row = this.table.querySelector(`tr:nth-of-type(${rowOffset})`);
+                            if (row) {
+                                row.setAttribute("filled", "true");
+                                // if offset odd, then it is a row for the XX:30h's
+                                const cellOffset = rowOffset % 2 == 0 ? j+2 : j+1; 
+                                const cellToHide = row.querySelector(`td:nth-child(${cellOffset})`);
+                                if (cellToHide) cellToHide.style.display = "none";
+                            }
+                        }
 
                         if (rowspan > 2)
                             this.spans[currentTableIndex+1].push(j+2);                
@@ -137,7 +148,7 @@ Schedule.prototype = {
             }
         });
     },
-    fixSpanning: function() {
+    /*fixSpanning: function() {
         // hide certain cells to compensate for the space taken by the rowspan
         for (let i = 1; i <= this.hours.length*2+1; i++) {
             if (this.spans[i].length > 0) {
@@ -163,16 +174,17 @@ Schedule.prototype = {
                 }
             }
         }
-    },
+    },*/
     fixSpanningCollapse: function() {
         // add fixed height to cells with spanning that collapse
-        const rows = this.table.querySelectorAll("tr[filled='true']");
+        const rows = this.table.querySelectorAll("tr");
         if (rows) {
-            Array.from(rows).forEach(row => {
-                Array.from(row.querySelectorAll("td")).forEach(cell => {
-                    const cellHeight = parseInt(getComputedStyle(cell)["height"]);
-                    if (cellHeight > 0 && cellHeight < 21) cell.style.height = "21px";
-                });
+            Array.from(rows).forEach((row, i) => {
+                if (i % 2 !== 0 && row.getAttribute("filled") == "true") {
+                    const cell = row.querySelector("td");
+                    if (cell.offsetHeight < 27)
+                        cell.style.height = "31px";
+                }
             });
         }
     },
@@ -206,6 +218,29 @@ Schedule.prototype = {
     expand: function() {
         Array.from(this.table.querySelectorAll("tr[style='display: none;']")).forEach(cell => cell.style.removeProperty("display"));
         this.trimmed = false;
+    },
+    highlightCell: function(day, hours, minutes, text) {
+        let cell;
+        let y = (hours-this.hours[0]+1)*2;
+        const dayIndex = this.days.indexOf(getDayFromIndex(day));
+        if (dayIndex >= 0) {
+            let x = dayIndex+2;
+            if (minutes >= 30) {
+                y++;
+                x--;
+            }
+    
+            const row = this.table.querySelector(`tr:nth-of-type(${y})`);
+            if (row) {
+                cell = row.querySelector(`td:nth-of-type(${x})`);
+                cell.classList.add("cell-now");
+                
+                if (!cell.innerText)
+                    cell.innerText = text;
+            }
+        }
+
+        return cell;
     }
 }
 

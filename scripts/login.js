@@ -162,4 +162,4 @@ const handleDragOver = e => {
 // Setup the dnd listeners.
 dropZone.addEventListener('dragover', handleDragOver, false);
 dropZone.addEventListener('dragleave', () => dropZone.style.removeProperty("background"), false);
-dropZone.addEventListener('drop', handleJSONDrop, false); 
+dropZone.addEventListener('drop', handleJSONDrop, false);

@@ -41,8 +41,17 @@ table > tbody > tr > td > div > div:nth-child(1) {
 
 .class {
     cursor: pointer;
+    position: relative;
 }
 
 .class div {
     color: white;
+}
+
+.cell-now {
+    background-color: #fff4bc !important;
+}
+
+.cell-now * {
+    color: black !important;
 }

@@ -84,7 +84,7 @@ body {
     position: fixed;
     background-color: white;
     width: 70%;
-    height: 25%;
+    height: 90px;
     left: 0;
     top: 0;
     margin: auto;
@@ -151,7 +151,17 @@ body {
     width: 21px;
 }
 
-#upload-from-paco {
+a {
     cursor: pointer;
     color: rgb(62,148,239);
+}
+
+.go-back {
+    left: 5px;
+    position: absolute;
+    transform: rotate(-90deg);
+    width: 20px;
+    padding: 10px;
+    opacity: 0.6;
+    top: 8px;
 }

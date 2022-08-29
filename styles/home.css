@@ -111,3 +111,13 @@ table > tbody > tr > th:not(:first-child, :last-child) {
     display: flex;
     column-gap: 5px;
 }
+
+.live-class {
+    width: 12px;
+    background-color: red;
+    height: 12px;
+    border-radius: 50%;
+    top: -3px;
+    right: -3px;
+    position: absolute;
+}
