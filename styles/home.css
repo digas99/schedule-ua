@@ -1,5 +1,6 @@
 body {
     margin-right: 50px;
+    min-height: unset !important;
 }
 
 #main > div:nth-of-type(1) {

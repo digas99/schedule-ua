@@ -8,6 +8,7 @@
     padding-top: 10px;
     height: 100%;
     border-left: 1px solid silver;
+    overflow: auto;
 }
 
 #navbar > img {
@@ -29,17 +30,4 @@
 
 #navbar > div:not(:first-child, :last-child):hover {
     background-color: #e1e1e1;
-}
-
-#navbar-bottom {
-    position: absolute;
-    bottom: 10px;
-    display: flex;
-    flex-direction: column;
-    row-gap: 7px;
-    font-size: 10px;
-}
-
-#navbar-bottom > div {
-    color: #8f8f8f;
 }

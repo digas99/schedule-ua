@@ -12,16 +12,6 @@ chrome.storage.sync.get([...STORAGE_KEYS, "trimmed", "subject_colors", "selected
 
         const title = document.getElementById("title");
         if (title) title.innerText += ` ${school_year} ${semester}`;
-        
-        const navbarBottom = document.getElementById("navbar-bottom");
-        if (navbarBottom) {
-            const [year1, year2] = school_year.split("/");
-            [year1.slice(2)+"/"+year2.slice(2), semester].forEach(value => {
-                const row = document.createElement("div");
-                navbarBottom.appendChild(row);
-                row.appendChild(document.createTextNode(value));
-            });
-        }
 
         // create schedule table
         mySchedule = new Schedule(document.querySelector("#main > div"), {
@@ -380,7 +370,7 @@ const highlightNowCell = () => {
         const now = new Date();
         const cell = mySchedule.highlightCell(now.getDay(), now.getHours(), now.getMinutes(), "You're here");
         
-        if (cell.classList.contains("class")) {
+        if (cell && cell.classList.contains("class")) {
             const liveClass = document.createElement("div");
             cell.appendChild(liveClass);
             liveClass.classList.add("live-class");
