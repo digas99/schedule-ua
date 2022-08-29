@@ -32,7 +32,7 @@ chrome.storage.sync.get([...STORAGE_KEYS, "trimmed", "subject_colors", "selected
         mySchedule.create();
         mySchedule.removeSaturday();
 
-        highlightNowCell();
+        highlightNowCell(2, 15, 0);
 
         document.querySelector("#main").style.removeProperty("display");
 
@@ -384,21 +384,27 @@ const infoPanel = schedule => {
 const highlightNowCell = (day, hours, minutes) => {
     if (highlightNow !== false) {
         const now = new Date();
-        day = day ? day : now.getDay();
-        hours = hours ? hours : now.getHours();
-        minutes = minutes ? minutes : now.getMinutes();
-
-        let cell = mySchedule.highlightCell(day, hours, minutes, "You're here");
+        day = day !== null ? day : now.getDay();
+        hours = hours !== null ? hours : now.getHours();
+        minutes = minutes !== null ? minutes : now.getMinutes();
+    
+        if (day > 0 && day < 6) {
+            let cell = mySchedule.highlight(day, hours, minutes, "You're here");
         
-        if (!cell) return;
-
-        if (cell && cell.classList.contains("class")) {
-            const liveClass = document.createElement("div");
-            cell.appendChild(liveClass);
-            liveClass.classList.add("live-class");
+            if (cell && cell.classList.contains("class")) {
+                const liveClass = document.createElement("div");
+                cell.appendChild(liveClass);
+                liveClass.classList.add("live-class");
+            }
+            
+            if (cell.getAttribute("type") == "slave") {
+                const masterId = cell.getAttribute("id");
+                if (masterId) {
+                    const master = mySchedule.table.querySelector(`.class[id='${masterId}']`);
+                    if (master)
+                        mySchedule.highlightCell(master);
+                }
+            }
         }
-        
-        if (cell.style.display == "none")
-            return highlightNowCell(day, minutes >= 30 ? hours : hours - 1, minutes >= 30 ? 0 : 30);
     }
 }

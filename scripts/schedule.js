@@ -9,6 +9,7 @@ const Schedule = function(container, config) {
     this.limitTrimming = config["limitTrimming"];
     this.soonest = config["soonest"];
     this.latest = config["latest"];
+    this.subjectId = 0;
 
     if (Object.values(this.schedule)[0] == undefined || Object.values(this.schedule).flat(1).length == 0) this.empty = true;
 
@@ -112,8 +113,10 @@ Schedule.prototype = {
                         tableRow.setAttribute("filled", "true");
                         if (tableRow.nextElementSibling) tableRow.nextElementSibling.setAttribute("filled", "true");
 
+                        const thisSubjectId = this.subjectId++;
                         const cell = tableRow.querySelector(`td:nth-child(${j+2})`);
                         cell.classList.add("class");
+                        cell.setAttribute("id", thisSubjectId);
                         cell.setAttribute("subject", subject["subject"]["abbrev"]);
                         cell.setAttribute("day", getDayFromIndex(j+1));
 
@@ -129,7 +132,11 @@ Schedule.prototype = {
                                 // if offset odd, then it is a row for the XX:30h's
                                 const cellOffset = rowOffset % 2 == 0 ? j+2 : j+1; 
                                 const cellToHide = row.querySelector(`td:nth-child(${cellOffset})`);
-                                if (cellToHide) cellToHide.style.display = "none";
+                                if (cellToHide) {
+                                    cellToHide.setAttribute("id", thisSubjectId);
+                                    cellToHide.setAttribute("type", "slave");
+                                    cellToHide.style.display = "none";
+                                }
                             }
                         }
 
@@ -151,33 +158,6 @@ Schedule.prototype = {
             }
         });
     },
-    /*fixSpanning: function() {
-        // hide certain cells to compensate for the space taken by the rowspan
-        for (let i = 1; i <= this.hours.length*2+1; i++) {
-            if (this.spans[i].length > 0) {
-                const tableRow = this.table.querySelector(`tr:nth-of-type(${i+1})`);
-                if (tableRow) {
-                    // identify row as indirectly filled
-                    tableRow.setAttribute("filled", "true");
-                    if (tableRow.nextElementSibling) tableRow.nextElementSibling.setAttribute("filled", "true");
-
-                    let counter = 0, control = 0;
-                    while(1) {
-                        const cell = tableRow.querySelector(`td:nth-child(${this.spans[i][counter]})`);
-                        // only hide cells that are empty
-                        if (cell && !cell.innerText) {
-                            cell.style.display = "none";
-                            counter++;
-                        }             
-                        
-                        // break loop if the correct number os cells have been hidden
-                        // (or when there aren't any more cells left, to prevent an infinite loop)
-                        if (this.spans[i].length == counter || control++ >= tableRow.childElementCount) break;
-                    }
-                }
-            }
-        }
-    },*/
     fixSpanningCollapse: function() {
         // add fixed height to cells with spanning that collapse
         const rows = this.table.querySelectorAll("tr");
@@ -233,7 +213,7 @@ Schedule.prototype = {
         Array.from(this.table.querySelectorAll("tr[style='display: none;']")).forEach(cell => cell.style.removeProperty("display"));
         this.trimmed = false;
     },
-    highlightCell: function(day, hours, minutes, text) {
+    highlight: function(day, hours, minutes, text) {
         let cell;
         let y = (hours-this.hours[0]+1)*2;
         const dayIndex = this.days.indexOf(getDayFromIndex(day));
@@ -247,14 +227,17 @@ Schedule.prototype = {
             const row = this.table.querySelector(`tr:nth-of-type(${y})`);
             if (row) {
                 cell = row.querySelector(`td:nth-of-type(${x})`);
-                cell.classList.add("cell-now");
-                
-                if (!cell.innerText)
-                    cell.innerText = text;
+                this.highlightCell(cell, text);
             }
         }
 
         return cell;
+    },
+    highlightCell: function(cell, text) {
+        cell.classList.add("cell-now");
+                
+        if (!cell.innerText && text)
+            cell.innerText = text;
     }
 }
 
