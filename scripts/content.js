@@ -45,6 +45,15 @@
                 return data;
             }
             
+            const createMessage = msg => {
+                document.querySelector(".message")?.remove();
+                const message = document.createElement("message");
+                message.classList.add("message");
+                message.appendChild(document.createTextNode(msg));
+                setTimeout(() => message.remove(), 2000);
+                return message;
+            }
+
             const scheduleTable = document.querySelector("#template_main > table");
             if (scheduleTable) {
                 const schedule = parseSchedule(scheduleTable);
@@ -59,6 +68,7 @@
                 pacoDownload.addEventListener("click", () => {
                     const blob = new Blob([JSON.stringify(schedule, null, 2)], {type: "application/json"});
                     saveAs(blob, `schedua-schedule_${schedule["school_year"]}_${schedule["semester"]}.json`);
+                    wrapper.appendChild(createMessage("Download has started!"));
                 });
                 const pacoUpload = document.createElement("img");
                 wrapper.appendChild(pacoUpload);
@@ -66,7 +76,10 @@
                 pacoUpload.title = "SchedUA - Upload Schedule Configuration";
                 pacoUpload.addEventListener("click", () => {
                     chrome.storage.sync.set(schedule)
-                        .then(() => chrome.runtime.sendMessage({uploaded:"schedule"}));
+                        .then(() => {
+                            chrome.runtime.sendMessage({uploaded:"schedule"});
+                            wrapper.appendChild(createMessage("Uploaded! Check the extension popup."));
+                        });
                 });
             }
         }

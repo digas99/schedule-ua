@@ -12,14 +12,23 @@
 	<div class="separator"></div>
 	<div id="main">
 		<h2>Load Schedule</h2>
-		<div>Fill in with your institutional email credentials.</div>
-        <div id="login-wrapper">
-            <div><input placeholder="Email"></div>
-            <div><input type="password" placeholder="Password"><img class="clickable" id="show-pwd" src="images/icons/view.png"></div>
-        </div>
-		<div id="remember-email"><input type="checkbox"><div>Remember email? (saved in the local storage)</div></div>
-		<div id="small-info">Your password is NOT saved. It is used once to fetch the data and discarded.</div>
-		<div id="send" class="button clickable button-inactive">Send</div>
+		<div>
+			<div>Fill in with your institutional email credentials.</div>
+			<div id="login-wrapper">
+				<div><input placeholder="Email"></div>
+				<div><input type="password" placeholder="Password"><img class="clickable" id="show-pwd" src="images/icons/view.png"></div>
+			</div>
+			<div id="remember-email"><input type="checkbox"><div>Remember email? (saved in the local storage)</div></div>
+			<div id="small-info">Your password is NOT saved. It is used once to fetch the data and discarded.</div>
+			<div id="send" class="button clickable button-inactive">Send</div>
+		</div>
+		<div style="margin: 30px 0;" class="separator"></div>
+		<div>
+			<div style="text-align: center;">Don't want to use the institutional email credentials? Upload from <a target="_blank" href="https://paco.ua.pt/secvirtual/horarios/c_horario_aluno.asp" id="upload-from-paco">PACO UA directly</a> or drop here a Schedule Configuration file instead.</div>
+			<div id="drop-zone">
+				<div><img src="images/icons/file.png">Drop File Here</div>
+			</div>
+		</div>
 	</div>
 
 	<script src="scripts/static.js"></script>

@@ -105,3 +105,61 @@ window.addEventListener("click", e => {
         }
     }
 });
+
+const dropZone = document.getElementById("drop-zone");
+
+const errorMessage = msg => {
+    document.querySelector("#file-drop-error")?.remove();
+    
+    const errorMsg = document.createElement("div");
+    errorMsg.id = "file-drop-error";
+    errorMsg.style.color = "#f56161";
+    errorMsg.style.textAlign = "center";
+    errorMsg.appendChild(document.createTextNode(msg));
+    
+    dropZone.style.setProperty("background", "#f56161", "important");
+    setTimeout(() => dropZone.style.removeProperty("background"), 1000);
+
+    return errorMsg;
+}
+
+// https://gist.github.com/andjosh/7867934
+const handleJSONDrop = e => {
+    e.stopPropagation();
+    e.preventDefault();
+    
+    const file = e.dataTransfer.files[0];
+
+    const reader = new FileReader();
+
+    if (file && file.type.match('application/json')) {
+        // Closure to capture the file information.
+        reader.onload = (() => {
+            return function (e) {
+                data = JSON.parse(e.target.result);
+                if (Object.keys(data).some(key => ["schedule", "school_year", "semester", "subjectColors"].includes(key))) {
+                    chrome.storage.sync.set(data, () => window.location.href = "/home.html");
+                }
+                else
+                    dropZone.parentElement.appendChild(errorMessage("Missing keys in JSON file!"));
+            };
+        })(file);
+    
+        reader.readAsText(file);
+    }
+    else
+        dropZone.parentElement.appendChild(errorMessage("Couldn't read the file!"));
+}
+
+const handleDragOver = e => {
+    dropZone.style.setProperty("background", "#3e94ef", "important");
+
+    e.stopPropagation();
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+}
+
+// Setup the dnd listeners.
+dropZone.addEventListener('dragover', handleDragOver, false);
+dropZone.addEventListener('dragleave', () => dropZone.style.removeProperty("background"), false);
+dropZone.addEventListener('drop', handleJSONDrop, false); 

@@ -19,3 +19,22 @@
 #schedua-buttons img:hover {
     opacity: 0.6;
 }
+
+.message {
+    background: rgb(75,204,144);
+    background: -moz-linear-gradient(90deg, rgba(75,204,144,1) 0%, rgba(62,148,239,1) 100%);
+    background: -webkit-linear-gradient(90deg, rgba(75,204,144,1) 0%, rgba(62,148,239,1) 100%);
+    background: linear-gradient(90deg, rgba(75,204,144,1) 0%, rgba(62,148,239,1) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#4bcc90",endColorstr="#3e94ef",GradientType=1);
+    padding: 6px 9px;
+    border-radius: 20px;
+    font-size: 12px;
+    position: absolute;
+    top: -33px;
+    right: -5px;
+    text-align: center;
+    white-space: nowrap;
+    color: white;
+    font-weight: bold;
+    /* border: 1px solid silver; */
+}

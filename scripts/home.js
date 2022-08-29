@@ -59,7 +59,8 @@ window.addEventListener("click", e => {
         const blob = new Blob([JSON.stringify({
             "schedule": mySchedule.schedule,
             "school_year": school_year,
-            "semester": semester
+            "semester": semester,
+            "subject_colors": mySchedule.subjectColors
         }, null, 2)], {type: "application/json"});
         
         saveAs(blob, `schedua-schedule_${school_year}_${semester}.json`);

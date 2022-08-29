@@ -239,10 +239,7 @@ const DAYS_INDEX = {
     "Sábado": 6
 }
 
-const getDayFromIndex = index => {
-    console.log(index);
-    return Object.entries(DAYS_INDEX).filter(([day, i]) => i == index)[0][0];
-}
+const getDayFromIndex = index => Object.entries(DAYS_INDEX).filter(([day, i]) => i == index)[0][0];
 
 const getWeekDay = (day, increment) => {
     let index = DAYS_INDEX[day]+increment;

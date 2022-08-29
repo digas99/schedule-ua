@@ -12,17 +12,21 @@ Browser Extension for easy access to your Schedule from Universidade de Aveiro. 
 
 ### Table of Contents
 
-1. [Latest Featurs](#latest-features)
+1. [Latest Features](#latest-features)
 1. [Usage Guide](#usage-guide)
 1. [Pictures](#pictures)
 
 ## Pictures
 
-<img align="left" width="350px" src="/images/picture1.jpg">
-<img width="350px" src="/images/picture2.jpg">
+<img alt="picture1" align="left" width="350px" src="/images/picture1.jpg">
+<img alt="picture2" width="350px" src="/images/picture2.jpg">
 
 - Some pages within the extension popup.
 
 ![picture3](/images/picture3.jpg)
 
 - Possibility to either download the schedule configuration, or upload it directily to the extension.
+
+![picture4](/images/picture4.jpg)
+
+- Different ways to load the schedule.

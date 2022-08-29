@@ -8,6 +8,10 @@ body {
 }
 
 #main > div {
+    margin: 20px 0;
+}
+
+#main > div > div {
     margin: 10px 0; 
 }
 
@@ -108,4 +112,46 @@ body {
 
 #remember-email > div {
     font-size: 10px;
+}
+
+#drop-zone {
+    margin: 10px auto !important;
+    width: 90%;
+    height: 110px;
+    border-radius: 30px;
+    position: relative;
+    background: rgb(75,204,144);
+    background: -moz-linear-gradient(90deg, rgba(75,204,144,1) 0%, rgba(62,148,239,1) 100%);
+    background: -webkit-linear-gradient(90deg, rgba(75,204,144,1) 0%, rgba(62,148,239,1) 100%);
+    background: linear-gradient(90deg, rgba(75,204,144,1) 0%, rgba(62,148,239,1) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#4bcc90",endColorstr="#3e94ef",GradientType=1);
+    box-shadow: inset 0px 0px 5px grey;
+}
+
+#drop-zone > div {
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: 0;
+    margin: auto;
+    width: fit-content;
+    height: fit-content;
+    display: flex;
+    align-items: center;
+    column-gap: 10px;
+    pointer-events: none;
+}
+
+#drop-zone img {
+    filter: invert(1);
+    width: 21px;
+}
+
+#upload-from-paco {
+    cursor: pointer;
+    color: rgb(62,148,239);
 }
