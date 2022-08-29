@@ -1,3 +1,5 @@
+chrome.action.setBadgeText({text: ''});
+
 chrome.storage.sync.get([...STORAGE_KEYS, "email"], result => {
     // if schedule does not exist
     if (!STORAGE_KEYS.some(key => Object.keys(result).includes(key))) {

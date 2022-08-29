@@ -6,6 +6,14 @@
     "action": {
         "default_popup": "popup.html"
     },
+    "content_scripts": [{
+        "matches": ["https://paco.ua.pt/secvirtual/horarios/c_horario_aluno.asp"],
+        "js": ["scripts/content.js", "lib/FileSaver.js"],
+        "css": ["styles/content.css"]
+    }],
+    "background": {
+        "service_worker": "scripts/background.js"
+      },
     "icons": {
         "16":  "images/logo_16x16.png",
         "32":  "images/logo_32x32.png",

@@ -56,7 +56,11 @@ window.addEventListener("click", e => {
     const target = e.target;
 
     if (target.closest("#download")) {
-        const blob = new Blob([JSON.stringify(mySchedule.schedule, null, 2)], {type: "application/json"});
+        const blob = new Blob([JSON.stringify({
+            "schedule": mySchedule.schedule,
+            "school_year": school_year,
+            "semester": semester
+        }, null, 2)], {type: "application/json"});
         
         saveAs(blob, `schedua-schedule_${school_year}_${semester}.json`);
     }
@@ -107,7 +111,7 @@ window.addEventListener("click", e => {
                         "hours": defaultHours,
                         "days": defaultDays,
                         "schedule": schedule,
-                        "colors": subjectColors,
+                        "colors": mySchedule.subjectColors,
                         "trimmed": mySchedule.trimmed
                     });
 
@@ -171,7 +175,7 @@ window.addEventListener("click", e => {
                 "hours": defaultHours,
                 "days": days,
                 "schedule": newSchedule,
-                "colors": subjectColors,
+                "colors": mySchedule.subjectColors,
                 "trimmed": mySchedule.trimmed
             });
         
@@ -244,7 +248,7 @@ const createDaySchedule = (scheduleWrapper, scheduleDay) => {
         "hours": defaultHours,
         "days": [scheduleDay],
         "schedule": {[scheduleDay]: schedule[scheduleDay]},
-        "colors": subjectColors,
+        "colors": mySchedule.subjectColors,
         "trimmed": mySchedule.trimmed
     });
 
@@ -317,7 +321,7 @@ const infoPanel = schedule => {
                 const classTitle = document.createElement("div");
                 subjectWrapper.appendChild(classTitle);
                 classTitle.appendChild(document.createTextNode(`${subject["subject"]["abbrev"]} - ${subject["subject"]["name"]}`));
-                classTitle.style.backgroundColor = subjectColors[subject["subject"]["abbrev"]];
+                classTitle.style.backgroundColor = mySchedule.subjectColors[subject["subject"]["abbrev"]];
                 const infoWrapper = document.createElement("div");
                 subjectWrapper.appendChild(infoWrapper);
                 const classNumberWrapper = document.createElement("div");

@@ -1,10 +1,7 @@
 const Schedule = function(container, config) {
     this.container = container;
 
-    console.log(config);
-
     this.hours = config["hours"];
-    // added extra dummy column to prevent visual bug (it is hidden below)
     this.days = config["days"];
     this.schedule = config["schedule"];
     this.subjectColors = config["colors"];

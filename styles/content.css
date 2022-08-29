@@ -1,0 +1,21 @@
+#template_main > table {
+    position: relative;
+}
+
+#schedua-buttons {
+    position: absolute;
+    top: 2px;
+    right: 7px;
+    display: flex;
+    column-gap: 10px;
+    z-index: 2;
+}
+
+#schedua-buttons img {
+    width: 20px;
+    cursor: pointer;
+}
+
+#schedua-buttons img:hover {
+    opacity: 0.6;
+}

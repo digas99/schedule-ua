@@ -1,6 +1,6 @@
 let subjects, subjectColors;
 
-chrome.storage.sync.get(["subject_colors", "subjects", "email", "selected"], result => {
+chrome.storage.sync.get(["subject_colors", "subjects", "email", "selected", "paco_buttons"], result => {
     subjectColors = result["subject_colors"];
     subjects = result["subjects"];
     const subjectColorsElem = document.getElementById("subjects-colors");
@@ -33,6 +33,8 @@ chrome.storage.sync.get(["subject_colors", "subjects", "email", "selected"], res
 
 
     if (result["email"] == null) document.getElementById("remember-email").click();
+
+    if (result["paco_buttons"] == false) document.getElementById("paco-download-upload").click();
 });
 
 window.addEventListener("click", e => {
@@ -67,13 +69,20 @@ window.addEventListener("click", e => {
     }
     else if (target.closest(".checkbox_wrapper")) target.closest(".checkbox_wrapper").children[0].click();
 
-    // settings remember email
     if (target.closest("#remember-email")) {
         const checkbox = target.closest("#remember-email");
         if (checkbox.checked)
             chrome.storage.sync.set({"email": ""});
         else
             chrome.storage.sync.remove("email");
+    }
+
+    if (target.closest("#paco-download-upload")) {
+        const checkbox = target.closest("#paco-download-upload");
+        if (checkbox.checked)
+            chrome.storage.sync.set({"paco_buttons": true});
+        else
+            chrome.storage.sync.set({"paco_buttons": false});
     }
 });
 
