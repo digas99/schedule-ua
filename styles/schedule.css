@@ -46,6 +46,7 @@ table > tbody > tr > td > div > div:nth-child(1) {
 .class {
     cursor: pointer;
     position: relative;
+    z-index: 1;
 }
 
 .class div {

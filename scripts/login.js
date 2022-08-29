@@ -9,7 +9,7 @@ chrome.storage.sync.get([...STORAGE_KEYS, "email"], result => {
             const inputs = loginWrapper.querySelectorAll("input");
             if (inputs) {
                 // put email if it is saved
-                if (result["email"] !== null) {
+                if (result["email"] !== undefined) {
                     inputs[0].value = result["email"];
                     document.getElementById("remember-email").querySelector("input").checked = true;
                 }
@@ -36,7 +36,19 @@ chrome.storage.sync.get([...STORAGE_KEYS, "email"], result => {
                                 'Content-Type': 'application/json',
                                 'Authorization': `Basic ${encoded}`
                             }
-                        }).then(response => response.json())
+                        }).then(response => {
+                            switch(response.status) {
+                                case 500:
+                                    document.querySelector(".loading").remove();
+                                    const text = document.getElementById("main").querySelector("div");
+                                    if (text) {
+                                        text.innerText = "Server Error. Please try again.";
+                                        text.style.color = "#f56161";
+                                    }
+                                    break;
+                            }
+                            return response.json();
+                        })
                         .then(data => {
                             if (data["data"] && Object.keys(data["data"]).length > 0) {
                                 // save email if asked
@@ -45,14 +57,6 @@ chrome.storage.sync.get([...STORAGE_KEYS, "email"], result => {
                                 else chrome.storage.sync.remove("email");
 
                                 chrome.storage.sync.set(data["data"], () => window.location.href = "/home.html");
-                            }
-                            else {
-                                document.querySelector(".loading").remove();
-                                const text = document.getElementById("main").querySelector("div");
-                                if (text) {
-                                    text.innerText = "Wrong credentials. Please try again.";
-                                    text.style.color = "#f56161";
-                                }
                             }
                         });
                     }

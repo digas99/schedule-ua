@@ -32,7 +32,7 @@ chrome.storage.sync.get([...STORAGE_KEYS, "trimmed", "subject_colors", "selected
         mySchedule.create();
         mySchedule.removeSaturday();
 
-        highlightNowCell(2, 15, 0);
+        highlightNowCell();
 
         document.querySelector("#main").style.removeProperty("display");
 
@@ -401,8 +401,12 @@ const highlightNowCell = (day, hours, minutes) => {
                 const masterId = cell.getAttribute("id");
                 if (masterId) {
                     const master = mySchedule.table.querySelector(`.class[id='${masterId}']`);
-                    if (master)
+                    if (master) {
                         mySchedule.highlightCell(master);
+                        const liveClass = document.createElement("div");
+                        master.appendChild(liveClass);
+                        liveClass.classList.add("live-class");
+                    }
                 }
             }
         }
