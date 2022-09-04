@@ -47,6 +47,7 @@ table > tbody > tr > td > div > div:nth-child(1) {
     cursor: pointer;
     position: relative;
     z-index: 1;
+    font-size: inherit !important;
 }
 
 .class div {
@@ -55,6 +56,9 @@ table > tbody > tr > td > div > div:nth-child(1) {
 
 .cell-now {
     background-color: #fff4bc !important;
+    white-space: nowrap;
+    padding: 4px;
+    font-size: 10px;
 }
 
 .cell-now * {

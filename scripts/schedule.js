@@ -83,12 +83,13 @@ Schedule.prototype = {
     },
     populateMatrix: function() {
         Object.entries(this.schedule).sort(([a_day, a_subject], [b_day, b_subject]) => DAYS_INDEX[a_day] - DAYS_INDEX[b_day])
-            .forEach(([day, subjects], i) => {
+            .forEach(([day, subjects]) => {
                 subjects?.forEach(subject => {
                     const start = Number(subject["start"].replace("h", ""));
-                    this.matrix[start][i] = subject;
+                    this.matrix[start][DAYS_INDEX[day]-1] = subject;
                 });
             });
+            console.log(this.matrix);
     },
     setColors: function() {
         this.subjects = [...new Set(Object.entries(this.schedule).map(([key, value]) => value.map(obj => obj["subject"]["abbrev"])).flat(1))];
@@ -96,11 +97,6 @@ Schedule.prototype = {
     },
     fill: function() {
         // iterate through filled matrix
-        this.spans = {};
-        for (let i = 1; i <= this.hours.length*2+1; i++) {
-            this.spans[i] = [];
-        }
-
         Object.entries(Object.entries(this.matrix)).forEach(([i, [hour, subjects]]) => {
             const currentTableIndex = (Number(i)+1)*2;
             const tableRow = this.table.querySelector(`tr:nth-of-type(${currentTableIndex})`);
@@ -138,10 +134,7 @@ Schedule.prototype = {
                                     cellToHide.style.display = "none";
                                 }
                             }
-                        }
-
-                        if (rowspan > 2)
-                            this.spans[currentTableIndex+1].push(j+2);                
+                        }           
 
                         cell.style.backgroundColor = this.subjectColors[subject["subject"]["abbrev"]];
                         const infoWrapper = document.createElement("div");
