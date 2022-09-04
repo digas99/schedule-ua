@@ -37,27 +37,41 @@ chrome.storage.sync.get([...STORAGE_KEYS, "email"], result => {
                                 'Authorization': `Basic ${encoded}`
                             }
                         }).then(response => {
+                            let message;
                             switch(response.status) {
                                 case 500:
-                                    document.querySelector(".loading").remove();
-                                    const text = document.getElementById("main").querySelector("div");
-                                    if (text) {
-                                        text.innerText = "Server Error. Please try again.";
-                                        text.style.color = "#f56161";
-                                    }
+                                case 504:
+                                    message = "Server Error. Please try again.";
+                                    break;
+                                case 403:
+                                    message = "Wrong credentials. Please try again.";
                                     break;
                             }
+
+                            document.querySelector(".loading").remove();
+                            const text = document.querySelector("#main > div > div");
+                            if (text) {
+                                text.innerText = message;
+                                text.style.color = "#f56161";
+                            }
+
                             return response.json();
                         })
-                        .then(data => {
-                            if (data["data"] && Object.keys(data["data"]).length > 0) {
-                                // save email if asked
-                                const remember = document.getElementById("remember-email")?.querySelector("input").checked;
-                                if (remember) data["data"]["email"] = email;
-                                else chrome.storage.sync.remove("email");
+                        .then(result => {
+                            let data = {};
+                            const success = result["data"] && Object.keys(result["data"]).length > 0;
+                            if (success)
+                                data = result["data"];
 
-                                chrome.storage.sync.set(data["data"], () => window.location.href = "/home.html");
-                            }
+                            // save email if asked
+                            const remember = document.getElementById("remember-email")?.querySelector("input").checked;
+                            if (remember) data["email"] = email;
+                            else chrome.storage.sync.remove("email");
+
+                            chrome.storage.sync.set(data, () => {
+                                if (success)
+                                    window.location.href = "/home.html";
+                            });
                         });
                     }
                 });
