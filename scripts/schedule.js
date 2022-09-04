@@ -3,6 +3,11 @@ const Schedule = function(container, config) {
 
     this.hours = config["hours"];
     this.days = config["days"];
+    if (this.days) {
+        this.daysIndex = {};
+        this.days.forEach((day, i) => this.daysIndex[day] = i);
+    }
+
     this.schedule = config["schedule"];
     this.subjectColors = config["colors"];
     this.trimmed = config["trimmed"];
@@ -82,11 +87,11 @@ Schedule.prototype = {
         this.container.appendChild(this.table);
     },
     populateMatrix: function() {
-        Object.entries(this.schedule).sort(([a_day, a_subject], [b_day, b_subject]) => DAYS_INDEX[a_day] - DAYS_INDEX[b_day])
+        Object.entries(this.schedule).sort(([a_day, a_subject], [b_day, b_subject]) => this.daysIndex[a_day] - this.daysIndex[b_day])
             .forEach(([day, subjects]) => {
                 subjects?.forEach(subject => {
                     const start = Number(subject["start"].replace("h", ""));
-                    this.matrix[start][DAYS_INDEX[day]-1] = subject;
+                    this.matrix[start][this.daysIndex[day]] = subject;
                 });
             });
             console.log(this.matrix);
