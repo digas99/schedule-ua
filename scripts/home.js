@@ -1,5 +1,5 @@
 let mySchedule, schedule, school_year, semester, subjectColors, highlightNow;
-const defaultHours = [8,9,10,11,12,13,14,15,16,17,18,19], defaultDays = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
+const defaultHours = [8,9,10,11,12,13,14,15,16,17,18,19,20], defaultDays = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
 
 chrome.storage.sync.get([...STORAGE_KEYS, "trimmed", "subject_colors", "selected", "highlight_now", "limit_trimming"], result => {
     // if schedule data exists
@@ -130,7 +130,7 @@ window.addEventListener("click", e => {
                 case "Today":
                 case "Tomorrow":
                 case "Yesterday":
-                    let day = getDayFromIndex(new Date().getDay());
+                    let day = getDayFromIndex(new Date().getDay(), DAYS_INDEX);
                     if (selected == "Tomorrow")
                         day = getWeekDay(day, 1);
                     else if (selected == "Yesterday")
@@ -201,11 +201,23 @@ window.addEventListener("mouseover", e => {
     const target = e.target;
     
     if (target.closest(".class")) {
-        const targetSubject = target.closest(".class").innerText.split(" - ")[0];
+        const subject = target.closest(".class");
+        subject.style.zIndex = "3";
+        const targetSubject = subject.innerText.split(" - ")[0];
         Array.from(mySchedule.table.querySelectorAll(".class")).forEach(subject => {
             if (subject.getAttribute("subject") !== targetSubject)
                 subject.classList.add("shadowed-class");
         });
+
+        // info popup
+        const subjectInfo = mySchedule.schedule[subject.getAttribute("day")].filter(subj => subj["subject"]["abbrev"] === subject.getAttribute("subject") && subj["class"] === subject.getAttribute("class-group"))[0];
+        console.log(subjectInfo);
+        const start = parseFloat(subjectInfo["start"].replace(",", "."));
+        const duration = parseFloat(subjectInfo["duration"].replace(",", "."));
+        const end = start+duration;
+        const popup = classInfoPopup(subjectInfo["subject"]["name"], start, end);
+        popup.style.top = (subject.offsetHeight - 5)+"px";
+        subject.appendChild(popup);
     }
 
     if (target.closest("table th")) {
@@ -230,11 +242,15 @@ window.addEventListener("mouseout", e => {
     const target = e.target;
     
     if (target.closest(".class")) {
-        const targetSubject = target.closest(".class").innerText.split(" - ")[0];
+        const subject = target.closest(".class");
+        subject.style.removeProperty("z-index");
+        const targetSubject = subject.innerText.split(" - ")[0];
         Array.from(mySchedule.table.querySelectorAll(".class")).forEach(subject => {
             if (subject.getAttribute("subject") !== targetSubject)
                 subject.classList.remove("shadowed-class");
         });
+
+        subject.querySelector(".class-info-popup").remove();
     }
 
     if (target.closest("table th")) {
@@ -384,31 +400,43 @@ const infoPanel = schedule => {
 const highlightNowCell = (day, hours, minutes) => {
     if (highlightNow !== false) {
         const now = new Date();
-        day = day !== null ? day : now.getDay();
-        hours = hours !== null ? hours : now.getHours();
-        minutes = minutes !== null ? minutes : now.getMinutes();
-    
+        day = day !== undefined ? day : now.getDay();
+        hours = hours !== undefined ? hours : now.getHours();
+        minutes = minutes !== undefined ? minutes : now.getMinutes();
         if (day > 0 && day < 6) {
             let cell = mySchedule.highlight(day, hours, minutes, "You're here");
-        
-            if (cell && cell.classList.contains("class")) {
-                const liveClass = document.createElement("div");
-                cell.appendChild(liveClass);
-                liveClass.classList.add("live-class");
-            }
-            
-            if (cell.getAttribute("type") == "slave") {
-                const masterId = cell.getAttribute("id");
-                if (masterId) {
-                    const master = mySchedule.table.querySelector(`.class[id='${masterId}']`);
-                    if (master) {
-                        mySchedule.highlightCell(master);
-                        const liveClass = document.createElement("div");
-                        master.appendChild(liveClass);
-                        liveClass.classList.add("live-class");
+            if (cell) {
+                if (cell.classList.contains("class")) {
+                    const liveClass = document.createElement("div");
+                    cell.appendChild(liveClass);
+                    liveClass.classList.add("live-class");
+                }
+                
+                if (cell.getAttribute("type") == "slave") {
+                    const masterId = cell.getAttribute("id");
+                    if (masterId) {
+                        const master = mySchedule.table.querySelector(`.class[id='${masterId}']`);
+                        if (master) {
+                            mySchedule.highlightCell(master);
+                            const liveClass = document.createElement("div");
+                            master.appendChild(liveClass);
+                            liveClass.classList.add("live-class");
+                        }
                     }
                 }
             }
         }
     }
+}
+
+const classInfoPopup = (className, start, end) => {
+    const wrapper = document.createElement("div");
+    wrapper.classList.add("class-info-popup");
+    const name = document.createElement("div");
+    wrapper.appendChild(name);
+    name.appendChild(document.createTextNode(className));
+    const time = document.createElement("div");
+    wrapper.appendChild(time);
+    time.appendChild(document.createTextNode(`${start}h - ${end}h`));
+    return wrapper;
 }

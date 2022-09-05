@@ -119,7 +119,8 @@ Schedule.prototype = {
                         cell.classList.add("class");
                         cell.setAttribute("id", thisSubjectId);
                         cell.setAttribute("subject", subject["subject"]["abbrev"]);
-                        cell.setAttribute("day", getDayFromIndex(j+1));
+                        cell.setAttribute("class-group", subject["class"]);
+                        cell.setAttribute("day", getDayFromIndex(j, this.daysIndex));
 
                         // number of rows the subject will fill
                         const rowspan = parseFloat(subject["duration"].replace("h", "").replace(",", "."))*2;
@@ -214,7 +215,7 @@ Schedule.prototype = {
     highlight: function(day, hours, minutes, text) {
         let cell;
         let y = (hours-this.hours[0]+1)*2;
-        const dayIndex = this.days.indexOf(getDayFromIndex(day));
+        const dayIndex = this.days.indexOf(getDayFromIndex(day, DAYS_INDEX));
         if (dayIndex >= 0) {
             let x = dayIndex+2;
             if (minutes >= 30) {
@@ -269,7 +270,7 @@ const DAYS_INDEX = {
     "Sábado": 6
 }
 
-const getDayFromIndex = index => Object.entries(DAYS_INDEX).filter(([day, i]) => i == index)[0][0];
+const getDayFromIndex = (index, daysIndex) => Object.entries(daysIndex).filter(([day, i]) => i == index)[0][0];
 
 const getWeekDay = (day, increment) => {
     let index = DAYS_INDEX[day]+increment;
