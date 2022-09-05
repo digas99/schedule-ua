@@ -9,6 +9,9 @@ const Schedule = function(container, config) {
     }
 
     this.schedule = config["schedule"];
+    if (this.schedule)
+        this.subjects = [...new Set(Object.entries(this.schedule).map(([key, value]) => value.map(obj => obj["subject"]["abbrev"])).flat(1))];
+
     this.subjectColors = config["colors"];
     this.trimmed = config["trimmed"];
     this.limitTrimming = config["limitTrimming"];
@@ -97,7 +100,6 @@ Schedule.prototype = {
             console.log(this.matrix);
     },
     setColors: function() {
-        this.subjects = [...new Set(Object.entries(this.schedule).map(([key, value]) => value.map(obj => obj["subject"]["abbrev"])).flat(1))];
         this.subjectColors = shuffleColors(this.subjects, SUBJECT_COLORS);
     },
     fill: function() {
@@ -249,6 +251,7 @@ const scheduleMatrix = (hours, nDays) => {
 }
 
 const shuffleColors = (subjects, colors) => {
+    console.log(subjects, colors);
     let indexes = [], counter = 0, subjectColors = {};
     while (indexes.length < subjects.length) {
         const index = Math.floor(Math.random() * colors.length-1) + 1;
@@ -257,6 +260,8 @@ const shuffleColors = (subjects, colors) => {
             subjectColors[subjects[counter++]] = colors[index];
         }
     }
+
+    console.log(subjectColors);
     return subjectColors;
 }
 

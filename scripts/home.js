@@ -1,7 +1,7 @@
 let mySchedule, schedule, school_year, semester, subjectColors, highlightNow;
 const defaultHours = [8,9,10,11,12,13,14,15,16,17,18,19,20], defaultDays = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
 
-chrome.storage.sync.get([...STORAGE_KEYS, "trimmed", "subject_colors", "selected", "highlight_now", "limit_trimming"], result => {
+chrome.storage.sync.get([...STORAGE_KEYS, "trimmed", "subject_colors", "selected", "highlight_now", "limit_trimming", "subjects"], result => {
     // if schedule data exists
     if (STORAGE_KEYS.every(key => Object.keys(result).includes(key))) {
         schedule = result["schedule"];
@@ -38,6 +38,9 @@ chrome.storage.sync.get([...STORAGE_KEYS, "trimmed", "subject_colors", "selected
 
         if (!subjectColors)
             chrome.storage.sync.set({"subject_colors": mySchedule.subjectColors});
+
+        if (!result["subjects"] && mySchedule.subjects)
+            chrome.storage.sync.set({"subjects": mySchedule.subjects});
 
         if (result["trimmed"]) updateExpandButton("shrink");
 
@@ -211,11 +214,10 @@ window.addEventListener("mouseover", e => {
 
         // info popup
         const subjectInfo = mySchedule.schedule[subject.getAttribute("day")].filter(subj => subj["subject"]["abbrev"] === subject.getAttribute("subject") && subj["class"] === subject.getAttribute("class-group"))[0];
-        console.log(subjectInfo);
         const start = parseFloat(subjectInfo["start"].replace(",", "."));
         const duration = parseFloat(subjectInfo["duration"].replace(",", "."));
         const end = start+duration;
-        const popup = classInfoPopup(subjectInfo["subject"]["name"], start, end);
+        const popup = classInfoPopup(subjectInfo["subject"]["name"], start, end, subjectColors[targetSubject]);
         popup.style.top = (subject.offsetHeight - 5)+"px";
         subject.appendChild(popup);
     }
@@ -365,12 +367,17 @@ const infoPanel = schedule => {
                 classNumber.appendChild(document.createTextNode(subject["class"]));
                 const info = document.createElement("div");
                 infoWrapper.appendChild(info);
-                ["duration", "room", "capacity"].forEach(type => {
+                const start = parseFloat(subject["start"].replace(",", "."));
+                const duration = parseFloat(subject["duration"].replace(",", "."));
+                const end = start+duration;
+                subject["time"] = `${start}h - ${end}h`;
+                ["time" ,"duration", "room", "capacity"].forEach(type => {
                     const rowWrapper = document.createElement("div");
                     info.appendChild(rowWrapper);
-                    const rowTitle = document.createElement("b");
-                    rowWrapper.appendChild(rowTitle);
-                    rowTitle.appendChild(document.createTextNode(type.charAt(0).toUpperCase()+type.slice(1)));
+                    rowWrapper.title = type.charAt(0).toUpperCase()+type.slice(1);
+                    const rowIcon = document.createElement("img");
+                    rowWrapper.appendChild(rowIcon);
+                    rowIcon.src = `images/icons/${type}.png`;
                     const rowContent = document.createElement("div");
                     rowWrapper.appendChild(rowContent);
                     rowContent.appendChild(document.createTextNode(subject[type]));
@@ -429,9 +436,11 @@ const highlightNowCell = (day, hours, minutes) => {
     }
 }
 
-const classInfoPopup = (className, start, end) => {
+const classInfoPopup = (className, start, end, color) => {
     const wrapper = document.createElement("div");
     wrapper.classList.add("class-info-popup");
+    if (color)
+        wrapper.style.borderBottom = "4px solid "+color;
     const name = document.createElement("div");
     wrapper.appendChild(name);
     name.appendChild(document.createTextNode(className));

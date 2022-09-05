@@ -86,10 +86,10 @@ table > tbody > tr > th:not(:first-child, :last-child) {
 }
 
 .subject-info > div:nth-child(2) > div:nth-child(1) {
-    font-size: 20px;
+    font-size: 15px;
     background-color: #646262;
-    width: 90px;
-    height: 58px;
+    width: 60px;
+    height: 35px;
     display: flex;
     align-items: center;
 }
@@ -103,14 +103,20 @@ table > tbody > tr > th:not(:first-child, :last-child) {
 .subject-info > div:nth-child(2) > div:nth-child(2) {
     padding: 5px 9px;
     display: flex;
-    flex-direction: column;
-    row-gap: 3px;
+    flex-direction: row;
+    column-gap: 10px;
     width: 100%;
 }
 
 .subject-info > div:nth-child(2) > div:nth-child(2) > div {
     display: flex;
     column-gap: 5px;
+    align-items: center;
+}
+
+.subject-info > div:nth-child(2) > div:nth-child(2) > div > img {
+    width: 15px;
+    opacity: 0.6;
 }
 
 .live-class {
