@@ -25,7 +25,7 @@ if [ -f "$FILENAME" ]; then
 		ZIPNAME="schedua_$formated.zip"
 
 		# pick files and folders to zip
-		zip -r "$ZIPNAME" manifest.json popup.html home.html settings.html about.html images scripts styles lib
+		zip -r "$ZIPNAME" manifest.json login.html home.html settings.html about.html load_paco.html images scripts styles lib
 
 		break
 	fi

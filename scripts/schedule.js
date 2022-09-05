@@ -9,9 +9,6 @@ const Schedule = function(container, config) {
     }
 
     this.schedule = config["schedule"];
-    if (this.schedule)
-        this.subjects = [...new Set(Object.entries(this.schedule).map(([key, value]) => value.map(obj => obj["subject"]["abbrev"])).flat(1))];
-
     this.subjectColors = config["colors"];
     this.trimmed = config["trimmed"];
     this.limitTrimming = config["limitTrimming"];
@@ -22,6 +19,9 @@ const Schedule = function(container, config) {
     if (Object.values(this.schedule)[0] == undefined || Object.values(this.schedule).flat(1).length == 0) this.empty = true;
 
     this.matrix = scheduleMatrix(this.hours, this.days.length);
+
+    if (!this.empty && this.schedule)
+        this.subjects = [...new Set(Object.entries(this.schedule).map(([key, value]) => value.map(obj => obj["subject"]["abbrev"])).flat(1))];
 }
 
 Schedule.prototype = {

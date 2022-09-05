@@ -4,6 +4,8 @@
 
 ## SchedUA - Schedule for Universidade de Aveiro
 
+![Latest Release](https://img.shields.io/github/v/release/digas99/schedule-ua?label=Latest%20Version)
+
 Browser Extension for easy access to your Schedule from Universidade de Aveiro. This extension uses the [PACO-UA API](https://github.com/digas99/paco-ua-api) to fetch the data from the schedule and present it in the Extension Popup.
 
 <img alt="logo" align="left" src="/images/logo_48x48.png">
@@ -19,6 +21,29 @@ Browser Extension for easy access to your Schedule from Universidade de Aveiro. 
     1. [Schedule Page](#schedule-page)
     1. [Settings](#settings)
 1. [Pictures](#pictures)
+
+## Latest Features
+### [Changelog v0.1.0](https://github.com/digas99/schedule-ua/releases/tag/v1.0.0) 
+Released on 05/09/2022
+
+#### Content
+- Download and Upload buttons in the interface of the student's schedule at [https://paco.ua.pt/secvirtual/horarios/c_horario_aluno.asp](https://paco.ua.pt/secvirtual/horarios/c_horario_aluno.asp) to easily upload/download the schedule configuration
+
+#### Popup
+- "Login" page to load the schedule configuration, either through the PACO API or by droping the configuration file directly
+- Page with the interface of the schedule.
+- Possibility to navigate through the schedule by clicking in the classes and the week days.
+- Highlight of the cell corresponding to the current hour of the day
+- Detailed information on the classes of the day when viewing the schedule on a single day mode
+- Expand or trim the schedule size, based on the the first and last hours of classes of the day
+- Download schedule configuration file
+- Take a picture and download the schedule
+- Customize your experience on the Settings page
+
+
+[(All changelogs)](CHANGELOG.md)
+
+---
 
 ## Usage Guide
 
@@ -93,6 +118,8 @@ There is a page that provides ways of customizing your experience with the app. 
     - **Remember Email:** remember email the next time you logout.
 - **PACO**
     - **Download and Upload buttons:** extra buttons above the schedule in the schedule page in PACO - Secretaria Virtual.
+
+---
 
 ## Pictures
 
