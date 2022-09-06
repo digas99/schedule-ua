@@ -50,7 +50,7 @@ chrome.storage.sync.get([...STORAGE_KEYS, "email"], result => {
 
                             document.querySelector(".loading").remove();
                             const text = document.querySelector("#main > div > div");
-                            if (text) {
+                            if (text && message) {
                                 text.innerText = message;
                                 text.style.color = "#f56161";
                             }
@@ -72,6 +72,19 @@ chrome.storage.sync.get([...STORAGE_KEYS, "email"], result => {
                                 if (success)
                                     window.location.href = "/home.html";
                             });
+                        })
+                        .catch(() => {
+                            document.querySelector(".loading").remove();
+                            const text = document.querySelector("#main > div > div");
+                            if (text) {
+                                text.innerText = "Something went wrong! Please try again.";
+                                text.style.color = "#f56161";
+                            }
+
+                            // save email if asked
+                            const remember = document.getElementById("remember-email")?.querySelector("input").checked;
+                            if (remember) data["email"] = email;
+                            else chrome.storage.sync.remove("email");
                         });
                     }
                 });

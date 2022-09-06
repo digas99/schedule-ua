@@ -39,11 +39,11 @@ chrome.storage.sync.get([...STORAGE_KEYS, "trimmed", "subject_colors", "selected
         if (!subjectColors)
             chrome.storage.sync.set({"subject_colors": mySchedule.subjectColors});
 
-        if (!result["subjects"] && mySchedule.subjects)
+        if (mySchedule.subjects)
             chrome.storage.sync.set({"subjects": mySchedule.subjects});
 
-        if (result["trimmed"]) updateExpandButton("shrink");
-
+        if (result["trimmed"])
+            updateExpandButton("shrink");
 
         if (result["selected"]) {
             const selectors = document.querySelectorAll(".day-selector div");
@@ -230,7 +230,7 @@ window.addEventListener("mouseover", e => {
         const start = parseFloat(subjectInfo["start"].replace(",", "."));
         const duration = parseFloat(subjectInfo["duration"].replace(",", "."));
         const end = start+duration;
-        const popup = classInfoPopup(subjectInfo["subject"]["name"], start, end, subjectColors[targetSubject]);
+        const popup = classInfoPopup(subjectInfo["subject"]["name"], start, end, mySchedule.subjectColors ? mySchedule.subjectColors[targetSubject] : null);
         popup.style.top = (subject.offsetHeight - 5)+"px";
         subject.appendChild(popup);
     }

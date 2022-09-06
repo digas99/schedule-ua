@@ -2,7 +2,6 @@ let subjects, subjectColors;
 
 chrome.storage.sync.get(["subject_colors", "subjects", "email", "selected", "paco_buttons", "highlight_now", "limit_trimming"], result => {
     subjectColors = result["subject_colors"];
-    console.log(subjects);
     subjects = result["subjects"];
     const subjectColorsElem = document.getElementById("subjects-colors");
     if (subjectColors && subjectColorsElem) {
@@ -43,7 +42,6 @@ chrome.storage.sync.get(["subject_colors", "subjects", "email", "selected", "pac
 window.addEventListener("click", e => {
     const target = e.target;
 
-    console.log(subjects, subjectColors);
     if (subjects && subjectColors) {
         if (target.closest("#subjects-colors-refresh")) {
             subjectColors = shuffleColors(subjects, SUBJECT_COLORS);

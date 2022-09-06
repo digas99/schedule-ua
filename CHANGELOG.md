@@ -1,4 +1,14 @@
-# [Changelog v0.1.0](https://github.com/digas99/schedule-ua/releases/tag/v1.0.0) 
+# [Changelog v1.0.1](https://github.com/digas99/schedule-ua/releases/tag/v1.0.1) 
+
+## Bug Fixes
+- Fixed issue with classes starting at the half hour (--h30)
+- Fixed class info popup not showing when hovering classes the first time the schedule was loaded
+- Added another layer of error warnings when fetching the schedule through the PACO API, to prevent infinite loading screen
+
+## Popup
+- Changed days selector from the bottom of the page to a popup on the navbar that opens when hovering over the schedule button
+
+# [Changelog v1.0.0](https://github.com/digas99/schedule-ua/releases/tag/v1.0.0) 
 Released on 06/09/2022
 
 ## Content
