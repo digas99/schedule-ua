@@ -93,11 +93,10 @@ Schedule.prototype = {
         Object.entries(this.schedule).sort(([a_day, a_subject], [b_day, b_subject]) => this.daysIndex[a_day] - this.daysIndex[b_day])
             .forEach(([day, subjects]) => {
                 subjects?.forEach(subject => {
-                    const start = Number(subject["start"].replace("h", ""));
+                    const start = parseFloat(subject["start"].replace("h", ""));
                     this.matrix[start][this.daysIndex[day]] = subject;
                 });
             });
-            console.log(this.matrix);
     },
     setColors: function() {
         this.subjectColors = shuffleColors(this.subjects, SUBJECT_COLORS);
@@ -105,19 +104,26 @@ Schedule.prototype = {
     fill: function() {
         // iterate through filled matrix
         Object.entries(Object.entries(this.matrix)).forEach(([i, [hour, subjects]]) => {
-            const currentTableIndex = (Number(i)+1)*2;
-            const tableRow = this.table.querySelector(`tr:nth-of-type(${currentTableIndex})`);
+            let rowIndex = (Number(i)+1)*2;
+            let tableRow = this.table.querySelector(`tr:nth-of-type(${rowIndex})`);
+            let halfHourStart = false;
             if (tableRow) {
                 // fill the row with the subjects
                 // iterate cells
                 for (let j = 0; j < subjects.length; j++) {
                     const subject = subjects[j];
                     if (subject) {
+                        // check for XXh30 cases
+                        if (parseInt(subject["start"].split(",")[1]) >= 5) {
+                            tableRow = this.table.querySelector(`tr:nth-of-type(${++rowIndex})`);
+                            halfHourStart = true;
+                        }
+
                         tableRow.setAttribute("filled", "true");
                         if (tableRow.nextElementSibling) tableRow.nextElementSibling.setAttribute("filled", "true");
 
                         const thisSubjectId = this.subjectId++;
-                        const cell = tableRow.querySelector(`td:nth-child(${j+2})`);
+                        const cell = tableRow.querySelector(`td:nth-child(${j+(!halfHourStart ? 2 : 1)})`);
                         cell.classList.add("class");
                         cell.setAttribute("id", thisSubjectId);
                         cell.setAttribute("subject", subject["subject"]["abbrev"]);
@@ -129,7 +135,7 @@ Schedule.prototype = {
                         cell.setAttribute("rowspan", rowspan);
                         // hide cells below covered by the span
                         for (let k = 1; k < rowspan; k++) {
-                            const rowOffset = currentTableIndex+k;
+                            const rowOffset = rowIndex+k;
                             const row = this.table.querySelector(`tr:nth-of-type(${rowOffset})`);
                             if (row) {
                                 row.setAttribute("filled", "true");
@@ -178,7 +184,6 @@ Schedule.prototype = {
             this.table.querySelectorAll("tr").forEach(row => row.children[Object.keys(this.schedule).length].style.display = "none");
     },
     trim: function(force=false) {
-        console.log(this.limitTrimming, this.soonest, this.latest);
         if (!this.empty || force || this.limitTrimming) {
             const tableRows = this.table.querySelectorAll("tr");
             if(tableRows) {
@@ -251,6 +256,7 @@ Schedule.prototype = {
                 header.setAttribute("colspan", cols+1);
                 const tableWidth = this.table.offsetWidth-(36*2); // remove columns of hours
                 const nColumns = this.table.querySelectorAll("th").length-2+cols; // remove columns of hours and add new cols
+                console.log(tableWidth, this.table.querySelectorAll("th").length, nColumns);
                 if (tableWidth && nColumns) {
                     const colWidth = tableWidth/nColumns;
                     header.style.width = colWidth*(cols+1)+"px";
@@ -275,12 +281,14 @@ Schedule.prototype = {
                 const currentNCols = parseInt(header.getAttribute("colspan"));
                 if (currentNCols && !isNaN(currentNCols) && currentNCols-cols > 0) {
                     const newCols = currentNCols-cols;
+                    console.log(newCols);
                     header.setAttribute("colspan", newCols);
                     const tableWidth = this.table.offsetWidth-(36*2); // remove columns of hours
-                    const nColumns = this.table.querySelectorAll("th").length-2-cols; // remove columns of hours and add new cols
+                    const nColumns = this.table.querySelectorAll("th").length-2+(newCols-1); // remove columns of hours and add new cols
+                    console.log(tableWidth, this.table.querySelectorAll("th").length, nColumns);
                     if (tableWidth && nColumns) {
                         const colWidth = tableWidth/nColumns;
-                        header.style.width = colWidth*(newCols+1)+"px";
+                        header.style.width = colWidth*(newCols)+"px";
                         for (let i = cols; i > 0; i--) {
                             // get all td from the next day, to make an insertBefore
                             const cells = this.table.querySelectorAll(`tr td:nth-of-type(${index+2+i})`);
@@ -348,5 +356,6 @@ const SUBJECT_COLORS = [
     "#6fb792",
     "#cf77b0",
     "#a274df",
-    "#62c1d1"
+    "#62c1d1",
+    "#e6a356"
 ];
