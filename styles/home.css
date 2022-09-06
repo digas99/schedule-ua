@@ -29,7 +29,7 @@ body {
     cursor: not-allowed;
 }
 
-.selectors > div:not(.selector-active):hover, table > tbody > tr > th:not(:first-child, :last-child):hover {
+.selectors > div:not(.selector-active):hover, .day-selector > div:not(.selector-active):hover, table > tbody > tr > th:not(:first-child, :last-child):hover {
     background-color: #e1e1e1;
 }
 
@@ -159,4 +159,27 @@ table > tbody > tr > th:not(:first-child, :last-child) {
     left: 5px;
     transform: rotate(45deg);
     z-index: -1;
+}
+
+.day-selector {
+    position: fixed !important;
+    right: 50px;
+    background-color: white;
+    width: fit-content !important;
+    padding: unset !important;
+    top: 50px;
+    border: 1px solid silver;
+    z-index: 1;
+}
+
+.day-selector > div {
+    padding: 10px;
+}
+
+.day-selector:hover {
+    background-color: white !important;
+}
+
+.day-selector > div:not(:last-child) {
+    border-bottom: 1px solid silver;
 }

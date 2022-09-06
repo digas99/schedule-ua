@@ -9,6 +9,7 @@
     height: 100%;
     border-left: 1px solid silver;
     overflow: auto;
+    z-index: 2;
 }
 
 #navbar > img {
@@ -26,8 +27,32 @@
     width: 100%;
     text-align: center;
     padding: 10px 0;
+    position: relative;
 }
 
 #navbar > div:not(:first-child, :last-child):hover {
     background-color: #e1e1e1;
+}
+
+.info-circle {
+    position: absolute;
+    top: 3px;
+    right: 5px;
+    background-color: black;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+}
+
+.info-circle > div {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    width: fit-content;
+    height: fit-content;
+    font-size: 10px;
+    color: white;
 }

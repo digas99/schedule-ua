@@ -46,7 +46,7 @@ chrome.storage.sync.get([...STORAGE_KEYS, "trimmed", "subject_colors", "selected
 
 
         if (result["selected"]) {
-            const selectors = document.querySelectorAll(".selectors div");
+            const selectors = document.querySelectorAll(".day-selector div");
             if (selectors) {
                 const elem = Array.from(selectors).filter(selector => selector.innerText == result["selected"])[0];
                 if (elem) elem.click();
@@ -101,12 +101,13 @@ window.addEventListener("click", e => {
     }
 
     // schedule selectors
-    if (target.closest(".selectors")) {
+    if (target.closest(".day-selector")) {
         const scheduleWrapper = document.querySelector("#main > div");
         if (scheduleWrapper && !target.classList.contains("selector-active")) {
             document.querySelector(".selector-active")?.classList.replace("selector-active", "clickable");
             target.classList.replace("clickable", "selector-active");
-
+            
+            let letter = "N";
             const selected = target.innerText; 
             switch(selected) {
                 case "Week":
@@ -129,20 +130,30 @@ window.addEventListener("click", e => {
 
                     highlightNowCell();
 
+                    letter = "W";
+
                     break;
                 case "Today":
                 case "Tomorrow":
                 case "Yesterday":
                     let day = getDayFromIndex(new Date().getDay(), DAYS_INDEX);
-                    if (selected == "Tomorrow")
+                    if (selected == "Tomorrow") {
                         day = getWeekDay(day, 1);
-                    else if (selected == "Yesterday")
+                        letter = "T";
+                    }
+                    else if (selected == "Yesterday") {
                         day = getWeekDay(day, -1);
+                        letter = "Y";
+                    }
 
                     createDaySchedule(scheduleWrapper, day);
 
                     break;
             }
+
+            const infoCircle = document.querySelector("#schedule .info-circle");
+            document.querySelector("#schedule .info-circle").style.removeProperty("display");
+            if (infoCircle) infoCircle.firstChild.innerText = letter;
 
             chrome.storage.sync.set({"selected": selected});
         }
@@ -156,6 +167,7 @@ window.addEventListener("click", e => {
             const scheduleWrapper = document.querySelector("#main > div");
             if (weekday && Object.keys(DAYS_INDEX).includes(weekday) && scheduleWrapper) {
                 document.querySelector(".selector-active")?.classList.replace("selector-active", "clickable");
+                document.querySelector("#schedule .info-circle").style.display = "none";
                 createDaySchedule(scheduleWrapper, weekday);
             }
         }
@@ -170,6 +182,7 @@ window.addEventListener("click", e => {
 
         if (days) {
             document.querySelector(".selector-active")?.classList.replace("selector-active", "clickable");
+            document.querySelector("#schedule .info-circle").style.display = "none";
 
             const scheduleWrapper = document.querySelector("#main > div");
             scheduleWrapper.firstChild?.remove();
@@ -236,6 +249,20 @@ window.addEventListener("mouseover", e => {
                 targetElem.setAttribute("day", weekday);
                 targetElem.innerText = "Week";
             }
+        }
+    }
+
+    if (target.closest("#schedule")) {
+        const daySelector = document.querySelector(".day-selector");
+        if (daySelector) {
+            daySelector.style.removeProperty("display");
+        }
+    }
+
+    if (!target.closest("#navbar")) {
+        const daySelector = document.querySelector(".day-selector");
+        if (daySelector) {
+            daySelector.style.display = "none";
         }
     }
 });
@@ -309,7 +336,7 @@ const createDaySchedule = (scheduleWrapper, scheduleDay) => {
     });
 
     // make day header go back to Week
-    mySchedule.table.querySelector("th:nth-of-type(2)").addEventListener("click", () => document.querySelector(".selectors > div").click());
+    mySchedule.table.querySelector("th:nth-of-type(2)").addEventListener("click", () => document.querySelector(".day-selector > div").click());
 }
 
 const updateExpandButton = state => {

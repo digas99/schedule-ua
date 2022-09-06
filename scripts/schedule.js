@@ -198,8 +198,10 @@ Schedule.prototype = {
                 for (let i = tableRows.length-1; i > 0; i--) {
                     const row = tableRows[i];
 
-                    if (this.limitTrimming && parseFloat(row.children[0].innerText) == this.latest)
+                    if (this.limitTrimming && parseFloat(row.children[0].innerText) == this.latest) {
+                        tableRows[i+1]?.style.removeProperty("display"); // show the XXh30 from this hour
                         break;
+                    }
 
                     // if row is empty
                     if (!row.getAttribute("filled")) row.style.display = "none";
