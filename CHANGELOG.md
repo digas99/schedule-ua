@@ -1,5 +1,5 @@
 # [Changelog v0.1.0](https://github.com/digas99/schedule-ua/releases/tag/v1.0.0) 
-Released on 05/09/2022
+Released on 06/09/2022
 
 ## Content
 - Download and Upload buttons in the interface of the student's schedule at [https://paco.ua.pt/secvirtual/horarios/c_horario_aluno.asp](https://paco.ua.pt/secvirtual/horarios/c_horario_aluno.asp) to easily upload/download the schedule configuration

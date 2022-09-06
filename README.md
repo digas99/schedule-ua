@@ -9,7 +9,7 @@
 Browser Extension for easy access to your Schedule from Universidade de Aveiro. This extension uses the [PACO-UA API](https://github.com/digas99/paco-ua-api) to fetch the data from the schedule and present it in the Extension Popup.
 
 <img alt="logo" align="left" src="/images/logo_48x48.png">
-<a href="#"><img alt="chrome-webstore" width="170px" src="/images/chrome-webstore-logo.png"></a>
+<a href="https://chrome.google.com/webstore/detail/schedua/hdidghpdffhhefdafcajajjocjbmbnml/"><img alt="chrome-webstore" width="170px" src="/images/chrome-webstore-logo.png"></a>
 
 ###### Idea for this project: [jtsimoes](https://github.com/jtsimoes)
 
@@ -24,7 +24,7 @@ Browser Extension for easy access to your Schedule from Universidade de Aveiro. 
 
 ## Latest Features
 ### [Changelog v0.1.0](https://github.com/digas99/schedule-ua/releases/tag/v1.0.0) 
-Released on 05/09/2022
+Released on 06/09/2022
 
 #### Content
 - Download and Upload buttons in the interface of the student's schedule at [https://paco.ua.pt/secvirtual/horarios/c_horario_aluno.asp](https://paco.ua.pt/secvirtual/horarios/c_horario_aluno.asp) to easily upload/download the schedule configuration
