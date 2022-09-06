@@ -249,22 +249,47 @@ Schedule.prototype = {
             const header = this.table.querySelector(`th:nth-of-type(${index+2})`);
             if (header) {
                 header.setAttribute("colspan", cols+1);
-                console.log(this.table, this.table.offsetWidth);
                 const tableWidth = this.table.offsetWidth-(36*2); // remove columns of hours
                 const nColumns = this.table.querySelectorAll("th").length-2+cols; // remove columns of hours and add new cols
                 if (tableWidth && nColumns) {
                     const colWidth = tableWidth/nColumns;
-                    console.log(tableWidth, nColumns, colWidth);
                     header.style.width = colWidth*(cols+1)+"px";
                     for (let i = 0; i < cols; i++) {
                         // get all td from the next day, to make an insertBefore
                         const cells = this.table.querySelectorAll(`tr td:nth-of-type(${index+3})`);
                         const rows = this.table.querySelectorAll("tr:not(:first-child)");
                         if (rows) {
-                            Array.from(rows).forEach((row, i) => {
-                                console.log(row, cells[i]);
-                                row.insertBefore(document.createElement("td"), cells[i]);
-                            });
+                            Array.from(rows).forEach((row, i) => row.insertBefore(document.createElement("td"), cells[i]));
+                        }
+                    }
+                }
+            }
+        }
+    },
+    removeColumns: function(day, cols) {
+        const index = this.daysIndex[day];
+        if (index !== undefined) {
+            // +2 because it starts on sunday and nth-of-type starts at 1
+            const header = this.table.querySelector(`th:nth-of-type(${index+2})`);
+            if (header) {
+                const currentNCols = parseInt(header.getAttribute("colspan"));
+                if (currentNCols && !isNaN(currentNCols) && currentNCols-cols > 0) {
+                    const newCols = currentNCols-cols;
+                    header.setAttribute("colspan", newCols);
+                    const tableWidth = this.table.offsetWidth-(36*2); // remove columns of hours
+                    const nColumns = this.table.querySelectorAll("th").length-2-cols; // remove columns of hours and add new cols
+                    if (tableWidth && nColumns) {
+                        const colWidth = tableWidth/nColumns;
+                        header.style.width = colWidth*(newCols+1)+"px";
+                        for (let i = cols; i > 0; i--) {
+                            // get all td from the next day, to make an insertBefore
+                            const cells = this.table.querySelectorAll(`tr td:nth-of-type(${index+2+i})`);
+                            const rows = this.table.querySelectorAll("tr:not(:first-child)");
+                            if (rows) {
+                                for (let j = 0; j < rows.length; j++) {
+                                    cells[j].remove();
+                                }
+                            }
                         }
                     }
                 }
