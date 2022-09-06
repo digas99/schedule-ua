@@ -1,3 +1,9 @@
+# [Changelog v1.1.0](https://github.com/digas99/schedule-ua/releases/tag/v1.1.0) 
+
+## Popup
+- Added compatibility with overlapping classes
+- Possibility to expand day with overlapping classes
+
 # [Changelog v1.0.1](https://github.com/digas99/schedule-ua/releases/tag/v1.0.1) 
 
 ## Bug Fixes
