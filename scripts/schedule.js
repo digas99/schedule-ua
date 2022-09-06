@@ -92,9 +92,19 @@ Schedule.prototype = {
     populateMatrix: function() {
         Object.entries(this.schedule).sort(([a_day, a_subject], [b_day, b_subject]) => this.daysIndex[a_day] - this.daysIndex[b_day])
             .forEach(([day, subjects]) => {
+                // check if classes overlap
+                for (let i = 0; i < subjects.length; i++) {
+                    for (let j = i+1; j < subjects.length; j++) {
+                        if (classesOverlap(subjects[i], subjects[j]))
+                            subjects[j]["overlap"] = true;
+                    }
+                }
+
                 subjects?.forEach(subject => {
-                    const start = parseFloat(subject["start"].replace("h", ""));
-                    this.matrix[start][this.daysIndex[day]] = subject;
+                    if (!subject["overlap"]) {
+                        const start = parseFloat(subject["start"].replace("h", ""));
+                        this.matrix[start][this.daysIndex[day]] = subject;
+                    }
                 });
             });
     },
@@ -281,11 +291,9 @@ Schedule.prototype = {
                 const currentNCols = parseInt(header.getAttribute("colspan"));
                 if (currentNCols && !isNaN(currentNCols) && currentNCols-cols > 0) {
                     const newCols = currentNCols-cols;
-                    console.log(newCols);
                     header.setAttribute("colspan", newCols);
                     const tableWidth = this.table.offsetWidth-(36*2); // remove columns of hours
                     const nColumns = this.table.querySelectorAll("th").length-2+(newCols-1); // remove columns of hours and add new cols
-                    console.log(tableWidth, this.table.querySelectorAll("th").length, nColumns);
                     if (tableWidth && nColumns) {
                         const colWidth = tableWidth/nColumns;
                         header.style.width = colWidth*(newCols)+"px";
@@ -359,3 +367,16 @@ const SUBJECT_COLORS = [
     "#62c1d1",
     "#e6a356"
 ];
+
+// https://stackoverflow.com/a/47668070/11488921
+const classesOverlap = (classA, classB) => {
+    const startA = parseFloat(classA["start"].replace(",", "."));
+    const durationA = parseFloat(classA["duration"].replace(",", "."));
+    const endA = startA+durationA;
+    const startB = parseFloat(classB["start"].replace(",", "."));
+    const durationB = parseFloat(classB["duration"].replace(",", "."));
+    const endB = startB+durationB;
+
+    if (startB < startA) return endB > startA;
+    else return startB < endA;
+}
