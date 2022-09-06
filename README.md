@@ -95,7 +95,7 @@ To know more about the format of the Schedule Configuration JSON, go to [https:/
 
 ### Schedule Page
 
-When a schedule is successfully loaded into the extension, it is displayed in a different page, on a table [[1]](#1---some-pages-within-the-extension-popup). Here, you can choose between a view of the entire **Week**, or simply the classes for **Today**, the day before (**Yesterday**) and the day after (**Tomorrow**). The view you choose will show up the next time you open the extension.
+When a schedule is successfully loaded into the extension, it is displayed in a different page, on a table [[1]](#1---some-pages-within-the-extension-popup). When you hover over the schedule button on the sidebar, you can select the view of the entire **Week (W)**, or simply the classes for **Today (N)**, the day before (**Yesterday (Y)**) and the day after (**Tomorrow (T)**). The view you choose will show up the next time you open the extension.
 
 Clicking on the days of the week in the Week view will also show the classes for that one day specifically.
 
@@ -124,8 +124,8 @@ There is a page that provides ways of customizing your experience with the app. 
 ## Pictures
 
 ##### 1 - Some pages within the extension popup.
-<img alt="picture1" align="left" height="310px" src="/images/picture1.jpg">
-<img alt="picture2" height="310px" src="/images/picture2.jpg">
+<img alt="picture1" align="left" height="300px" src="/images/picture1.jpg">
+<img alt="picture2" height="300px" src="/images/picture2.jpg">
 
 ##### 2 - Possibility to either download the schedule configuration, or upload it directily to the extension.
 ![picture3](/images/picture3.jpg)
