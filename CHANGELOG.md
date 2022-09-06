@@ -1,4 +1,9 @@
-# [Changelog v0.1.0](https://github.com/digas99/schedule-ua/releases/tag/v1.0.0) 
+# [Changelog v1.0.1](https://github.com/digas99/schedule-ua/releases/tag/v1.0.1) 
+
+## Popup
+- Changed days selector from the bottom of the page to a popup on the navbar that opens when hovering over the schedule button
+
+# [Changelog v1.0.0](https://github.com/digas99/schedule-ua/releases/tag/v1.0.0) 
 Released on 06/09/2022
 
 ## Content
@@ -6,7 +11,7 @@ Released on 06/09/2022
 
 ## Popup
 - "Login" page to load the schedule configuration, either through the PACO API or by droping the configuration file directly
-- Page with the interface of the schedule.
+- Page with the interface of the schedule
 - Possibility to navigate through the schedule by clicking in the classes and the week days.
 - Highlight of the cell corresponding to the current hour of the day
 - Detailed information on the classes of the day when viewing the schedule on a single day mode

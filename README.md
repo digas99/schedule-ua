@@ -23,7 +23,7 @@ Browser Extension for easy access to your Schedule from Universidade de Aveiro. 
 1. [Pictures](#pictures)
 
 ## Latest Features
-### [Changelog v0.1.0](https://github.com/digas99/schedule-ua/releases/tag/v1.0.0) 
+### [Changelog v1.0.0](https://github.com/digas99/schedule-ua/releases/tag/v1.0.0) 
 Released on 06/09/2022
 
 #### Content

@@ -52,6 +52,8 @@ chrome.storage.sync.get([...STORAGE_KEYS, "trimmed", "subject_colors", "selected
                 if (elem) elem.click();
             }
         }
+
+        mySchedule.addColumns("Segunda", 1);
     }
     else
         window.location.href = "/login.html";
