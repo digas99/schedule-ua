@@ -15,6 +15,7 @@ const Schedule = function(container, config) {
     this.soonest = config["soonest"];
     this.latest = config["latest"];
     this.subjectId = 0;
+    this.overlappedSubjects = {};
 
     if (Object.values(this.schedule)[0] == undefined || Object.values(this.schedule).flat(1).length == 0) this.empty = true;
 
@@ -95,8 +96,13 @@ Schedule.prototype = {
                 // check if classes overlap
                 for (let i = 0; i < subjects.length; i++) {
                     for (let j = i+1; j < subjects.length; j++) {
-                        if (classesOverlap(subjects[i], subjects[j]))
+                        if (!subjects[i]["overlap"] && classesOverlap(subjects[i], subjects[j])) {
                             subjects[j]["overlap"] = true;
+
+                            if (!this.overlappedSubjects[day])
+                                this.overlappedSubjects[day] = [];
+                            this.overlappedSubjects[day].push(subjects[j]);
+                        }
                     }
                 }
 
@@ -171,6 +177,62 @@ Schedule.prototype = {
                         roomName.appendChild(document.createTextNode(subject["room"]));
                     }
 
+                }
+            }
+        });
+    },
+    fillColumn: function(day, offset, subjects) {
+        // dayIndex+1 because it starts on sunday; offset+1 because of the hours column
+        const x = (this.daysIndex[day]+1)+(offset+1);
+        subjects.forEach(subject => {
+            let y = (parseInt(subject["start"])-this.hours[0]+1)*2;
+            let row = this.table.querySelector(`tr:nth-of-type(${y})`);
+            let halfHourStart = false;
+            if (row) {
+                // check for XXh30 cases
+                if (parseInt(subject["start"].split(",")[1]) >= 5) {
+                    row = this.table.querySelector(`tr:nth-of-type(${++y})`);
+                    halfHourStart = true;
+                }
+
+                const thisSubjectId = this.subjectId++;
+                cell = row.querySelector(`td:nth-of-type(${x})`);
+                if (cell) {
+                    cell.classList.add("class");
+                    cell.setAttribute("id", thisSubjectId);
+                    cell.setAttribute("subject", subject["subject"]["abbrev"]);
+                    cell.setAttribute("class-group", subject["class"]);
+                    cell.setAttribute("day", day);
+
+                    // number of rows the subject will fill
+                    const rowspan = parseFloat(subject["duration"].replace("h", "").replace(",", "."))*2;
+                    cell.setAttribute("rowspan", rowspan);
+                    // hide cells below covered by the span
+                    for (let k = 1; k < rowspan; k++) {
+                        const rowOffset = y+k;
+                        const row = this.table.querySelector(`tr:nth-of-type(${rowOffset})`);
+                        if (row) {
+                            row.setAttribute("filled", "true");
+                            // if offset odd, then it is a row for the XX:30h's
+                            const cellOffset = rowOffset % 2 == 0 ? x+0 : x+1; 
+                            const cellToHide = row.querySelector(`td:nth-child(${cellOffset})`);
+                            if (cellToHide) {
+                                cellToHide.setAttribute("id", thisSubjectId);
+                                cellToHide.setAttribute("type", "slave");
+                                cellToHide.style.display = "none";
+                            }
+                        }
+                    }           
+
+                    cell.style.backgroundColor = this.subjectColors[subject["subject"]["abbrev"]];
+                    const infoWrapper = document.createElement("div");
+                    cell.appendChild(infoWrapper);
+                    const subjectName = document.createElement("div");
+                    infoWrapper.appendChild(subjectName);
+                    subjectName.appendChild(document.createTextNode(`${subject["subject"]["abbrev"]} - ${subject["class"]}`));
+                    const roomName = document.createElement("div");
+                    infoWrapper.appendChild(roomName);
+                    roomName.appendChild(document.createTextNode(subject["room"]));
                 }
             }
         });
