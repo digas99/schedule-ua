@@ -29,19 +29,32 @@ chrome.storage.sync.get([...STORAGE_KEYS, "trimmed", "subject_colors", "selected
             "latest": allHours ? Math.max.apply(Math, allHours)-1 : null
         });
 
+
+        if (!subjectColors)
+            chrome.storage.sync.set({"subject_colors": mySchedule.subjectColors});
+
+        // check if the subjects have changed
+        if (mySchedule.subjectColors && mySchedule.subjects) {
+            const subjectsFromColors = Object.keys(mySchedule.subjectColors).sort((a, b) => a.localeCompare(b));
+            const subjects = mySchedule.subjects.sort((a, b) => a.localeCompare(b));
+            for (let i = 0; i < subjectsFromColors.length; ++i) {
+                if (subjectsFromColors[i] !== subjects[i]) {
+                    mySchedule.setColors();
+                    chrome.storage.sync.set({"subject_colors": mySchedule.subjectColors});
+                    break;
+                }
+            }
+        }
+
+        if (mySchedule.subjects)
+            chrome.storage.sync.set({"subjects": mySchedule.subjects});
+
         mySchedule.create();
         mySchedule.removeSaturday();
 
         highlightNowCell();
 
         document.querySelector("#main").style.removeProperty("display");
-
-        if (!subjectColors)
-            chrome.storage.sync.set({"subject_colors": mySchedule.subjectColors});
-
-        console.log(mySchedule.subject);
-        if (mySchedule.subjects)
-            chrome.storage.sync.set({"subjects": mySchedule.subjects});
 
         if (result["trimmed"])
             updateExpandButton("shrink");

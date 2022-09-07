@@ -1,4 +1,6 @@
 (() => {
+    const ignoredWords = ["o", "a", "os", "as", "de", "da", "do", "das", "dos", "e", "na", "no", "nas", "nos", "em"];
+
     chrome.storage.sync.get("paco_buttons", result => {
         if (result["paco_buttons"] !== false) {
 
@@ -38,7 +40,7 @@
                             subject = {
                                 "subject": {
                                     "name": titleData[0],
-                                    "abbrev": titleData[0].split(" ").reduce((abbrev, string) => abbrev+=string.charAt(0), "")
+                                    "abbrev": titleData[0].split(" ").reduce((abbrev, string) => abbrev+=(!ignoredWords.includes(string.toLowerCase()) ? string.charAt(0) : ""), "")
                                 },
                                 "start": titleData[2].split("INÍCIO: ")[1],
                                 "duration": titleData[3].split("DURAÇÃO: ")[1],

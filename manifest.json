@@ -1,7 +1,7 @@
 {
     "name": "SchedUA",
     "description": "Unoficial extension to easily look up your schedule from Universidade de Aveiro.",
-    "version": "1.0.1",
+    "version": "1.1.0",
     "manifest_version": 3,
     "action": {
         "default_popup": "login.html"

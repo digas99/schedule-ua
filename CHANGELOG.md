@@ -8,6 +8,8 @@
 ## Content
 - Updated schedule parser to be able to fetch schedules from single subjects
 
+---
+
 # [Changelog v1.0.1](https://github.com/digas99/schedule-ua/releases/tag/v1.0.1) 
 
 ## Bug Fixes
