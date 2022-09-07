@@ -41,8 +41,6 @@ Schedule.prototype = {
             this.trim();
 
         this.fixSpanningCollapse();
-
-        this.setupOverlappedSubjects();
     },
     createTable: function() {
         this.table = document.createElement("table");

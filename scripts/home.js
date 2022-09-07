@@ -29,10 +29,6 @@ chrome.storage.sync.get([...STORAGE_KEYS, "trimmed", "subject_colors", "selected
             "latest": allHours ? Math.max.apply(Math, allHours)-1 : null
         });
 
-
-        if (!subjectColors)
-            chrome.storage.sync.set({"subject_colors": mySchedule.subjectColors});
-
         // check if the subjects have changed
         if (mySchedule.subjectColors && mySchedule.subjects) {
             const subjectsFromColors = Object.keys(mySchedule.subjectColors).sort((a, b) => a.localeCompare(b));
@@ -51,6 +47,10 @@ chrome.storage.sync.get([...STORAGE_KEYS, "trimmed", "subject_colors", "selected
 
         mySchedule.create();
         mySchedule.removeSaturday();
+        mySchedule.setupOverlappedSubjects();
+
+        if (!subjectColors)
+            chrome.storage.sync.set({"subject_colors": mySchedule.subjectColors});
 
         highlightNowCell();
 
@@ -141,6 +141,7 @@ window.addEventListener("click", e => {
 
                     mySchedule.create();
                     mySchedule.removeSaturday();
+                    mySchedule.setupOverlappedSubjects();
 
                     highlightNowCell();
 
@@ -221,6 +222,7 @@ window.addEventListener("click", e => {
             });
         
             mySchedule.create();
+            mySchedule.setupOverlappedSubjects();
             
             highlightNowCell();
         }
