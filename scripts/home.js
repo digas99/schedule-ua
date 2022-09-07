@@ -39,6 +39,7 @@ chrome.storage.sync.get([...STORAGE_KEYS, "trimmed", "subject_colors", "selected
         if (!subjectColors)
             chrome.storage.sync.set({"subject_colors": mySchedule.subjectColors});
 
+        console.log(mySchedule.subject);
         if (mySchedule.subjects)
             chrome.storage.sync.set({"subjects": mySchedule.subjects});
 

@@ -7,7 +7,7 @@
         "default_popup": "login.html"
     },
     "content_scripts": [{
-        "matches": ["https://paco.ua.pt/secvirtual/horarios/c_horario_aluno.asp"],
+        "matches": ["https://paco.ua.pt/secvirtual/horarios/*"],
         "js": ["scripts/content.js", "lib/FileSaver.js"],
         "css": ["styles/content.css"]
     }],

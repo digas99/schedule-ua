@@ -10,6 +10,7 @@
     border-left: 1px solid silver;
     overflow: auto;
     z-index: 2;
+    background-color: white;
 }
 
 #navbar > img {

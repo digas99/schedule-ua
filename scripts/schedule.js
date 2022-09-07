@@ -20,7 +20,7 @@ const Schedule = function(container, config) {
 
     this.matrix = scheduleMatrix(this.hours, this.days.length);
 
-    if (!this.empty && this.schedule)
+    if (this.empty !== true && this.schedule)
         this.subjects = [...new Set(Object.entries(this.schedule).map(([key, value]) => value.map(obj => obj["subject"]["abbrev"])).flat(1))];
 }
 

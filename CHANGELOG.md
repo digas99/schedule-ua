@@ -5,6 +5,9 @@
 - Possibility to expand a day with overlapping classes
 - Clicking the File Drop container in the login page now opens the file explorer to select a configuration file
 
+## Content
+- Updated schedule parser to be able to fetch schedules from single subjects
+
 # [Changelog v1.0.1](https://github.com/digas99/schedule-ua/releases/tag/v1.0.1) 
 
 ## Bug Fixes
