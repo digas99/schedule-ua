@@ -1,8 +1,32 @@
 chrome.action.setBadgeText({text: ''});
 
+const loading = text => {
+    const wrapper = document.createElement("div");
+    wrapper.classList.add("loading");
+
+    // add gray back
+    wrapper.appendChild(document.createElement("div"));
+
+    // add popup
+    const textWrapper = document.createElement("div");
+    wrapper.appendChild(textWrapper);
+    const textNode = document.createElement("div");
+    textWrapper.appendChild(textNode);
+    textNode.appendChild(document.createTextNode(text));
+    
+    return wrapper;
+}
+
+const loadingData = loading("Loading data...");
+document.body.appendChild(loadingData);
+
 chrome.storage.sync.get([...STORAGE_KEYS, "email"], result => {
     // if schedule does not exist
     if (!STORAGE_KEYS.some(key => Object.keys(result).includes(key))) {
+        loadingData.remove();
+        document.body.style.removeProperty("height");
+        document.querySelector("#main")?.style.removeProperty("display");
+
         const loginWrapper = document.getElementById("login-wrapper");
         const send = document.getElementById("send");
         if (loginWrapper && send) {
@@ -99,23 +123,6 @@ chrome.storage.sync.get([...STORAGE_KEYS, "email"], result => {
         });
 
         const inputsFilled = (inputs) => Array.from(inputs).every(elem => elem.value);
-
-        const loading = text => {
-            const wrapper = document.createElement("div");
-            wrapper.classList.add("loading");
-
-            // add gray back
-            wrapper.appendChild(document.createElement("div"));
-
-            // add popup
-            const textWrapper = document.createElement("div");
-            wrapper.appendChild(textWrapper);
-            const textNode = document.createElement("div");
-            textWrapper.appendChild(textNode);
-            textNode.appendChild(document.createTextNode(text));
-            
-            return wrapper;
-        }
     }
     else
         window.location.href = "/home.html";
@@ -137,7 +144,11 @@ window.addEventListener("click", e => {
     }
 });
 
+// DROP ZONE
+
 const dropZone = document.getElementById("drop-zone");
+const dropZoneContent = dropZone.querySelector("div");
+const dropZoneFileInput = document.querySelector("#drop-zone input");
 
 const errorMessage = msg => {
     document.querySelector("#file-drop-error")?.remove();
@@ -155,15 +166,10 @@ const errorMessage = msg => {
 }
 
 // https://gist.github.com/andjosh/7867934
-const handleJSONDrop = e => {
-    e.stopPropagation();
-    e.preventDefault();
-    
-    const file = e.dataTransfer.files[0];
-
-    const reader = new FileReader();
-
+const handleJSONFile = file => {
     if (file && file.type.match('application/json')) {
+        const reader = new FileReader();
+
         // Closure to capture the file information.
         reader.onload = (() => {
             return function (e) {
@@ -182,15 +188,49 @@ const handleJSONDrop = e => {
         dropZone.parentElement.appendChild(errorMessage("Couldn't read the file!"));
 }
 
+const handleJSONDrop = e => {
+    e.stopPropagation();
+    e.preventDefault();
+    
+    const file = e.dataTransfer.files[0];
+    handleJSONFile(file);
+}
+
 const handleDragOver = e => {
-    dropZone.style.setProperty("background", "#3e94ef", "important");
+    handleHover();
 
     e.stopPropagation();
     e.preventDefault();
     e.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
 }
 
+const handleHover = () => {
+    dropZone.style.background = "#3e94ef";
+
+    dropZoneContent.innerText = "+";
+    dropZoneContent.style.fontSize = "40px";
+}
+
+const handleOut = () => {
+    dropZone.style.removeProperty("background");
+
+    dropZoneContent.style.removeProperty("font-size");
+    dropZoneContent.innerText = "";
+    const img = document.createElement("img");
+    dropZoneContent.appendChild(img);
+    img.src = "../images/icons/file.png";
+    dropZoneContent.appendChild(document.createTextNode("Drop File Here"));
+}
+
 // Setup the dnd listeners.
 dropZone.addEventListener('dragover', handleDragOver, false);
-dropZone.addEventListener('dragleave', () => dropZone.style.removeProperty("background"), false);
+dropZone.addEventListener('dragleave', handleOut, false);
 dropZone.addEventListener('drop', handleJSONDrop, false);
+dropZone.addEventListener('mouseover', handleHover);
+dropZone.addEventListener('mouseout', handleOut);
+dropZone.addEventListener('click', () => {
+    if (dropZoneFileInput)
+        dropZoneFileInput.click();
+});
+
+dropZoneFileInput.addEventListener('input', () => handleJSONFile(dropZoneFileInput.files[0]), false);

@@ -2,7 +2,8 @@
 
 ## Popup
 - Added compatibility with overlapping classes
-- Possibility to expand day with overlapping classes
+- Possibility to expand a day with overlapping classes
+- Clicking the File Drop container in the login page now opens the file explorer to select a configuration file
 
 # [Changelog v1.0.1](https://github.com/digas99/schedule-ua/releases/tag/v1.0.1) 
 

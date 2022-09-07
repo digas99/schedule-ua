@@ -72,6 +72,8 @@ The schedule can be loaded in many different ways, using the the first page of t
 
 - **Drag and drop configuration file:** If you have a configuration JSON file of the schedule, you can simply drag and drop it in the "login" page at the beginning [[3]](#3---different-ways-to-load-the-schedule). A configuration file can be obtained either within the extension, on an already setup schedule, through the Download ⭳ button in the side bar [[1]](#1---some-pages-within-the-extension-popup), or through the same button within the schedule interface in [https://paco.ua.pt/secvirtual](https://paco.ua.pt/secvirtual/horarios/c_horario_aluno.asp) [[2]](#2---possibility-to-either-download-the-schedule-configuration-or-upload-it-directily-to-the-extension).
 
+- **Use file explorer:** Instead of droping the file into the right container, if you click that container, your operating system's file explorer will open and you can load the configuration JSON file from there.
+
 - **Through the Browser Console:** A less convenient way would be to use the Browser Console and, using JavaScript, update the storage manually. To achieve this, do the following:
     - Right click anywhere **within** the Extension and select **Inspect**
     - When the **DevTools** window opens, click **Console** in the top navbar

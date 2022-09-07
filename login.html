@@ -7,10 +7,10 @@
 	<link rel="stylesheet" href="styles/styles.css">
 	<link rel="stylesheet" href="styles/login.css">
 </head>
-<body style="font-family: sans-serif">
+<body style="font-family: sans-serif; height: 400px;">
 	<div id="logo"><img src="images/logo-text.png"></div>
 	<div class="separator"></div>
-	<div id="main">
+	<div style="display: none;" id="main">
 		<h2>Load Schedule</h2>
 		<div>
 			<div>Fill in with your institutional email credentials.</div>
@@ -25,8 +25,9 @@
 		<div style="margin: 30px 0;" class="separator"></div>
 		<div>
 			<div style="text-align: center;">Don't want to use the institutional email credentials? Upload from <a href="/load_paco.html">PACO UA directly</a> or drop here a Schedule Configuration file instead.</div>
-			<div id="drop-zone">
+			<div title="Select a File" id="drop-zone">
 				<div><img src="images/icons/file.png">Drop File Here</div>
+				<input type="file" accept=".json">
 			</div>
 		</div>
 	</div>

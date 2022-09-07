@@ -126,6 +126,11 @@ body {
     background: linear-gradient(90deg, rgba(75,204,144,1) 0%, rgba(62,148,239,1) 100%);
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#4bcc90",endColorstr="#3e94ef",GradientType=1);
     box-shadow: inset 0px 0px 5px grey;
+    cursor: pointer;
+}
+
+#drop-zone:hover {
+    background: #3e94ef;
 }
 
 #drop-zone > div {
@@ -149,6 +154,10 @@ body {
 #drop-zone img {
     filter: invert(1);
     width: 21px;
+}
+
+#drop-zone input {
+    display: none;
 }
 
 a {
