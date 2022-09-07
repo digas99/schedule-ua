@@ -121,6 +121,8 @@ The lateral navbar has three buttons with actions on the schedule:
 - **Download Schedule Configuration:** download JSON file with the configuration of the schedule
 - **Print Schedule:** take a picture of the schedule and download it
 
+Days with overlapping classes have arrows on them. When **right** clicking on them, their column expands showing the overlapping classes.
+
 ### Settings
 
 There is a page that provides ways of customizing your experience with the app. The settings are the following:

@@ -41,6 +41,8 @@ Schedule.prototype = {
             this.trim();
 
         this.fixSpanningCollapse();
+
+        this.setupOverlappedSubjects();
     },
     createTable: function() {
         this.table = document.createElement("table");
@@ -373,6 +375,38 @@ Schedule.prototype = {
                 }
             }
         }
+    },
+    setupOverlappedSubjects: function() {
+        Object.entries(this.overlappedSubjects).forEach(([day, subjects]) => {
+            // +2 because of hour cell and nth-of-type begins in 1
+            const dayIndex = this.daysIndex[day]+2;
+            const header = this.table.querySelector(`th:nth-of-type(${dayIndex})`);
+            if (header) {
+                header.style.position = "relative";
+                header.setAttribute("overlap", "shrinked");
+                
+                // add arrows
+                dayArrows(header, ["<", ">"]);
+
+                // right click
+                header.addEventListener('contextmenu', e => {
+                    // prevent context menu
+                    e.preventDefault();
+
+                    if (header.getAttribute("overlap") === "shrinked") {
+                        this.addColumns(day, 1);
+                        this.fillColumn(day, 1, subjects);
+                        header.setAttribute("overlap", "expanded");
+                        dayArrows(header, [">", "<"]);
+                    }
+                    else {
+                        this.removeColumns(day, 1);
+                        header.setAttribute("overlap", "shrinked");
+                        dayArrows(header, ["<", ">"]);
+                    }
+                });
+            }
+        });
     }
 }
 
@@ -397,6 +431,19 @@ const shuffleColors = (subjects, colors) => {
 
     console.log(subjectColors);
     return subjectColors;
+}
+
+const dayArrows = (header, arrows) => {
+    const oldArrows = header.querySelectorAll(".day-arrow");
+    if (oldArrows) Array.from(oldArrows).forEach(arrow => arrow.remove());
+
+    arrows.forEach((arrow, i) => {
+        const arrowWrapper = document.createElement("div");
+        header.appendChild(arrowWrapper);
+        arrowWrapper.classList.add("day-arrow");
+        arrowWrapper.appendChild(document.createTextNode(arrow));
+        arrowWrapper.style.setProperty(i === 0 ? "left" : "right", "5px");
+    });
 }
 
 const DAYS_INDEX = {

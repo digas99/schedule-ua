@@ -177,7 +177,7 @@ window.addEventListener("click", e => {
     if (target.closest("table th")) {
         // only enable action if there are several days
         if (target.closest("table tr").children.length > 3) {
-            const weekday = target.closest("table th").innerText;
+            const weekday = target.closest("table th").innerText.replaceAll(/[<>]/g, "").replaceAll("\n", "");
             const scheduleWrapper = document.querySelector("#main > div");
             if (weekday && Object.keys(DAYS_INDEX).includes(weekday) && scheduleWrapper) {
                 document.querySelector(".selector-active")?.classList.replace("selector-active", "clickable");

@@ -2,7 +2,7 @@
 
 ## Popup
 - Added compatibility with overlapping classes
-- Possibility to expand a day with overlapping classes
+- Possibility to expand a day with overlapping classes (Right Click on the day)
 - Clicking the File Drop container in the login page now opens the file explorer to select a configuration file
 
 ## Content

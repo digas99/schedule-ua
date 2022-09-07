@@ -65,3 +65,11 @@ table > tbody > tr > td > div > div:nth-child(1) {
 .cell-now * {
     color: black !important;
 }
+
+.day-arrow, .day-arrow {
+    position: absolute;
+    bottom: 0px;
+    top: 0px;
+    height: fit-content;
+    margin: auto;
+}
