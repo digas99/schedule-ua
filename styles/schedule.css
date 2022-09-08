@@ -54,18 +54,6 @@ table > tbody > tr > td > div > div:nth-child(1) {
     color: white;
 }
 
-.cell-now {
-    background-color: #fff4bc !important;
-    white-space: nowrap;
-    padding: 4px;
-    font-size: 10px;
-    z-index: 2;
-}
-
-.cell-now * {
-    color: black !important;
-}
-
 .day-arrow, .day-arrow {
     position: absolute;
     bottom: 0px;

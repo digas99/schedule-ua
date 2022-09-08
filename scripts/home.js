@@ -451,6 +451,7 @@ const infoPanel = schedule => {
                     const rowIcon = document.createElement("img");
                     rowWrapper.appendChild(rowIcon);
                     rowIcon.src = `images/icons/${type}.png`;
+                    rowIcon.classList.add("icon");
                     const rowContent = document.createElement("div");
                     rowWrapper.appendChild(rowContent);
                     rowContent.appendChild(document.createTextNode(subject[type]));

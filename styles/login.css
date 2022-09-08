@@ -5,6 +5,7 @@ body {
 
 #main {
     padding: 20px;
+    position: relative;
 }
 
 #main > div {
@@ -35,13 +36,15 @@ body {
     padding: 10px 5px;
     width: 95%;
     padding-right: 40px;
+    background-color: var(--background-color);
 }
 
 #login-wrapper > div > input:focus {
     outline: none !important;
     border: none;
     border-bottom: 1px solid rgb(50, 180, 50);
-    background-color: rgb(234, 255, 234);
+    background-color: var(--background-hover);
+    color: var(--font-color);
 }
 
 #login-wrapper > div > img {
@@ -68,40 +71,6 @@ body {
 
 .button:hover {
     background-color: rgb(172, 255, 172); 
-}
-
-.loading > div:nth-child(1) {
-    width: 100%;
-    height: 100%;
-    position: fixed;
-    background-color: black;
-    opacity: 0.5;
-    left: 0;
-    top: 0;
-}
-
-.loading > div:nth-child(2) {
-    position: fixed;
-    background-color: white;
-    width: 70%;
-    height: 90px;
-    left: 0;
-    top: 0;
-    margin: auto;
-    right: 0;
-    bottom: 0;
-    box-shadow: 0px 6px 6px -2px #686868;
-}
-
-.loading > div:nth-child(2) > div {
-    position: absolute;
-    left: 0;
-    top: 0;
-    margin: auto;
-    right: 0;
-    bottom: 0;
-    width: fit-content;
-    height: fit-content;
 }
 
 #remember-email {
@@ -173,4 +142,15 @@ a {
     padding: 10px;
     opacity: 0.6;
     top: 8px;
+}
+
+#darkmode {
+    position: absolute;
+    top: 0;
+    right: 20px;
+}
+
+#darkmode img {
+    width: 20px;
+    opacity: 0.7;
 }

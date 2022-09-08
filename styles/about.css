@@ -55,7 +55,7 @@ ul {
 }
 
 .third-party-app:hover {
-    background-color: #e1e1e1;
+    background-color: var(--background-hover);
 }
 
 .third-party-app > img {

@@ -11,12 +11,15 @@
 	<div id="logo"><img src="images/logo-text.png"></div>
 	<div class="separator"></div>
 	<div style="display: none;" id="main">
+		<div id="darkmode" title="Dark Mode" class="clickable">
+			<img class="icon" src="images/icons/moon.png">
+		</div>
 		<h2>Load Schedule</h2>
 		<div>
 			<div>Fill in with your institutional email credentials.</div>
 			<div id="login-wrapper">
 				<div><input placeholder="Email"></div>
-				<div><input type="password" placeholder="Password"><img class="clickable" id="show-pwd" src="images/icons/view.png"></div>
+				<div><input type="password" placeholder="Password"><img class="clickable icon" id="show-pwd" src="images/icons/view.png"></div>
 			</div>
 			<div id="remember-email"><input type="checkbox"><div>Remember email? (saved in the local storage)</div></div>
 			<div id="small-info">Your password is NOT saved. It is used once to fetch the data and discarded.</div>
@@ -32,7 +35,7 @@
 		</div>
 	</div>
 
-	<script src="scripts/static.js"></script>
+	<script src="scripts/scripts.js"></script>
 	<script src="scripts/login.js"></script>
 </body>
 </html>

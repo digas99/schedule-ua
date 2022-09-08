@@ -1,3 +1,10 @@
+# [Changelog v1.2.0](https://github.com/digas99/schedule-ua/releases/tag/v1.2.0) 
+
+## Popup
+- Added Dark Mode
+
+---
+
 # [Changelog v1.1.0](https://github.com/digas99/schedule-ua/releases/tag/v1.1.0) 
 
 ## Popup

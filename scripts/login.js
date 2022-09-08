@@ -142,6 +142,12 @@ window.addEventListener("click", e => {
             target.src = "images/icons/view.png";
         }
     }
+
+    if (target.closest("#darkmode")) {
+        const darkModeWrapper = target.closest("#darkmode");
+        let darkmode = darkModeWrapper.title === "Dark Mode" ? true : false;
+        chrome.storage.sync.set({"darkmode": darkmode}, swapDarkMode);
+    }
 });
 
 // DROP ZONE
