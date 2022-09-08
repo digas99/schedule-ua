@@ -1,10 +1,10 @@
 const STORAGE_KEYS = ["schedule", "school_year", "semester"];
 
-const swapDarkMode = () => {
-    document.documentElement.style.setProperty('--background-color', "#323232");
-    document.documentElement.style.setProperty('--background-hover', "#666666");
-    document.documentElement.style.setProperty('--font-color', "#e3e3e3");
-    document.documentElement.style.setProperty('--table-borders', "#838383");
+const colorSchemaSetup = (config) => {
+    document.documentElement.style.setProperty('--background-color', config["backgroundColor"]);
+    document.documentElement.style.setProperty('--background-hover', config["backgroundHover"]);
+    document.documentElement.style.setProperty('--font-color', config["fontColor"]);
+    document.documentElement.style.setProperty('--table-borders', config["tableBorders"]);
 
     const addStyle = (styleString) => {
         const style = document.createElement('style');
@@ -12,30 +12,57 @@ const swapDarkMode = () => {
         document.head.append(style);
     }
     
-    addStyle(`
-        body .icon {
-            filter: invert(1);
-            opacity: 0.8 !important;
-        }
-    `);
+    if (config["style"])
+        addStyle(config["style"]);
+}
 
+const swapDarkMode = () => {
     // change icon
     const darkModeIcon = document.querySelector("#darkmode");
     const colorSchema = document.querySelector("#color-schema");
     if (darkModeIcon) {
+        let options;
+
         if (darkModeIcon.title === "Dark Mode") {
             darkModeIcon.title = "Light Mode";
             darkModeIcon.querySelector("img").src = "images/icons/sun.png";
         
             if (colorSchema) colorSchema.value = "Dark Mode";
+
+            options = {
+                backgroundColor: "#323232",
+                backgroundHover: "#666666",
+                fontColor: "#e3e3e3",
+                tableBorders: "#838383",
+                style: `
+                    body .icon {
+                        filter: invert(1) !important;
+                        opacity: 0.8 !important;
+                    }
+                `
+            };
         }
         else {
             darkModeIcon.title = "Dark Mode";
             darkModeIcon.querySelector("img").src = "images/icons/moon.png";
-            window.location.reload();
 
             if (colorSchema) colorSchema.value = "Light Mode";
+
+            options = {
+                backgroundColor: "white",
+                backgroundHover: "#e1e1e1",
+                fontColor: "#585858",
+                tableBorders: "#dddddd",
+                style: `
+                    body .icon {
+                        filter: unset !important;
+                        opacity: 0.5 !important;
+                    }
+                `
+            };
         }
+
+        colorSchemaSetup(options);
     }
 }
 
