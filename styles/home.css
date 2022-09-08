@@ -195,5 +195,8 @@ table > tbody > tr > th:not(:first-child, :last-child) {
     padding: 4px;
     font-size: 10px;
     z-index: 2;
+}
+
+.cell-now, .cell-now * {
     color: black !important;
 }

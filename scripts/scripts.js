@@ -4,7 +4,8 @@ const swapDarkMode = () => {
     document.documentElement.style.setProperty('--background-color', "#323232");
     document.documentElement.style.setProperty('--background-hover', "#666666");
     document.documentElement.style.setProperty('--font-color', "#e3e3e3");
-    
+    document.documentElement.style.setProperty('--table-borders', "#838383");
+
     const addStyle = (styleString) => {
         const style = document.createElement('style');
         style.textContent = styleString;

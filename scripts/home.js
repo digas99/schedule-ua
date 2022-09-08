@@ -53,7 +53,7 @@ chrome.storage.sync.get([...STORAGE_KEYS, "trimmed", "subject_colors", "selected
             chrome.storage.sync.set({"subject_colors": mySchedule.subjectColors});
 
 
-        //highlightTester(1, [8, 17], 0, 500);
+        //highlightTester(1, [8, 17], 0, 250);
         highlightNowCell();
 
         document.querySelector("#main").style.removeProperty("display");

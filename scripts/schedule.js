@@ -149,8 +149,10 @@ Schedule.prototype = {
             }           
     
             cell.style.backgroundColor = this.subjectColors[subject["subject"]["abbrev"]];
+            const container = document.createElement("div");
+            cell.appendChild(container);
             const infoWrapper = document.createElement("div");
-            cell.appendChild(infoWrapper);
+            container.appendChild(infoWrapper);
             const subjectName = document.createElement("div");
             infoWrapper.appendChild(subjectName);
             subjectName.appendChild(document.createTextNode(`${subject["subject"]["abbrev"]} - ${subject["class"]}`));
