@@ -19,8 +19,6 @@ const Schedule = function(container, config) {
 
     if (Object.values(this.schedule)[0] == undefined || Object.values(this.schedule).flat(1).length == 0) this.empty = true;
 
-    this.matrix = scheduleMatrix(this.hours, this.days.length);
-
     if (this.empty !== true && this.schedule)
         this.subjects = [...new Set(Object.entries(this.schedule).map(([key, value]) => value.map(obj => obj["subject"]["abbrev"])).flat(1))];
 }
@@ -32,10 +30,7 @@ Schedule.prototype = {
         if (!this.subjectColors)
             this.setColors();
 
-        this.populateMatrix();
-        this.fill();
-
-        //this.fixSpanning();
+        this.fill(this.days);
 
         if (this.trimmed)
             this.trim();
@@ -90,152 +85,98 @@ Schedule.prototype = {
 
         this.container.appendChild(this.table);
     },
-    populateMatrix: function() {
-        Object.entries(this.schedule).sort(([a_day, a_subject], [b_day, b_subject]) => this.daysIndex[a_day] - this.daysIndex[b_day])
-            .forEach(([day, subjects]) => {
-                // check if classes overlap
-                for (let i = 0; i < subjects.length; i++) {
-                    for (let j = i+1; j < subjects.length; j++) {
-                        if (!subjects[i]["overlap"] && classesOverlap(subjects[i], subjects[j])) {
-                            subjects[j]["overlap"] = true;
-
-                            if (!this.overlappedSubjects[day])
-                                this.overlappedSubjects[day] = [];
-                            this.overlappedSubjects[day].push(subjects[j]);
-                        }
-                    }
-                }
-
-                subjects?.forEach(subject => {
-                    if (!subject["overlap"]) {
-                        const start = parseFloat(subject["start"].replace("h", ""));
-                        this.matrix[start][this.daysIndex[day]] = subject;
-                    }
-                });
-            });
-    },
     setColors: function() {
         this.subjectColors = shuffleColors(this.subjects, SUBJECT_COLORS);
     },
-    fill: function() {
-        // iterate through filled matrix
-        Object.entries(Object.entries(this.matrix)).forEach(([i, [hour, subjects]]) => {
-            let rowIndex = (Number(i)+1)*2;
-            let tableRow = this.table.querySelector(`tr:nth-of-type(${rowIndex})`);
-            let halfHourStart = false;
-            if (tableRow) {
-                // fill the row with the subjects
-                // iterate cells
-                for (let j = 0; j < subjects.length; j++) {
-                    const subject = subjects[j];
-                    if (subject) {
-                        // check for XXh30 cases
-                        if (parseInt(subject["start"].split(",")[1]) >= 5) {
-                            tableRow = this.table.querySelector(`tr:nth-of-type(${++rowIndex})`);
-                            halfHourStart = true;
-                        }
-
-                        tableRow.setAttribute("filled", "true");
-                        if (tableRow.nextElementSibling) tableRow.nextElementSibling.setAttribute("filled", "true");
-
-                        const thisSubjectId = this.subjectId++;
-                        const cell = tableRow.querySelector(`td:nth-child(${j+(!halfHourStart ? 2 : 1)})`);
-                        cell.classList.add("class");
-                        cell.setAttribute("id", thisSubjectId);
-                        cell.setAttribute("subject", subject["subject"]["abbrev"]);
-                        cell.setAttribute("class-group", subject["class"]);
-                        cell.setAttribute("day", getDayFromIndex(j, this.daysIndex));
-
-                        // number of rows the subject will fill
-                        const rowspan = parseFloat(subject["duration"].replace("h", "").replace(",", "."))*2;
-                        cell.setAttribute("rowspan", rowspan);
-                        // hide cells below covered by the span
-                        for (let k = 1; k < rowspan; k++) {
-                            const rowOffset = rowIndex+k;
-                            const row = this.table.querySelector(`tr:nth-of-type(${rowOffset})`);
-                            if (row) {
-                                row.setAttribute("filled", "true");
-                                // if offset odd, then it is a row for the XX:30h's
-                                const cellOffset = rowOffset % 2 == 0 ? j+2 : j+1; 
-                                const cellToHide = row.querySelector(`td:nth-child(${cellOffset})`);
-                                if (cellToHide) {
-                                    cellToHide.setAttribute("id", thisSubjectId);
-                                    cellToHide.setAttribute("type", "slave");
-                                    cellToHide.style.display = "none";
-                                }
-                            }
-                        }           
-
-                        cell.style.backgroundColor = this.subjectColors[subject["subject"]["abbrev"]];
-                        const infoWrapper = document.createElement("div");
-                        cell.appendChild(infoWrapper);
-                        const subjectName = document.createElement("div");
-                        infoWrapper.appendChild(subjectName);
-                        subjectName.appendChild(document.createTextNode(`${subject["subject"]["abbrev"]} - ${subject["class"]}`));
-                        const roomName = document.createElement("div");
-                        infoWrapper.appendChild(roomName);
-                        roomName.appendChild(document.createTextNode(subject["room"]));
-                    }
-
-                }
-            }
+    fill: function(days) {
+        days.forEach(day => {
+            const subjects = this.schedule[day];
+            if (subjects)
+                this.fillColumn(day, 0, subjects);
         });
     },
     fillColumn: function(day, offset, subjects) {
         // dayIndex+1 because it starts on sunday; offset+1 because of the hours column
-        const x = (this.daysIndex[day]+1)+(offset+1);
+        const x = (this.daysIndex[day]+1)+(offset+1); // position of given day
         subjects.forEach(subject => {
-            let y = (parseInt(subject["start"])-this.hours[0]+1)*2;
+            let y = (parseInt(subject["start"])-this.hours[0]+1)*2; // position of given hours
             let row = this.table.querySelector(`tr:nth-of-type(${y})`);
-            let halfHourStart = false;
             if (row) {
-                // check for XXh30 cases
-                if (parseInt(subject["start"].split(",")[1]) >= 5) {
-                    row = this.table.querySelector(`tr:nth-of-type(${++y})`);
-                    halfHourStart = true;
-                }
+                // set as filled the current and next rows (the full hour)
+                row.setAttribute("filled", "true");
+                if (row.nextElementSibling) row.nextElementSibling.setAttribute("filled", "true");
 
-                const thisSubjectId = this.subjectId++;
-                cell = row.querySelector(`td:nth-of-type(${x})`);
-                if (cell) {
-                    cell.classList.add("class");
-                    cell.setAttribute("id", thisSubjectId);
-                    cell.setAttribute("subject", subject["subject"]["abbrev"]);
-                    cell.setAttribute("class-group", subject["class"]);
-                    cell.setAttribute("day", day);
-
-                    // number of rows the subject will fill
-                    const rowspan = parseFloat(subject["duration"].replace("h", "").replace(",", "."))*2;
-                    cell.setAttribute("rowspan", rowspan);
-                    // hide cells below covered by the span
-                    for (let k = 1; k < rowspan; k++) {
-                        const rowOffset = y+k;
-                        const row = this.table.querySelector(`tr:nth-of-type(${rowOffset})`);
-                        if (row) {
-                            row.setAttribute("filled", "true");
-                            // if offset odd, then it is a row for the XX:30h's
-                            const cellOffset = rowOffset % 2 == 0 ? x+0 : x+1; 
-                            const cellToHide = row.querySelector(`td:nth-child(${cellOffset})`);
-                            if (cellToHide) {
-                                cellToHide.setAttribute("id", thisSubjectId);
-                                cellToHide.setAttribute("type", "slave");
-                                cellToHide.style.display = "none";
-                            }
-                        }
-                    }           
-
-                    cell.style.backgroundColor = this.subjectColors[subject["subject"]["abbrev"]];
-                    const infoWrapper = document.createElement("div");
-                    cell.appendChild(infoWrapper);
-                    const subjectName = document.createElement("div");
-                    infoWrapper.appendChild(subjectName);
-                    subjectName.appendChild(document.createTextNode(`${subject["subject"]["abbrev"]} - ${subject["class"]}`));
-                    const roomName = document.createElement("div");
-                    infoWrapper.appendChild(roomName);
-                    roomName.appendChild(document.createTextNode(subject["room"]));
-                }
+                subject["id"] = this.subjectId++;
+                const cell = row.querySelector(`td:nth-of-type(${x})`);
+                this.classCell(cell, [x, y], day, subject);
             }
         });
+    },
+    classCell: function(cell, coords, day, subject) {
+        const [x, y] = coords;
+        if (cell) {
+            cell.classList.add("class");
+            cell.setAttribute("id", subject["id"]);
+            cell.setAttribute("subject", subject["subject"]["abbrev"]);
+            cell.setAttribute("class-group", subject["class"]);
+            cell.setAttribute("day", day);
+            cell.setAttribute("type", "master");
+    
+            // number of rows the subject will fill
+            const rowspan = parseFloat(subject["duration"].replace("h", "").replace(",", "."))*2;
+            cell.setAttribute("rowspan", rowspan);
+            // hide cells below covered by the span
+            for (let k = 1; k < rowspan; k++) {
+                const rowOffset = y+k;
+                const row = this.table.querySelector(`tr:nth-of-type(${rowOffset})`);
+                if (row) {
+                    row.setAttribute("filled", "true");
+                    const cellToHide = row.querySelector(`td:nth-child(${x})`);
+                    if (cellToHide) {
+                        cellToHide.setAttribute("id", subject["id"]);
+                        cellToHide.setAttribute("type", "slave");
+                        cellToHide.style.display = "none";
+                    }
+                }
+            }           
+    
+            cell.style.backgroundColor = this.subjectColors[subject["subject"]["abbrev"]];
+            const infoWrapper = document.createElement("div");
+            cell.appendChild(infoWrapper);
+            const subjectName = document.createElement("div");
+            infoWrapper.appendChild(subjectName);
+            subjectName.appendChild(document.createTextNode(`${subject["subject"]["abbrev"]} - ${subject["class"]}`));
+            const roomName = document.createElement("div");
+            infoWrapper.appendChild(roomName);
+            roomName.appendChild(document.createTextNode(subject["room"]));
+        }
+    },
+    highlight: function(day, hours, minutes, text) {
+        let cell;
+        let y = (hours-this.hours[0]+1)*2;
+        const dayIndex = this.days.indexOf(getDayFromIndex(day, DAYS_INDEX));
+        if (dayIndex >= 0) {
+            let x = dayIndex+2;
+            if (minutes >= 30) y++;
+            const row = this.table.querySelector(`tr:nth-of-type(${y})`);
+            if (row) {
+                cell = row.querySelector(`td:nth-of-type(${x})`);
+                // if cell is not part of a class
+                if (!cell.getAttribute("type")) {
+                    cell = row.querySelector(`td:nth-of-type(${x-1})`);
+                }
+
+                this.highlightCell(cell, text);
+            }
+        }
+
+        return cell;
+    },
+    highlightCell: function(cell, text) {
+        cell.classList.add("cell-now");
+
+        if (!cell.innerText && text)
+            cell.innerText = text;
     },
     fixSpanningCollapse: function() {
         // add fixed height to cells with spanning that collapse
@@ -293,32 +234,6 @@ Schedule.prototype = {
         Array.from(this.table.querySelectorAll("tr[style='display: none;']")).forEach(cell => cell.style.removeProperty("display"));
         this.trimmed = false;
     },
-    highlight: function(day, hours, minutes, text) {
-        let cell;
-        let y = (hours-this.hours[0]+1)*2;
-        const dayIndex = this.days.indexOf(getDayFromIndex(day, DAYS_INDEX));
-        if (dayIndex >= 0) {
-            let x = dayIndex+2;
-            if (minutes >= 30) {
-                y++;
-                x--;
-            }
-    
-            const row = this.table.querySelector(`tr:nth-of-type(${y})`);
-            if (row) {
-                cell = row.querySelector(`td:nth-of-type(${x})`);
-                this.highlightCell(cell, text);
-            }
-        }
-
-        return cell;
-    },
-    highlightCell: function(cell, text) {
-        cell.classList.add("cell-now");
-                
-        if (!cell.innerText && text)
-            cell.innerText = text;
-    },
     addColumns: function(day, cols) {
         const index = this.daysIndex[day];
         if (index !== undefined) {
@@ -374,6 +289,13 @@ Schedule.prototype = {
             }
         }
     },
+    getOverlappedSubjects: function(days) {
+        days.forEach(day => {
+            const subjects = this.schedule[day];
+            if (subjects)
+                this.fillColumn(day, 0, subjects);
+        });
+    },
     setupOverlappedSubjects: function() {
         Object.entries(this.overlappedSubjects).forEach(([day, subjects]) => {
             // +2 because of hour cell and nth-of-type begins in 1
@@ -406,14 +328,6 @@ Schedule.prototype = {
             }
         });
     }
-}
-
-const scheduleMatrix = (hours, nDays) => {
-    const matrix = {};
-    hours.forEach(hour => { 
-        matrix[hour] = new Array(nDays);
-    });
-    return matrix;
 }
 
 const shuffleColors = (subjects, colors) => {
