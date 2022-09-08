@@ -39,7 +39,7 @@ ul {
     font-size: 15px;
 }
 
-#resources > div:nth-of-type(1) {
+#resources > div:nth-of-type(1), #changelog > div:nth-of-type(1) {
     color: silver;
     font-size: 14px;
 }
@@ -75,4 +75,46 @@ ul {
     background-color: #6fa53b;
     padding: 5px 3px 5px 8px;
     width: 38px;
+}
+
+.readme-navbar {
+    display: flex;
+    font-size: 12px;
+    overflow: auto;
+    margin-bottom: 4px;
+    column-gap: 2px;
+    padding-bottom: 2px;
+}
+
+.readme-navbar > div {
+	padding: 5px;
+    border: 2px solid var(--font-color);
+    color: var(--font-color);
+	font-weight: bold;
+}
+
+.readme-navbar-selected, .readme-navbar > div:hover {
+    background-color: var(--font-color);
+	color: var(--background-color) !important;
+}
+
+.readme {
+    max-height: 300px;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+}
+
+.readme h2 {
+    margin-bottom: 20px;
+    background-color: var(--font-color);
+    padding: 8px;
+    color: var(--background-color);
+}
+
+.readme p {
+    font-size: 14px;
+}
+
+.readme h3 {
+    font-size: 16px;
 }

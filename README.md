@@ -24,15 +24,10 @@ Browser Extension for easy access to your Schedule from Universidade de Aveiro. 
 
 ## Latest Features
 
-# [Changelog v1.1.0](https://github.com/digas99/schedule-ua/releases/tag/v1.1.0) 
+# [Changelog v1.2.0](https://github.com/digas99/schedule-ua/releases/tag/v1.2.0) 
 
 ## Popup
-- Added compatibility with overlapping classes
-- Possibility to expand a day with overlapping classes with a Right Click on the day (can handle one overlap for now)
-- Clicking the File Drop container in the login page now opens the file explorer to select a configuration file
-
-## Content
-- Updated schedule parser to be able to fetch schedules from single subjects
+- Added Dark Mode
 
 [(All changelogs)](CHANGELOG.md)
 
