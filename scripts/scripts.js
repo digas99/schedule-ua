@@ -33,6 +33,11 @@ const swapDarkMode = () => {
     }
 }
 
+// check for user's OS preferences
+// https://stackoverflow.com/a/57795518/11488921
+if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
+    swapDarkMode();
+
 chrome.storage.sync.get("darkmode", result => {
     if (result["darkmode"]) swapDarkMode();
 });

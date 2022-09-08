@@ -89,7 +89,7 @@ h2 {
     margin: auto;
     right: 0;
     bottom: 0;
-    box-shadow: 0px 6px 6px -2px black;
+    box-shadow: 0px 2px 6px -2px black;
 }
 
 .loading > div:nth-child(2) > div {
