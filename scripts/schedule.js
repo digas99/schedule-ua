@@ -30,6 +30,7 @@ Schedule.prototype = {
         if (!this.subjectColors)
             this.setColors();
 
+        this.getOverlappedSubjects(this.days);
         this.fill(this.days);
 
         if (this.trimmed)
@@ -92,7 +93,7 @@ Schedule.prototype = {
         days.forEach(day => {
             const subjects = this.schedule[day];
             if (subjects)
-                this.fillColumn(day, 0, subjects);
+                this.fillColumn(day, 0, subjects.filter(subject => !subject["overlap"]));
         });
     },
     fillColumn: function(day, offset, subjects) {
@@ -108,12 +109,12 @@ Schedule.prototype = {
 
                 subject["id"] = this.subjectId++;
                 const cell = row.querySelector(`td:nth-of-type(${x})`);
-                this.classCell(cell, [x, y], day, subject);
+                this.classCell(cell, day, subject);
             }
         });
     },
-    classCell: function(cell, coords, day, subject) {
-        const [x, y] = coords;
+    classCell: function(cell, day, subject) {
+        const [x, y] = [Array.from(cell.parentElement.children).indexOf(cell)+1, Array.from(cell.parentElement.parentElement.children).indexOf(cell.parentElement)+1];
         if (cell) {
             cell.classList.add("class");
             cell.setAttribute("id", subject["id"]);
@@ -234,7 +235,7 @@ Schedule.prototype = {
         Array.from(this.table.querySelectorAll("tr[style='display: none;']")).forEach(cell => cell.style.removeProperty("display"));
         this.trimmed = false;
     },
-    addColumns: function(day, cols) {
+    addExtraColumns: function(day, cols) {
         const index = this.daysIndex[day];
         if (index !== undefined) {
             // +2 because it starts on sunday and nth-of-type starts at 1
@@ -259,7 +260,7 @@ Schedule.prototype = {
             }
         }
     },
-    removeColumns: function(day, cols) {
+    removeExtraColumns: function(day, cols) {
         const index = this.daysIndex[day];
         if (index !== undefined) {
             // +2 because it starts on sunday and nth-of-type starts at 1
@@ -292,9 +293,23 @@ Schedule.prototype = {
     getOverlappedSubjects: function(days) {
         days.forEach(day => {
             const subjects = this.schedule[day];
-            if (subjects)
-                this.fillColumn(day, 0, subjects);
+            if (subjects) {
+                // check if classes overlap
+                for (let i = 0; i < subjects.length; i++) {
+                    for (let j = i+1; j < subjects.length; j++) {
+                        if (!subjects[i]["overlap"] && classesOverlap(subjects[i], subjects[j])) {
+                            subjects[j]["overlap"] = true;
+
+                            if (!this.overlappedSubjects[day])
+                                this.overlappedSubjects[day] = [];
+                            this.overlappedSubjects[day].push(subjects[j]);
+                        }
+                    }
+                }
+            }
         });
+
+        return this.overlappedSubjects;
     },
     setupOverlappedSubjects: function() {
         Object.entries(this.overlappedSubjects).forEach(([day, subjects]) => {
@@ -314,13 +329,13 @@ Schedule.prototype = {
                     e.preventDefault();
 
                     if (header.getAttribute("overlap") === "shrinked") {
-                        this.addColumns(day, 1);
+                        this.addExtraColumns(day, 1);
                         this.fillColumn(day, 1, subjects);
                         header.setAttribute("overlap", "expanded");
                         dayArrows(header, [">", "<"]);
                     }
                     else {
-                        this.removeColumns(day, 1);
+                        this.removeExtraColumns(day, 1);
                         header.setAttribute("overlap", "shrinked");
                         dayArrows(header, ["<", ">"]);
                     }
@@ -331,7 +346,6 @@ Schedule.prototype = {
 }
 
 const shuffleColors = (subjects, colors) => {
-    console.log(subjects, colors);
     let indexes = [], counter = 0, subjectColors = {};
     while (indexes.length < subjects.length) {
         const index = Math.floor(Math.random() * colors.length-1) + 1;
@@ -341,7 +355,6 @@ const shuffleColors = (subjects, colors) => {
         }
     }
 
-    console.log(subjectColors);
     return subjectColors;
 }
 
