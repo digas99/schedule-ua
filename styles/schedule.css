@@ -68,6 +68,10 @@ table > tbody > tr > td > div > div:nth-child(1) {
     color: white;
 }
 
+.class:hover {
+    box-shadow: inset 0px 0px 18px #313030;
+}
+
 .day-arrow, .day-arrow {
     position: absolute;
     bottom: 0px;

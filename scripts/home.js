@@ -1,6 +1,9 @@
 let mySchedule, schedule, school_year, semester, subjectColors, highlightNow;
 const defaultHours = [8,9,10,11,12,13,14,15,16,17,18,19,20], defaultDays = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
 
+const loadingData = loading("Loading data...");
+document.body.appendChild(loadingData);
+
 chrome.storage.sync.get([...STORAGE_KEYS, "trimmed", "subject_colors", "selected", "highlight_now", "limit_trimming", "subjects"], result => {
     // if schedule data exists
     if (STORAGE_KEYS.every(key => Object.keys(result).includes(key))) {
@@ -57,6 +60,7 @@ chrome.storage.sync.get([...STORAGE_KEYS, "trimmed", "subject_colors", "selected
         highlightNowCell();
 
         document.querySelector("#main").style.removeProperty("display");
+        loadingData.remove();
 
         if (result["trimmed"])
             updateExpandButton("shrink");
@@ -286,11 +290,21 @@ window.addEventListener("mouseover", e => {
         const targetElem = target.closest("table th");
         const weekday = targetElem.innerText;
         if (Object.keys(DAYS_INDEX).includes(weekday)) {
-            if (target.closest("table tr").children.length > 3)
+            if (target.closest("table tr").children.length > 3) {
                 Array.from(mySchedule.table.querySelectorAll(".class")).forEach(subject => {
                     if (subject.getAttribute("day") !== weekday)
                         subject.classList.add("shadowed-class");
                 });
+
+                // highlight row
+                const index = mySchedule.daysIndex[weekday]+2;
+                if (!isNaN(index)) {
+                    mySchedule.table.querySelectorAll("tr:not(:first-child)").forEach(row => {
+                        const cell = row.querySelector(`td:nth-of-type(${index})`);
+                        if (cell && !cell.getAttribute("type")) cell.style.backgroundColor = "var(--background-hover)";
+                    });
+                }
+            }
             else {
                 targetElem.setAttribute("day", weekday);
                 targetElem.innerText = "Week";
@@ -332,11 +346,21 @@ window.addEventListener("mouseout", e => {
         // only enable action if there are several days
         const targetElem = target.closest("table th");
         const weekday = targetElem.innerText;
-        if (target.closest("table tr").children.length > 3)
+        if (target.closest("table tr").children.length > 3) {
             Array.from(mySchedule.table.querySelectorAll(".class")).forEach(subject => {
                 if (subject.getAttribute("day") !== weekday)  
                     subject.classList.remove("shadowed-class");
             });
+
+            // remove row highlight
+            const index = mySchedule.daysIndex[weekday]+2;
+            if (!isNaN(index)) {
+                mySchedule.table.querySelectorAll("tr:not(:first-child)").forEach(row => {
+                    const cell = row.querySelector(`td:nth-of-type(${index})`);
+                    if (cell && !cell.getAttribute("type")) cell.style.removeProperty("background-color");
+                });   
+            }
+        }
         else {
             if (targetElem.getAttribute("day"))
                 targetElem.innerText = targetElem.getAttribute("day");

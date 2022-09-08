@@ -1,22 +1,5 @@
 chrome.action.setBadgeText({text: ''});
 
-const loading = text => {
-    const wrapper = document.createElement("div");
-    wrapper.classList.add("loading");
-
-    // add gray back
-    wrapper.appendChild(document.createElement("div"));
-
-    // add popup
-    const textWrapper = document.createElement("div");
-    wrapper.appendChild(textWrapper);
-    const textNode = document.createElement("div");
-    textWrapper.appendChild(textNode);
-    textNode.appendChild(document.createTextNode(text));
-    
-    return wrapper;
-}
-
 const loadingData = loading("Loading data...");
 document.body.appendChild(loadingData);
 

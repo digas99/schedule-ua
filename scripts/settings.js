@@ -125,10 +125,15 @@ window.addEventListener("input", e => {
                 chrome.storage.sync.remove("darkmode", () => window.location.reload());
                 break;
             case "Dark Mode":
-            case "Light Mode":
-                chrome.storage.sync.set({"darkmode": target.value === "Dark Mode"}, () => {
+                chrome.storage.sync.set({"darkmode": true}, () => {
                     const darkModeButton = document.querySelector("#darkmode");
-                    if (darkModeButton) darkModeButton.click();
+                    if (darkModeButton && darkModeButton.title === "Dark Mode") darkModeButton.click();
+                });
+                break;
+            case "Light Mode":
+                chrome.storage.sync.set({"darkmode": false}, () => {
+                    const darkModeButton = document.querySelector("#darkmode");
+                    if (darkModeButton && darkModeButton.title === "Light Mode") darkModeButton.click();
                 });
                 break;
         }
