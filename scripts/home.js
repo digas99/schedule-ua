@@ -52,7 +52,9 @@ chrome.storage.sync.get([...STORAGE_KEYS, "trimmed", "subject_colors", "selected
         if (!subjectColors)
             chrome.storage.sync.set({"subject_colors": mySchedule.subjectColors});
 
-        highlightNowCell();
+
+        highlightTester(1, [8, 17], 0, 500);
+        //highlightNowCell();
 
         document.querySelector("#main").style.removeProperty("display");
 
@@ -70,6 +72,34 @@ chrome.storage.sync.get([...STORAGE_KEYS, "trimmed", "subject_colors", "selected
     else
         window.location.href = "/login.html";
 });
+
+const highlightTester = (day, hours, k, speed) => {
+    let [start, end] = hours;
+    const fixedStart = start;
+    const interval = setInterval(() => {
+        const now = document.querySelectorAll(".cell-now");
+        if (now) {
+            now.forEach(elem => {
+                elem.classList.remove("cell-now");
+                if (elem.innerText === "You're here") elem.innerText = "";
+            });
+        }
+
+        if (day == 6) clearInterval(interval);
+
+        if (start == end+1) {
+            start = fixedStart-1;
+            day++;
+        }
+
+        if (k == 2) {
+            k = 0;
+            start++;
+        }
+
+        highlightNowCell(day, start, (k++)*30);
+    }, speed);
+}
 
 window.addEventListener("click", e => {
     const target = e.target;

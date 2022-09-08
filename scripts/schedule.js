@@ -36,7 +36,7 @@ Schedule.prototype = {
         if (this.trimmed)
             this.trim();
 
-        this.fixSpanningCollapse();
+        this.fixRowHeights();
     },
     createTable: function() {
         this.table = document.createElement("table");
@@ -80,7 +80,12 @@ Schedule.prototype = {
             body.appendChild(secondRow);
     
             for (let i = 0; i < this.days.length+2; i++) {
-                secondRow.appendChild(document.createElement("td"));
+                const cell = document.createElement("td");
+                secondRow.appendChild(cell);
+
+                // hide slaves of hour cells
+                if (i == 0 || i == this.days.length+1)
+                    cell.style.display = "none";
             }
         });
 
@@ -101,6 +106,8 @@ Schedule.prototype = {
         const x = (this.daysIndex[day]+1)+(offset+1); // position of given day
         subjects.forEach(subject => {
             let y = (parseInt(subject["start"])-this.hours[0]+1)*2; // position of given hours
+            if (subject["start"].split(",")[1]) y++; // if class starts at the second half of the hour
+
             let row = this.table.querySelector(`tr:nth-of-type(${y})`);
             if (row) {
                 // set as filled the current and next rows (the full hour)
@@ -153,20 +160,17 @@ Schedule.prototype = {
         }
     },
     highlight: function(day, hours, minutes, text) {
-        let cell;
         let y = (hours-this.hours[0]+1)*2;
+        if (minutes >= 30) y++; // if on the second half of the hour, go down one row
+
+        let cell;
         const dayIndex = this.days.indexOf(getDayFromIndex(day, DAYS_INDEX));
         if (dayIndex >= 0) {
-            let x = dayIndex+2;
-            if (minutes >= 30) y++;
+            const x = dayIndex+2; // +1 because of the hours column and +1 because of sunday
+
             const row = this.table.querySelector(`tr:nth-of-type(${y})`);
             if (row) {
                 cell = row.querySelector(`td:nth-of-type(${x})`);
-                // if cell is not part of a class
-                if (!cell.getAttribute("type")) {
-                    cell = row.querySelector(`td:nth-of-type(${x-1})`);
-                }
-
                 this.highlightCell(cell, text);
             }
         }
@@ -175,22 +179,15 @@ Schedule.prototype = {
     },
     highlightCell: function(cell, text) {
         cell.classList.add("cell-now");
-
         if (!cell.innerText && text)
             cell.innerText = text;
     },
-    fixSpanningCollapse: function() {
-        // add fixed height to cells with spanning that collapse
-        const rows = this.table.querySelectorAll("tr");
-        if (rows) {
-            Array.from(rows).forEach((row, i) => {
-                if (i % 2 !== 0 && row.getAttribute("filled") == "true") {
-                    const cell = row.querySelector("td");
-                    if (cell.offsetHeight < 27)
-                        cell.style.height = "31px";
-                }
-            });
-        }
+    fixRowHeights: function() {
+        const rows = document.querySelectorAll("tr:not(:first-child)");
+        Array.from(rows).forEach(row => {
+            const rowHeight = parseFloat(window.getComputedStyle(row).height);
+            if (rowHeight < 21) row.style.height = "21px";
+        });
     },
     removeSaturday: function() {
         // remove "Sábado" if it has no classes
@@ -244,7 +241,6 @@ Schedule.prototype = {
                 header.setAttribute("colspan", cols+1);
                 const tableWidth = this.table.offsetWidth-(36*2); // remove columns of hours
                 const nColumns = this.table.querySelectorAll("th").length-2+cols; // remove columns of hours and add new cols
-                console.log(tableWidth, this.table.querySelectorAll("th").length, nColumns);
                 if (tableWidth && nColumns) {
                     const colWidth = tableWidth/nColumns;
                     header.style.width = colWidth*(cols+1)+"px";
