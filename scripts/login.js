@@ -3,9 +3,9 @@ chrome.action.setBadgeText({text: ''});
 const loadingData = loading("Loading data...");
 document.body.appendChild(loadingData);
 
-chrome.storage.sync.get([...STORAGE_KEYS, "email"], result => {
+chrome.storage.sync.get([...SCHEDULE_CONFIGS, "email"], result => {
     // if schedule does not exist
-    if (!STORAGE_KEYS.some(key => Object.keys(result).includes(key))) {
+    if (!SCHEDULE_CONFIGS.some(key => Object.keys(result).includes(key))) {
         loadingData.remove();
         document.body.style.removeProperty("height");
         document.querySelector("#main")?.style.removeProperty("display");

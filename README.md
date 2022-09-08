@@ -111,6 +111,7 @@ There is a page that provides ways of customizing your experience with the app. 
     - **Subject Colors:** customize the colors of each subject.
     - **Highlight Cell of Now:** Highlight the cell in the schedule that corresponds to the current time.
     - **Limit Schedule Trim:** limit min and max hours of the trim. This values are taken from the schedule itself.
+    - **Show Popup with Information on a Class on hover:** show popup with information when hovering over a class wihtin the schedule.
 - **Account**
     - **Remember Email:** remember email the next time you logout.
     - **Color Schema:** app color schema.

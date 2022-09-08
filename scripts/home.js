@@ -1,33 +1,29 @@
-let mySchedule, schedule, school_year, semester, subjectColors, highlightNow;
+let mySchedule, storage;
 const defaultHours = [8,9,10,11,12,13,14,15,16,17,18,19,20], defaultDays = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
 
 const loadingData = loading("Loading data...");
 document.body.appendChild(loadingData);
 
-chrome.storage.sync.get([...STORAGE_KEYS, "trimmed", "subject_colors", "selected", "highlight_now", "limit_trimming", "subjects"], result => {
+chrome.storage.sync.get([...SCHEDULE_CONFIGS, ...SETTINGS_KEYS], result => {
     // if schedule data exists
-    if (STORAGE_KEYS.every(key => Object.keys(result).includes(key))) {
-        schedule = result["schedule"];
-        school_year = result["school_year"];
-        semester = result["semester"];
-        subjectColors = result["subject_colors"];
-        highlightNow = result["highlight_now"];
+    if (SCHEDULE_CONFIGS.every(key => Object.keys(result).includes(key))) {
+        storage = result;
 
         const title = document.getElementById("title");
-        if (title) title.innerText += ` ${school_year} ${semester}`;
+        if (title) title.innerText += ` ${storage["school_year"]} ${storage["semester"]}`;
 
         let allHours;
-        if (result["limit_trimming"] !== false)
-            allHours = Object.values(schedule).map(subjects => subjects.map(subject => [parseFloat(subject["start"]), parseFloat(subject["start"])+parseFloat(subject["duration"])])).flat(2);
+        if (storage["limit_trimming"] !== false)
+            allHours = Object.values(storage["schedule"]).map(subjects => subjects.map(subject => [parseFloat(subject["start"]), parseFloat(subject["start"])+parseFloat(subject["duration"])])).flat(2);
 
         // create schedule table
         mySchedule = new Schedule(document.querySelector("#main > div"), {
             "hours": defaultHours,
             "days": defaultDays,
-            "schedule": schedule,
-            "colors": subjectColors,
-            "trimmed": result["trimmed"],
-            "limitTrimming": result["limit_trimming"] !== false,
+            "schedule": storage["schedule"],
+            "colors": storage["subject_colors"],
+            "trimmed": storage["trimmed"],
+            "limitTrimming": storage["limit_trimming"] !== false,
             "soonest": allHours ? Math.min.apply(Math, allHours) : null,
             "latest": allHours ? Math.max.apply(Math, allHours)-1 : null
         });
@@ -52,7 +48,7 @@ chrome.storage.sync.get([...STORAGE_KEYS, "trimmed", "subject_colors", "selected
         mySchedule.removeSaturday();
         mySchedule.setupOverlappedSubjects();
 
-        if (!subjectColors)
+        if (!storage["subject_colors"])
             chrome.storage.sync.set({"subject_colors": mySchedule.subjectColors});
 
 
@@ -62,13 +58,13 @@ chrome.storage.sync.get([...STORAGE_KEYS, "trimmed", "subject_colors", "selected
         document.querySelector("#main").style.removeProperty("display");
         loadingData.remove();
 
-        if (result["trimmed"])
+        if (storage["trimmed"])
             updateExpandButton("shrink");
 
-        if (result["selected"]) {
+        if (storage["selected"]) {
             const selectors = document.querySelectorAll(".day-selector div");
             if (selectors) {
-                const elem = Array.from(selectors).filter(selector => selector.innerText == result["selected"])[0];
+                const elem = Array.from(selectors).filter(selector => selector.innerText == storage["selected"])[0];
                 if (elem) elem.click();
             }
         }
@@ -111,12 +107,12 @@ window.addEventListener("click", e => {
     if (target.closest("#download")) {
         const blob = new Blob([JSON.stringify({
             "schedule": mySchedule.schedule,
-            "school_year": school_year,
-            "semester": semester,
+            "school_year": storage["school_year"],
+            "semester": storage["semester"],
             "subject_colors": mySchedule.subjectColors
         }, null, 2)], {type: "application/json"});
         
-        saveAs(blob, `schedua-schedule_${school_year}_${semester}.json`);
+        saveAs(blob, `schedua-schedule_${storage["school_year"]}_${storage["semester"]}.json`);
     }
 
     // trim schedule ui
@@ -144,7 +140,7 @@ window.addEventListener("click", e => {
             area.style.filter = "brightness(2)";
             setTimeout(() => area.style.removeProperty("filter"), 150);
 
-            html2canvas(area).then(canvas => canvas.toBlob(blob => saveAs(blob, `schedua-schedule_${school_year}_${semester}.png`), "image/png"));
+            html2canvas(area).then(canvas => canvas.toBlob(blob => saveAs(blob, `schedua-schedule_${storage["school_year"]}_${storage["semester"]}.png`), "image/png"));
         }
     }
 
@@ -165,7 +161,7 @@ window.addEventListener("click", e => {
                     mySchedule = new Schedule(scheduleWrapper, {
                         "hours": defaultHours,
                         "days": defaultDays,
-                        "schedule": schedule,
+                        "schedule": storage["schedule"],
                         "colors": mySchedule.subjectColors,
                         "trimmed": mySchedule.trimmed,
                         "limitTrimming": mySchedule.limitTrimming,
@@ -224,7 +220,7 @@ window.addEventListener("click", e => {
 
     if (target.closest(".class")) {
         const targetSubject = target.closest(".class").innerText.split(" - ")[0];
-        const days = Object.entries(schedule)
+        const days = Object.entries(storage["schedule"])
             .filter(([day, subjects]) => subjects.some(subject => subject["subject"]["abbrev"] == targetSubject))
             .map(entry => entry[0])
             .sort((a, b) => DAYS_INDEX[a] - DAYS_INDEX[b]);
@@ -238,7 +234,7 @@ window.addEventListener("click", e => {
             scheduleWrapper.querySelector(".info-panel")?.remove();
         
             // adjust schedule
-            const newSchedule = JSON.parse(JSON.stringify(schedule)); // deep clone schedule
+            const newSchedule = JSON.parse(JSON.stringify(storage["schedule"])); // deep clone schedule
             Object.keys(DAYS_INDEX).forEach(day => {
                 if (!days.includes(day))
                     delete newSchedule[day];
@@ -276,13 +272,15 @@ window.addEventListener("mouseover", e => {
         });
 
         // info popup
-        const subjectInfo = mySchedule.schedule[subject.getAttribute("day")].filter(subj => subj["subject"]["abbrev"] === subject.getAttribute("subject") && subj["class"] === subject.getAttribute("class-group"))[0];
-        const start = parseFloat(subjectInfo["start"].replace(",", "."));
-        const duration = parseFloat(subjectInfo["duration"].replace(",", "."));
-        const end = start+duration;
-        const popup = classInfoPopup(subjectInfo["subject"]["name"], start, end, mySchedule.subjectColors ? mySchedule.subjectColors[targetSubject] : null);
-        popup.style.top = (subject.offsetHeight - 5)+"px";
-        subject.appendChild(popup);
+        if (storage["class_popup_info"] !== false) {
+            const subjectInfo = mySchedule.schedule[subject.getAttribute("day")].filter(subj => subj["subject"]["abbrev"] === subject.getAttribute("subject") && subj["class"] === subject.getAttribute("class-group"))[0];
+            const start = parseFloat(subjectInfo["start"].replace(",", "."));
+            const duration = parseFloat(subjectInfo["duration"].replace(",", "."));
+            const end = start+duration;
+            const popup = classInfoPopup(subjectInfo["subject"]["name"], start, end, mySchedule.subjectColors ? mySchedule.subjectColors[targetSubject] : null);
+            popup.style.top = (subject.offsetHeight - 5)+"px";
+            subject.appendChild(popup);
+        }
     }
 
     if (target.closest("table th")) {
@@ -339,7 +337,7 @@ window.addEventListener("mouseout", e => {
                 subject.classList.remove("shadowed-class");
         });
 
-        subject.querySelector(".class-info-popup").remove();
+        if (subject.querySelector(".class-info-popup")) subject.querySelector(".class-info-popup").remove();
     }
 
     if (target.closest("table th")) {
@@ -375,7 +373,7 @@ const createDaySchedule = (scheduleWrapper, scheduleDay) => {
     mySchedule = new Schedule(scheduleWrapper, {
         "hours": defaultHours,
         "days": [scheduleDay],
-        "schedule": {[scheduleDay]: schedule[scheduleDay]},
+        "schedule": {[scheduleDay]: storage.schedule[scheduleDay]},
         "colors": mySchedule.subjectColors,
         "trimmed": mySchedule.trimmed,
         "limitTrimming": mySchedule.limitTrimming,
@@ -503,7 +501,7 @@ const infoPanel = schedule => {
 }
 
 const highlightNowCell = (day, hours, minutes) => {
-    if (highlightNow !== false) {
+    if (storage["highlight_now"] !== false) {
         const now = new Date();
         day = day !== undefined ? day : now.getDay();
         hours = hours !== undefined ? hours : now.getHours();

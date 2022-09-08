@@ -1,4 +1,6 @@
-const STORAGE_KEYS = ["schedule", "school_year", "semester"];
+const SCHEDULE_CONFIGS = ["schedule", "school_year", "semester"];
+
+const SETTINGS_KEYS = ["subjects", "subject_colors", "trimmed", "email", "selected", "paco_buttons", "highlight_now", "limit_trimming", "darkmode", "class_popup_info"];
 
 const colorSchemaSetup = (config) => {
     document.documentElement.style.setProperty('--background-color', config["backgroundColor"]);

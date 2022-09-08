@@ -1,6 +1,6 @@
 let subjects, subjectColors;
 
-chrome.storage.sync.get(["subject_colors", "subjects", "email", "selected", "paco_buttons", "highlight_now", "limit_trimming", "darkmode"], result => {
+chrome.storage.sync.get(SETTINGS_KEYS, result => {
     subjectColors = result["subject_colors"];
     subjects = result["subjects"];
     const subjectColorsElem = document.getElementById("subjects-colors");
@@ -34,8 +34,9 @@ chrome.storage.sync.get(["subject_colors", "subjects", "email", "selected", "pac
 
     // handle checkboxes
     if (result["email"] == null) document.getElementById("remember-email").click();
-    ["paco_buttons", "highlight_now", "limit_trimming"].forEach(key => {
-        if (result[key] == false) document.getElementById(key.replace("_", "-"))?.click();
+
+    ["paco_buttons", "highlight_now", "limit_trimming", "class_popup_info"].forEach(key => {
+        if (result[key] == false) document.getElementById(key.replaceAll("_", "-"))?.click();
     });
 
     // handle color schema selector
@@ -110,6 +111,14 @@ window.addEventListener("click", e => {
             chrome.storage.sync.set({"limit_trimming": true});
         else
             chrome.storage.sync.set({"limit_trimming": false});
+    }
+
+    if (target.closest("#class-popup-info")) {
+        const checkbox = target.closest("#class-popup-info");
+        if (checkbox.checked)
+            chrome.storage.sync.set({"class_popup_info": true});
+        else
+            chrome.storage.sync.set({"class_popup_info": false});
     }
 });
 

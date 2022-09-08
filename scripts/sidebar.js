@@ -2,7 +2,7 @@ window.addEventListener("click", e => {
     const target = e.target;
 
     if (target.closest("#exit"))
-        chrome.storage.sync.remove([...STORAGE_KEYS, "subject_colors"]).then(() => window.location.href = "/login.html");
+        chrome.storage.sync.remove([...SCHEDULE_CONFIGS, "subject_colors"]).then(() => window.location.href = "/login.html");
 
     if (target.closest("#schedule") && !target.closest("#schedule").classList.contains("button-inactive")) window.location.href = "/home.html";
 
