@@ -1,6 +1,6 @@
 let subjects, subjectColors;
 
-chrome.storage.sync.get(["subject_colors", "subjects", "email", "selected", "paco_buttons", "highlight_now", "limit_trimming"], result => {
+chrome.storage.sync.get(["subject_colors", "subjects", "email", "selected", "paco_buttons", "highlight_now", "limit_trimming", "darkmode"], result => {
     subjectColors = result["subject_colors"];
     subjects = result["subjects"];
     const subjectColorsElem = document.getElementById("subjects-colors");
@@ -37,6 +37,15 @@ chrome.storage.sync.get(["subject_colors", "subjects", "email", "selected", "pac
     ["paco_buttons", "highlight_now", "limit_trimming"].forEach(key => {
         if (result[key] == false) document.getElementById(key.replace("_", "-"))?.click();
     });
+
+    // handle color schema selector
+    const colorSchema = document.querySelector("#color-schema");
+    if (colorSchema) {
+        if (result["darkmode"] !== undefined)
+            colorSchema.value = result["darkmode"] == true ? "Dark Mode" : "Light Mode";
+        else
+            colorSchema.value = "System";
+    }
 });
 
 window.addEventListener("click", e => {
@@ -109,4 +118,19 @@ window.addEventListener("input", e => {
 
     if (target.closest("#schedule-startup"))
         chrome.storage.sync.set({"selected": target.value});
+
+    if (target.closest("#color-schema")) {
+        switch(target.value) {
+            case "System":
+                chrome.storage.sync.remove("darkmode", () => window.location.reload());
+                break;
+            case "Dark Mode":
+            case "Light Mode":
+                chrome.storage.sync.set({"darkmode": target.value === "Dark Mode"}, () => {
+                    const darkModeButton = document.querySelector("#darkmode");
+                    if (darkModeButton) darkModeButton.click();
+                });
+                break;
+        }
+    }
 });

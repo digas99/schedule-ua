@@ -113,6 +113,7 @@ There is a page that provides ways of customizing your experience with the app. 
     - **Limit Schedule Trim:** limit min and max hours of the trim. This values are taken from the schedule itself.
 - **Account**
     - **Remember Email:** remember email the next time you logout.
+    - **Color Schema:** app color schema.
 - **PACO**
     - **Download and Upload buttons:** extra buttons above the schedule in the schedule page in PACO - Secretaria Virtual.
 

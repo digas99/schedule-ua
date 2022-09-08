@@ -20,15 +20,20 @@ const swapDarkMode = () => {
 
     // change icon
     const darkModeIcon = document.querySelector("#darkmode");
+    const colorSchema = document.querySelector("#color-schema");
     if (darkModeIcon) {
         if (darkModeIcon.title === "Dark Mode") {
             darkModeIcon.title = "Light Mode";
             darkModeIcon.querySelector("img").src = "images/icons/sun.png";
+        
+            if (colorSchema) colorSchema.value = "Dark Mode";
         }
         else {
             darkModeIcon.title = "Dark Mode";
             darkModeIcon.querySelector("img").src = "images/icons/moon.png";
             window.location.reload();
+
+            if (colorSchema) colorSchema.value = "Light Mode";
         }
     }
 }
