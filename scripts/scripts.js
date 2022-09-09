@@ -3,7 +3,7 @@ const SCHEDULE_CONFIGS = ["schedule", "school_year", "semester"];
 const SETTINGS_KEYS = ["subjects", "subject_colors", "trimmed", "email", "selected", "paco_buttons", "highlight_now", "limit_trimming", "color_schema", "class_popup_info"];
 
 const setupColorSchema = (config) => {
-    ["background-color", "background-hover", "font-color", "table-borders", "active", "checkbox-ball", "checkbox-background"].forEach(property => {
+    ["background-color", "background-hover", "font-color", "table-borders", "active", "checkbox-ball", "checkbox-background", "select-font"].forEach(property => {
         const split = property.split("-");
         let key = split[0];
         if (split[1])
@@ -40,6 +40,7 @@ const swapColorSchema = schema => {
                 active: "#9c9c9c",
                 checkboxBall: "#5e5e5e",
                 checkboxBackground: "#7a7a7a",
+                selectFont: "#e3e3e3",
                 styles: [`
                     body .icon {
                         filter: invert(1) !important;
@@ -62,6 +63,7 @@ const swapColorSchema = schema => {
                 active: "#9c9c9c",
                 checkboxBall: "#5e5e5e",
                 checkboxBackground: "#7a7a7a",
+                selectFont: "white",
                 styles: [`
                     body .icon {
                         filter: unset !important;
@@ -88,12 +90,13 @@ const swapColorSchema = schema => {
                 backgroundHover: "#666666",
                 tableBorders: "white",
                 active: "#9c9c9c",
-                checkboxBall: "#5e5e5e",
-                checkboxBackground: "#7a7a7a",
+                checkboxBall: "white",
+                checkboxBackground: "#b2b2b2",
+                selectFont: "black",
                 styles: [`
                     body .icon {
                         filter: invert(1) !important;
-                        opacity: 0.8 !important;
+                        opacity: 1 !important;
                     }
                 `]
             }
@@ -112,6 +115,7 @@ const swapColorSchema = schema => {
                 active: "black",
                 checkboxBall: "black",
                 checkboxBackground: "#484848",
+                selectFont: "white",
                 styles: [`
                     body .icon {
                         filter: unset !important;
