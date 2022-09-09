@@ -101,7 +101,7 @@ const swapColorSchema = schema => {
                 `]
             }
             break;
-        case "Ligh High Contrast":
+        case "Light High Contrast":
             if (darkModeIcon) {
                 darkModeIcon.title = "Dark Mode";
                 darkModeIcon.querySelector("img").src = "images/icons/moon.png";
@@ -147,34 +147,36 @@ chrome.storage.sync.get(["color_schema", "schedule", "subject_colors"], result =
     if (result["schedule"]) {
         const now = new Date();
         const todaySubjects = result["schedule"][getDayFromIndex(now.getDay(), DAYS_INDEX)];
-        if (todaySubjects && todaySubjects.length > 0) {
-            let closestClass = todaySubjects[0];
-            todaySubjects.forEach(subject => {
-                const nowHours = parseInt(now.getHours());
-                const nowMinutes = parseInt(now.getMinutes());
-                const time = parseFloat(nowHours+"."+(nowMinutes*100/60));
-                const classStart = parseFloat(subject["start"].replaceAll(",", "."));
-                const classEnd = classStart+parseFloat(subject["duration"]);
-                
-                if (time >= classStart && time <= classEnd) closestClass = subject;
-
-                if (time > classEnd) closestClass = null;
-            });
-
-            if (closestClass) {
-                const subjectAbbrev = closestClass["subject"]["abbrev"];
-                chrome.action.setBadgeText({text: subjectAbbrev});
-                if (result["subject_colors"]) {
-                    const subjectColor = result["subject_colors"][subjectAbbrev];
-                    if (subjectColor)
-                        chrome.action.setBadgeBackgroundColor({color: subjectColor});
-                }
-            }
-            else
-                chrome.action.setBadgeText({text: ""});
-        }
+        updateClassBadge(todaySubjects, result["subject_colors"], parseInt(now.getHours()), parseInt(now.getMinutes()));
     }
 });
+
+const updateClassBadge = (todaySubjects, subjectColors, hours, minutes) => {
+    if (todaySubjects && todaySubjects.length > 0) {
+        let closestClass = todaySubjects[0];
+        todaySubjects.forEach(subject => {
+            const time = parseFloat(hours+"."+(minutes*100/60));
+            const classStart = parseFloat(subject["start"].replaceAll(",", "."));
+            const classEnd = classStart+parseFloat(subject["duration"].replaceAll(",", "."));
+            
+            if (time >= classStart && time <= classEnd) closestClass = subject;
+
+            if (time > classEnd) closestClass = null;
+        });
+
+        if (closestClass) {
+            const subjectAbbrev = closestClass["subject"]["abbrev"];
+            chrome.action.setBadgeText({text: subjectAbbrev});
+            if (subjectColors) {
+                const subjectColor = subjectColors[subjectAbbrev];
+                if (subjectColor)
+                    chrome.action.setBadgeBackgroundColor({color: subjectColor});
+            }
+        }
+        else
+            chrome.action.setBadgeText({text: ""});
+    }
+}
 
 const loading = text => {
     const wrapper = document.createElement("div");

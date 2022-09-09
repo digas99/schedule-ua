@@ -91,7 +91,7 @@ table > tbody > tr > th:not(:first-child, :last-child) {
 
 .subject-info > div:nth-child(2) > div:nth-child(1) {
     font-size: 15px;
-    background-color: #646262;
+    background-color: var(--font-color);
     width: 55px;
     height: 35px;
     display: flex;
@@ -99,9 +99,10 @@ table > tbody > tr > th:not(:first-child, :last-child) {
 }
 
 .subject-info > div:nth-child(2) > div:nth-child(1) > div {
-    color: white;
+    color: var(--background-color);
     width: 100%;
     text-align: center;
+    font-weight: bold;
 }
 
 .subject-info > div:nth-child(2) > div:nth-child(2) {
