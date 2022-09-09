@@ -28,6 +28,12 @@ Browser Extension for easy access to your Schedule from Universidade de Aveiro. 
 
 ## Popup
 - Added Dark Mode
+- Added Changelog to about page
+- Color Themes:
+    - Light Mode
+    - Light High Contrast
+    - Dark Mode
+    - Dark High Contrast
 
 [(All changelogs)](CHANGELOG.md)
 
@@ -109,7 +115,7 @@ There is a page that provides ways of customizing your experience with the app. 
     - **Show Popup with Information on a Class on hover:** show popup with information when hovering over a class wihtin the schedule.
 - **Account**
     - **Remember Email:** remember email the next time you logout.
-    - **Color Schema:** app color schema.
+    - **Color Theme:** app color theme.
         - Light Mode
         - Light High Contrast
         - Dark Mode
