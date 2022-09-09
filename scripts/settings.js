@@ -41,12 +41,8 @@ chrome.storage.sync.get(SETTINGS_KEYS, result => {
 
     // handle color schema selector
     const colorSchema = document.querySelector("#color-schema");
-    if (colorSchema) {
-        if (result["darkmode"] !== undefined)
-            colorSchema.value = result["darkmode"] == true ? "Dark Mode" : "Light Mode";
-        else
-            colorSchema.value = "System";
-    }
+    if (colorSchema)
+        colorSchema.value = result["color_schema"] !== undefined ? result["color_schema"] : "System";
 });
 
 window.addEventListener("click", e => {
@@ -128,23 +124,6 @@ window.addEventListener("input", e => {
     if (target.closest("#schedule-startup"))
         chrome.storage.sync.set({"selected": target.value});
 
-    if (target.closest("#color-schema")) {
-        switch(target.value) {
-            case "System":
-                chrome.storage.sync.remove("darkmode", () => window.location.reload());
-                break;
-            case "Dark Mode":
-                chrome.storage.sync.set({"darkmode": true}, () => {
-                    const darkModeButton = document.querySelector("#darkmode");
-                    if (darkModeButton && darkModeButton.title === "Dark Mode") darkModeButton.click();
-                });
-                break;
-            case "Light Mode":
-                chrome.storage.sync.set({"darkmode": false}, () => {
-                    const darkModeButton = document.querySelector("#darkmode");
-                    if (darkModeButton && darkModeButton.title === "Light Mode") darkModeButton.click();
-                });
-                break;
-        }
-    }
+    if (target.closest("#color-schema"))
+        swapColorSchema(target.value);
 });

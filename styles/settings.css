@@ -25,12 +25,12 @@ body {
     position: absolute;
     right: 0px;
     top: -6px;
-    opacity: 0.6;
     padding: 5px;
 }
 
 #settings-subjects-colors > div:nth-of-type(2) > img {
     width: 18px;
+    opacity: 0.5;
 }
 
 #settings-subjects-colors > div:nth-of-type(3) {
@@ -115,16 +115,16 @@ body {
 }
 
 .checkbox-enabled > .custom-checkbox-back {
-	background-color: #7a7a7a;
+	background-color: var(--checkbox-background);
 }
 
 .checkbox-enabled > .custom-checkbox-ball {
     margin-left: 16px;
-    background-color: #5e5e5e;
+    background-color: var(--checkbox-ball);
 }
 
 select {
-    background: #5c5c5c;
+    background: var(--checkbox-ball);
     color: white;
     width: 100px;
     padding: 2px 6px;

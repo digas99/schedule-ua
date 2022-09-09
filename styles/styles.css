@@ -2,6 +2,9 @@
     --font-color: #585858;
     --background-color: white;
     --background-hover: #e1e1e1;
+    --active: #9c9c9c;
+    --checkbox-ball: #5e5e5e;
+    --checkbox-background: #7a7a7a;
 }
 
 body {

@@ -126,11 +126,8 @@ window.addEventListener("click", e => {
         }
     }
 
-    if (target.closest("#darkmode")) {
-        const darkModeWrapper = target.closest("#darkmode");
-        let darkmode = darkModeWrapper.title === "Dark Mode" ? true : false;
-        chrome.storage.sync.set({"darkmode": darkmode}, swapDarkMode);
-    }
+    if (target.closest("#darkmode"))
+        swapColorSchema(target.closest("#darkmode").title);
 });
 
 // DROP ZONE

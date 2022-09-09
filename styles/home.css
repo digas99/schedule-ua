@@ -28,7 +28,7 @@ table {
 }
 
 .selector-active {
-    background-color: #9c9c9c;
+    background-color: var(--active);
     color: white;
     cursor: not-allowed;
 }
@@ -42,7 +42,7 @@ table {
 }
 
 table > tbody > tr:nth-child(13) {
-    border-bottom: 2px solid #cccccc;
+    border-bottom: 2px solid var(--table-borders);
 }
 
 table > tbody > tr > th:not(:first-child, :last-child) {
