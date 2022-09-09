@@ -3,6 +3,11 @@
 ## Popup
 - Added Dark Mode
 - Added Changelog to about page
+- Color Schemes:
+    - Light Mode
+    - Light High Contrast
+    - Dark Mode
+    - Dark High Contrast
 
 ---
 

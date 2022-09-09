@@ -110,6 +110,10 @@ There is a page that provides ways of customizing your experience with the app. 
 - **Account**
     - **Remember Email:** remember email the next time you logout.
     - **Color Schema:** app color schema.
+        - Light Mode
+        - Light High Contrast
+        - Dark Mode
+        - Dark High Contrast
 - **PACO**
     - **Download and Upload buttons:** extra buttons above the schedule in the schedule page in PACO - Secretaria Virtual.
 

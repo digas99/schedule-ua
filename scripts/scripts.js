@@ -129,14 +129,15 @@ const swapColorSchema = schema => {
     chrome.storage.sync.set({"color_schema": schema});
 }
 
-// check for user's OS preferences
-// https://stackoverflow.com/a/57795518/11488921
-if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
-    swapColorSchema("Dark Mode");
-
 chrome.storage.sync.get("color_schema", result => {
     if (result["color_schema"] !== undefined || result["color_schema"] !== "System")
         swapColorSchema(result["color_schema"]);
+    else {
+        // check for user's OS preferences
+        // https://stackoverflow.com/a/57795518/11488921
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
+            swapColorSchema("Dark Mode");
+    }
 });
 
 const loading = text => {
