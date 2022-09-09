@@ -133,7 +133,7 @@ const swapColorSchema = schema => {
     chrome.storage.sync.set({"color_schema": schema});
 }
 
-chrome.storage.sync.get("color_schema", result => {
+chrome.storage.sync.get(["color_schema", "schedule", "subject_colors"], result => {
     if (result["color_schema"] !== undefined && result["color_schema"] !== "System")
         swapColorSchema(result["color_schema"]);
     else {
@@ -141,6 +141,38 @@ chrome.storage.sync.get("color_schema", result => {
         // https://stackoverflow.com/a/57795518/11488921
         if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
             swapColorSchema("Dark Mode");
+    }
+
+    // put closest class in the badge text
+    if (result["schedule"]) {
+        const now = new Date();
+        const todaySubjects = result["schedule"][getDayFromIndex(now.getDay(), DAYS_INDEX)];
+        if (todaySubjects && todaySubjects.length > 0) {
+            let closestClass = todaySubjects[0];
+            todaySubjects.forEach(subject => {
+                const nowHours = parseInt(now.getHours());
+                const nowMinutes = parseInt(now.getMinutes());
+                const time = parseFloat(nowHours+"."+(nowMinutes*100/60));
+                const classStart = parseFloat(subject["start"].replaceAll(",", "."));
+                const classEnd = classStart+parseFloat(subject["duration"]);
+                
+                if (time >= classStart && time <= classEnd) closestClass = subject;
+
+                if (time > classEnd) closestClass = null;
+            });
+
+            if (closestClass) {
+                const subjectAbbrev = closestClass["subject"]["abbrev"];
+                chrome.action.setBadgeText({text: subjectAbbrev});
+                if (result["subject_colors"]) {
+                    const subjectColor = result["subject_colors"][subjectAbbrev];
+                    if (subjectColor)
+                        chrome.action.setBadgeBackgroundColor({color: subjectColor});
+                }
+            }
+            else
+                chrome.action.setBadgeText({text: ""});
+        }
     }
 });
 
