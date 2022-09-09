@@ -130,7 +130,7 @@ const swapColorSchema = schema => {
 }
 
 chrome.storage.sync.get("color_schema", result => {
-    if (result["color_schema"] !== undefined || result["color_schema"] !== "System")
+    if (result["color_schema"] !== undefined && result["color_schema"] !== "System")
         swapColorSchema(result["color_schema"]);
     else {
         // check for user's OS preferences
