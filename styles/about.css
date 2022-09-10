@@ -9,7 +9,7 @@ ul {
 }
 
 #main > div:not(.separator) {
-    margin: 20px;
+    padding: 20px;
 }
 
 #presentation > * {
@@ -40,7 +40,7 @@ ul {
 }
 
 #resources > div:nth-of-type(1), #changelog > div:nth-of-type(1) {
-    color: silver;
+    color: var(--active);
     font-size: 14px;
 }
 

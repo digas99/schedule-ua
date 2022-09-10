@@ -1,3 +1,14 @@
+# [Changelog v1.2.1](https://github.com/digas99/schedule-ua/releases/tag/v1.2.1) 
+
+## Bug Fixes
+- Fixed bug of Changelog not loading in about page
+- Changing pages within the extension while using a color theme doesn't flicker white anymore
+
+## Popup
+- Color Themes:
+    - Sapphire
+    - Ambar
+
 # [Changelog v1.2.0](https://github.com/digas99/schedule-ua/releases/tag/v1.2.0) 
 
 ## Popup

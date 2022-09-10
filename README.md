@@ -4,7 +4,7 @@
 
 ## SchedUA - Schedule for Universidade de Aveiro
 
-![Latest Release](https://img.shields.io/github/v/release/digas99/schedule-ua?label=Latest%20Version)
+[![Latest Release](https://img.shields.io/github/v/release/digas99/schedule-ua?label=Latest%20Version)](https://img.shields.io/github/v/release/digas99/schedule-ua?label=Latest%20Version) [![Chrome Users](https://img.shields.io/chrome-web-store/users/hdidghpdffhhefdafcajajjocjbmbnml?color=yellow&label=Chrome%20Users)](https://img.shields.io/chrome-web-store/users/hdidghpdffhhefdafcajajjocjbmbnml?color=yellow&label=Chrome%20Users)
 
 Browser Extension for easy access to your Schedule from Universidade de Aveiro. This extension uses the [PACO-UA API](https://github.com/digas99/paco-ua-api) to fetch the data from the schedule and present it in the Extension Popup.
 
@@ -24,9 +24,14 @@ Browser Extension for easy access to your Schedule from Universidade de Aveiro. 
 
 ## Latest Features
 
-# [Changelog v1.2.0](https://github.com/digas99/schedule-ua/releases/tag/v1.2.0) 
+## [Changelog v1.2.1](https://github.com/digas99/schedule-ua/releases/tag/v1.2.1) 
 
-## Popup
+### Bug Fixes
+- Fixed bug of Changelog not loading in about page
+
+## [Changelog v1.2.0](https://github.com/digas99/schedule-ua/releases/tag/v1.2.0) 
+
+### Popup
 - Added Dark Mode
 - Added Changelog to about page
 - Color Themes:
@@ -120,6 +125,8 @@ There is a page that provides ways of customizing your experience with the app. 
         - Light High Contrast
         - Dark Mode
         - Dark High Contrast
+        - Sapphire
+        - Ambar
 - **PACO**
     - **Download and Upload buttons:** extra buttons above the schedule in the schedule page in PACO - Secretaria Virtual.
 

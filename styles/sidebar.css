@@ -7,7 +7,7 @@
     align-items: center;
     padding-top: 10px;
     height: 100%;
-    border-left: 1px solid silver;
+    border-left: 1px solid var(--table-borders);
     overflow: auto;
     z-index: 2;
     background-color: var(--background-color);
@@ -39,7 +39,7 @@
     position: absolute;
     top: 3px;
     right: 5px;
-    background-color: black;
+    background-color: var(--font-color);
     width: 18px;
     height: 18px;
     border-radius: 50%;
@@ -55,5 +55,5 @@
     width: fit-content;
     height: fit-content;
     font-size: 10px;
-    color: white;
+    color: var(--background-color);
 }

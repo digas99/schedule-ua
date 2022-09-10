@@ -42,7 +42,7 @@ body {
 #login-wrapper > div > input:focus {
     outline: none !important;
     border: none;
-    border-bottom: 1px solid rgb(50, 180, 50);
+    border-bottom: 1px solid var(--font-color);
     background-color: var(--background-hover);
     color: var(--font-color);
 }
@@ -79,12 +79,18 @@ body {
     column-gap: 4px;
 }
 
-#remember-email > div {
+#remember-email > label {
     font-size: 10px;
+    cursor: pointer;
+}
+
+input[type="checkbox"] {
+    accent-color: var(--checkbox-ball);
 }
 
 #drop-zone {
-    margin: 10px auto !important;
+    margin: auto !important;
+    margin-top: 30px !important;
     width: 90%;
     height: 110px;
     border-radius: 30px;
