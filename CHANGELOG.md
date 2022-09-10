@@ -1,4 +1,16 @@
+# [Changelog v1.3.0](https://github.com/digas99/schedule-ua/releases/tag/v1.3.0)
+
+***Classes notices!***
+
+## Popup
+- The abbreviation for the Current/Next class of the day now shows up on the extension icon
+
+---
+
 # [Changelog v1.2.0](https://github.com/digas99/schedule-ua/releases/tag/v1.2.0) 
+Released on 10/09/2022
+
+***Dark mode!***
 
 ## Popup
 - Added Dark Mode
@@ -13,6 +25,8 @@
 
 # [Changelog v1.1.0](https://github.com/digas99/schedule-ua/releases/tag/v1.1.0) 
 Released on 08/09/2022
+
+***Overlapping classes!***
 
 ## Popup
 - Added compatibility with overlapping classes

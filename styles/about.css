@@ -118,3 +118,8 @@ ul {
 .readme h3 {
     font-size: 16px;
 }
+
+.md-extra-highlighted {
+    font-weight: bold;
+    font-style: italic;
+}

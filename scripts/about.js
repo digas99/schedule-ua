@@ -34,7 +34,11 @@ const mdToHTML = lineText => {
         
         if (insideLink) newLine+=line.charAt(i);
 
-        if (line.charAt(i) == '[') insideLink = true;
+        if (line.charAt(i) == '[') {
+            if (i !== 1) break;
+
+            insideLink = true;
+        }
     }
 
     if (line == "---") line = "";
@@ -42,7 +46,14 @@ const mdToHTML = lineText => {
     if (lineText.charAt(0) === ' ')
         elem.style.paddingLeft = "10px";
 
-    line.replaceAll('*', '');
+    if (line.slice(0, 3) === "***") {
+        elem.classList.add("md-extra-highlighted");
+    }
+
+    console.log(line);
+    line = line.replaceAll('*', '');
+
+    console.log(line);
 
     elem.appendChild(document.createTextNode(line));
 
