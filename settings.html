@@ -97,13 +97,26 @@
 						<option>System</option>
 					</select>
 				</div>
-				<div title="Show current/next class of the day on the extension icon." class="item-check">
+				<!-- <div title="Show current/next class of the day on the extension icon." class="item-check">
 					<label for="closest-class-icon">Show Current/Next Class on the Extension Icon</label>
 					<div class="checkbox_wrapper checkbox-enabled">
 						<input checked type="checkbox" id="closest-class-icon" style="display: none;">
 						<div class="custom-checkbox-ball"></div>
 						<div class="custom-checkbox-back"></div>
 					</div>
+				</div> -->
+				<div title="Extension Icon Badge" class="item-check">
+				<label for="extension-badge">Extension Icon Badge</label>	
+				<div style="margin-right: 15px;" class="checkbox_wrapper checkbox-enabled">
+					<input checked type="checkbox" id="extension-badge" style="display: none;">
+					<div class="custom-checkbox-ball"></div>
+					<div class="custom-checkbox-back"></div>
+				</div>
+				<select id="extension-badge-option">
+					<option>Next/Current Class</option>
+					<option>Time of Next Class</option>		
+					<option>Number of Classes Today</option>
+				</select>
 				</div>
 			</div>
 		</div>
@@ -123,6 +136,7 @@
 		</div>
     </div>
 
+	<script src="scripts/background/extension-badge.js"></script>
 	<script src="scripts/scripts.js"></script>
 	<script src="scripts/sidebar.js"></script>
 	<script src="scripts/schedule.js"></script>

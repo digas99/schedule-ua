@@ -126,7 +126,7 @@ body {
 select {
     background: var(--checkbox-ball);
     color: var(--select-font);
-    width: 100px;
+    width: fit-content;
     padding: 2px 6px;
     cursor: pointer;
 }

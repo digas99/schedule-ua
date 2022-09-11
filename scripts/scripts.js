@@ -1,6 +1,6 @@
 const SCHEDULE_CONFIGS = ["schedule", "school_year", "semester"];
 
-const DEFAULT_TRUE_SETTINGS = ["paco_buttons", "highlight_now", "limit_trimming", "class_popup_info", "closest_class_icon"];
+const DEFAULT_TRUE_SETTINGS = ["paco_buttons", "highlight_now", "limit_trimming", "class_popup_info", "extension_badge"];
 const DEFAULT_FALSE_SETTINGS = ["highlight_mouse_target_cell"];
 const SETTINGS_KEYS = ["subjects", "subject_colors", "trimmed", "email", "selected", "color_schema", ...DEFAULT_TRUE_SETTINGS, ...DEFAULT_FALSE_SETTINGS];
 
@@ -73,12 +73,6 @@ const swapColorSchema = schema => {
                     }
                 `]
             };
-            break;
-        case "System":
-            if (window.matchMedia)
-                swapColorSchema(window.matchMedia('(prefers-color-scheme: dark)').matches ? "Dark Mode" : "Light Mode");
-            else
-                window.location.reload();
             break;
         case "Dark High Contrast":
             if (darkModeIcon) {
@@ -172,6 +166,12 @@ const swapColorSchema = schema => {
                 `]
             }
             break;
+        case "System":
+            if (window.matchMedia)
+                swapColorSchema(window.matchMedia('(prefers-color-scheme: dark)').matches ? "Dark Mode" : "Light Mode");
+            else
+                window.location.reload();
+            break;
     }
 
     if (colorSchema) colorSchema.value = schema;
@@ -186,7 +186,7 @@ const urlParams = new URLSearchParams(window.location.search);
 if (urlParams.get('theme'))
     swapColorSchema(urlParams.get('theme'));
 
-chrome.storage.sync.get(["color_schema", "schedule", "subject_colors", "closest_class_icon"], result => {
+chrome.storage.sync.get(["color_schema", "extension_badge"], result => {
     if (!urlParams.get('theme')) {
         if (result["color_schema"] !== undefined && result["color_schema"] !== "System")
             swapColorSchema(result["color_schema"]);
@@ -198,40 +198,8 @@ chrome.storage.sync.get(["color_schema", "schedule", "subject_colors", "closest_
         }
     }
 
-    // put closest class in the badge text
-    if (result["schedule"] && result["closest_class_icon"] !== false) {
-        const now = new Date();
-        const todaySubjects = result["schedule"][getDayFromIndex(now.getDay(), DAYS_INDEX)];
-        updateClassBadge(todaySubjects, result["subject_colors"], parseInt(now.getHours()), parseInt(now.getMinutes()));
-    }
-});    
-
-const updateClassBadge = (todaySubjects, subjectColors, hours, minutes) => {
-    if (todaySubjects && todaySubjects.length > 0) {
-        let closestClass = todaySubjects[0];
-        todaySubjects.forEach(subject => {
-            const time = parseFloat(hours+"."+(minutes*100/60));
-            const classStart = parseFloat(subject["start"].replaceAll(",", "."));
-            const classEnd = classStart+parseFloat(subject["duration"].replaceAll(",", "."));
-            
-            if (time >= classStart && time <= classEnd) closestClass = subject;
-
-            if (time > classEnd) closestClass = null;
-        });
-
-        if (closestClass) {
-            const subjectAbbrev = closestClass["subject"]["abbrev"];
-            chrome.action.setBadgeText({text: subjectAbbrev});
-            if (subjectColors) {
-                const subjectColor = subjectColors[subjectAbbrev];
-                if (subjectColor)
-                    chrome.action.setBadgeBackgroundColor({color: subjectColor});
-            }
-        }
-        else
-            chrome.action.setBadgeText({text: ""});
-    }
-}
+    handleBadgeIcon(result["extension_badge"])
+});
 
 const loading = text => {
     const wrapper = document.createElement("div");

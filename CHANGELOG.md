@@ -9,6 +9,7 @@
 ---
 
 # [Changelog v1.2.1](https://github.com/digas99/schedule-ua/releases/tag/v1.2.1) 
+Released on 11/09/2022
 
 ## Bug Fixes
 - Fixed bug of Changelog not loading in about page

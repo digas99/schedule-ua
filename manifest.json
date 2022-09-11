@@ -12,7 +12,7 @@
         "css": ["styles/content.css"]
     }],
     "background": {
-        "service_worker": "scripts/background.js"
+        "service_worker": "scripts/background/background.js"
       },
     "icons": {
         "16":  "images/logo_16x16.png",

@@ -50,6 +50,12 @@ chrome.storage.sync.get(SETTINGS_KEYS, result => {
         if (result[key] == true) document.getElementById(key.replaceAll("_", "-"))?.click();
     });
 
+    if (result["extension_badge"]) {
+        const badgeSelector = document.getElementById("extension-icon-option");
+        if (badgeSelector)
+            badgeSelector.value = result["extension_badge"];
+    }
+
     // handle color schema selector
     const colorSchema = document.querySelector("#color-schema");
     if (colorSchema)
@@ -113,25 +119,36 @@ window.addEventListener("input", e => {
     if (target.closest("#color-schema"))
         swapColorSchema(target.value);
 
-    if (target.closest("#closest-class-icon")) {
+    if (target.closest("#extension-badge-option"))
+        handleBadgeIcon(target.value);
+
+    if (target.closest("#extension-badge")) {
+        const badgeSelector = document.getElementById("extension-badge-option");
         if (!target.checked) {
+            if (badgeSelector)
+                badgeSelector.classList.add("button-inactive");
+            
             chrome.action.setBadgeText({text: ''});
-            chrome.alarms.clear("update-class-badge");
+            chrome.storage.sync.set({"extension_badge": false});
+            
+            // clear any related alarms
+            ["update-class-badge"]
+                .forEach(alarm => chrome.alarms.clear(alarm));
         }
         else {
-            chrome.storage.sync.get(["schedule", "subject_colors", "closest_class_icon"], result => {      
-                // put closest class in the badge text
-                if (result["schedule"] && result["closest_class_icon"] !== false) {
-                    const now = new Date();
-                    const todaySubjects = result["schedule"][getDayFromIndex(now.getDay(), DAYS_INDEX)];
-                    updateClassBadge(todaySubjects, result["subject_colors"], parseInt(now.getHours()), parseInt(now.getMinutes()));
-
-                    chrome.alarms.create("update-class-badge", {
-                        delayInMinutes: 1,
-                        periodInMinutes: 1
-                    });
-                }
-            });                
+            if (badgeSelector) {
+                badgeSelector.classList.remove("button-inactive");
+                
+                handleBadgeIcon(badgeSelector.value);
+            }
         }
     }
+});
+
+window.addEventListener("mousedown", e => {
+    const target = e.target;
+
+    // prevent select from opening if inactive
+    if (target.closest("select") && target.closest("select").classList.contains("button-inactive"))
+        e.preventDefault();
 });
