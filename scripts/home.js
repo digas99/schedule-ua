@@ -272,6 +272,9 @@ window.addEventListener("click", e => {
 
     if (!target.closest(".floating-info-panel") && !target.closest("#list-subjects") && !target.closest("#darkmode") && document.querySelector(".floating-info-panel"))
         document.querySelector("#list-subjects").click();
+
+    if (document.querySelector(".day-selector") && !target.closest(".day-selector") && window.getComputedStyle(document.querySelector(".day-selector"))["display"] !== "none")
+        document.querySelector(".day-selector").style.display = "none";
 });
 
 window.addEventListener("mouseover", e => {
