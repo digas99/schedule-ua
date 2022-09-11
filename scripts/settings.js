@@ -42,7 +42,7 @@ chrome.storage.sync.get(SETTINGS_KEYS, result => {
     // handle checkboxes
     if (result["email"] == null) document.getElementById("remember-email").click();
 
-    ["paco_buttons", "highlight_now", "limit_trimming", "class_popup_info"].forEach(key => {
+    DEFAULT_TRUE_SETTINGS.forEach(key => {
         if (result[key] == false) document.getElementById(key.replaceAll("_", "-"))?.click();
     });
 
@@ -92,37 +92,12 @@ window.addEventListener("click", e => {
             chrome.storage.sync.remove("email");
     }
 
-    if (target.closest("#paco-download-upload")) {
-        const checkbox = target.closest("#paco-download-upload");
-        if (checkbox.checked)
-            chrome.storage.sync.set({"paco_buttons": true});
-        else
-            chrome.storage.sync.set({"paco_buttons": false});
-    }
-
-    if (target.closest("#highlight-now")) {
-        const checkbox = target.closest("#highlight-now");
-        if (checkbox.checked)
-            chrome.storage.sync.set({"highlight_now": true});
-        else
-            chrome.storage.sync.set({"highlight_now": false});
-    }
-
-    if (target.closest("#limit-trimming")) {
-        const checkbox = target.closest("#limit-trimming");
-        if (checkbox.checked)
-            chrome.storage.sync.set({"limit_trimming": true});
-        else
-            chrome.storage.sync.set({"limit_trimming": false});
-    }
-
-    if (target.closest("#class-popup-info")) {
-        const checkbox = target.closest("#class-popup-info");
-        if (checkbox.checked)
-            chrome.storage.sync.set({"class_popup_info": true});
-        else
-            chrome.storage.sync.set({"class_popup_info": false});
-    }
+    // add click listeners to default true checkboxes
+    DEFAULT_TRUE_SETTINGS.forEach(key => {
+        const id = "#"+key.replaceAll("_", "-");
+        if (target.closest(id))
+            chrome.storage.sync.set({[key]: target.closest(id).checked});
+    });
 });
 
 window.addEventListener("input", e => {

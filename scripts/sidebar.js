@@ -20,10 +20,9 @@ window.addEventListener("click", e => {
             floatingInfoPanel = document.createElement("div");
             document.getElementById("main").appendChild(floatingInfoPanel);
             floatingInfoPanel.classList.add("floating-info-panel");
-            const sortedSchedule = Object.entries(mySchedule.schedule)
-                .filter(([, value]) => value && value.length > 0)
-                .sort(([a,], [b,]) => mySchedule.daysIndex[a] - mySchedule.daysIndex[b])
-                .reduce((acc, [key, value]) => ({...acc, [key]: value}), {});
+            const sortedSchedule = Object.fromEntries(Object.entries(mySchedule.schedule)
+                    .filter(([, value]) => value && value.length > 0)
+                    .sort(([a,], [b,]) => mySchedule.daysIndex[a] - mySchedule.daysIndex[b]));
 
             const panel = infoPanel(sortedSchedule);
             floatingInfoPanel.appendChild(panel);
