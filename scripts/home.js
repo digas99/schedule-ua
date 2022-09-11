@@ -309,14 +309,9 @@ window.addEventListener("mouseover", e => {
                         subject.classList.add("shadowed-class");
                 });
 
-                // highlight row
+                // highlight column
                 const index = mySchedule.daysIndex[weekday]+2;
-                if (!isNaN(index)) {
-                    mySchedule.table.querySelectorAll("tr:not(:first-child)").forEach(row => {
-                        const cell = row.querySelector(`td:nth-of-type(${index})`);
-                        if (cell && !cell.getAttribute("type")) cell.style.backgroundColor = "var(--background-hover)";
-                    });
-                }
+                mySchedule.columnHighlight(index, "add");
             }
             else {
                 targetElem.setAttribute("day", weekday);
@@ -336,6 +331,18 @@ window.addEventListener("mouseover", e => {
         const daySelector = document.querySelector(".day-selector");
         if (daySelector) {
             daySelector.style.display = "none";
+        }
+    }
+
+    if (storage["highlight_mouse_target_cell"]) {
+        if (target.closest("table td")) {
+            const thisCell = target.closest("table td");
+    
+            const x = Array.from(thisCell.parentElement.children).indexOf(thisCell)+1;
+            const y = Array.from(thisCell.parentElement.parentElement.children).indexOf(thisCell.parentElement)+1;
+            
+            mySchedule.columnHighlight(x, "add");
+            mySchedule.rowHighlight(y, "add");
         }
     }
 });
@@ -365,18 +372,25 @@ window.addEventListener("mouseout", e => {
                     subject.classList.remove("shadowed-class");
             });
 
-            // remove row highlight
+            // remove column highlight
             const index = mySchedule.daysIndex[weekday]+2;
-            if (!isNaN(index)) {
-                mySchedule.table.querySelectorAll("tr:not(:first-child)").forEach(row => {
-                    const cell = row.querySelector(`td:nth-of-type(${index})`);
-                    if (cell && !cell.getAttribute("type")) cell.style.removeProperty("background-color");
-                });   
-            }
+            mySchedule.columnHighlight(index, "remove");
         }
         else {
             if (targetElem.getAttribute("day"))
                 targetElem.innerText = targetElem.getAttribute("day");
+        }
+    }
+
+    if (storage["highlight_mouse_target_cell"]) {
+        if (target.closest("table td")) {
+            const thisCell = target.closest("table td");
+    
+            const x = Array.from(thisCell.parentElement.children).indexOf(thisCell)+1;
+            const y = Array.from(thisCell.parentElement.parentElement.children).indexOf(thisCell.parentElement)+1;
+            
+            mySchedule.columnHighlight(x, "remove");
+            mySchedule.rowHighlight(y, "remove");
         }
     }
 });
@@ -577,7 +591,7 @@ const highlightNowCell = (day, hours, minutes) => {
                     if (masterId) {
                         const master = mySchedule.table.querySelector(`.class[id='${masterId}']`);
                         if (master) {
-                            mySchedule.highlightCell(master);
+                            mySchedule.cellHighlight(master);
                             const liveClass = document.createElement("div");
                             master.appendChild(liveClass);
                             liveClass.classList.add("live-class");

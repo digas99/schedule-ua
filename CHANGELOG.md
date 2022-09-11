@@ -4,6 +4,7 @@
 
 ## Popup
 - The abbreviation for the Current/Next class of the day now shows up on the extension icon
+- Added possibility to highlight mouse target cell on the schedule (can be enabled on settings)
 
 ---
 

@@ -46,6 +46,10 @@ chrome.storage.sync.get(SETTINGS_KEYS, result => {
         if (result[key] == false) document.getElementById(key.replaceAll("_", "-"))?.click();
     });
 
+    DEFAULT_FALSE_SETTINGS.forEach(key => {
+        if (result[key] == true) document.getElementById(key.replaceAll("_", "-"))?.click();
+    });
+
     // handle color schema selector
     const colorSchema = document.querySelector("#color-schema");
     if (colorSchema)
@@ -92,8 +96,8 @@ window.addEventListener("click", e => {
             chrome.storage.sync.remove("email");
     }
 
-    // add click listeners to default true checkboxes
-    DEFAULT_TRUE_SETTINGS.forEach(key => {
+    // add click listeners to regular checkboxes
+    [...DEFAULT_TRUE_SETTINGS, ...DEFAULT_FALSE_SETTINGS].forEach(key => {
         const id = "#"+key.replaceAll("_", "-");
         if (target.closest(id))
             chrome.storage.sync.set({[key]: target.closest(id).checked});

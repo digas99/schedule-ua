@@ -173,16 +173,44 @@ Schedule.prototype = {
             const row = this.table.querySelector(`tr:nth-of-type(${y})`);
             if (row) {
                 cell = row.querySelector(`td:nth-of-type(${x})`);
-                this.highlightCell(cell, text);
+                this.cellHighlight(cell, text);
             }
         }
 
         return cell;
     },
-    highlightCell: function(cell, text) {
+    cellHighlight: function(cell, text) {
         cell.classList.add("cell-now");
         if (!cell.innerText && text)
             cell.innerText = text;
+    },
+    columnHighlight: function(colIndex, mode) {
+        if (!isNaN(colIndex)) {
+            this.table.querySelectorAll("tr").forEach(row => {
+                const cell = row.querySelector(`td:nth-of-type(${colIndex}), th:nth-of-type(${colIndex})`);
+                if (cell && !cell.getAttribute("type")) {
+                    if (mode === "add")
+                        cell.style.backgroundColor = "var(--background-hover)";
+                    else if (mode === "remove")
+                        cell.style.removeProperty("background-color");
+                }
+            });
+        }  
+    },
+    rowHighlight: function(rowIndex, mode) {
+        if (!isNaN(rowIndex)) {
+            Array.from(this.table.querySelector(`tr:nth-of-type(${rowIndex})`).children).forEach((cell, i, cells) => {
+                if (cell && !cell.getAttribute("type")) {
+                    if ((i == 0 || i == cells.length-1) && window.getComputedStyle(cell)["display"] === "none")
+                        cell = cell.parentElement.previousElementSibling.children[i];
+    
+                    if (mode === "add")
+                        cell.style.backgroundColor = "var(--background-hover)";
+                    else if (mode === "remove")
+                        cell.style.removeProperty("background-color");
+                }
+            });
+        }
     },
     fixRowHeights: function() {
         const rows = document.querySelectorAll("tr:not(:first-child)");

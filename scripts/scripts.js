@@ -1,7 +1,8 @@
 const SCHEDULE_CONFIGS = ["schedule", "school_year", "semester"];
 
 const DEFAULT_TRUE_SETTINGS = ["paco_buttons", "highlight_now", "limit_trimming", "class_popup_info", "closest_class_icon"];
-const SETTINGS_KEYS = ["subjects", "subject_colors", "trimmed", "email", "selected", "color_schema", ...DEFAULT_TRUE_SETTINGS];
+const DEFAULT_FALSE_SETTINGS = ["highlight_mouse_target_cell"];
+const SETTINGS_KEYS = ["subjects", "subject_colors", "trimmed", "email", "selected", "color_schema", ...DEFAULT_TRUE_SETTINGS, ...DEFAULT_FALSE_SETTINGS];
 
 const setupColorSchema = (config) => {
     ["background-color", "background-hover", "font-color", "table-borders", "active", "checkbox-ball", "checkbox-background", "select-font"].forEach(property => {
