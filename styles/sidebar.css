@@ -7,14 +7,14 @@
     align-items: center;
     padding-top: 10px;
     height: 100%;
-    border-left: 1px solid silver;
+    border-left: 1px solid var(--table-borders);
     overflow: auto;
-    z-index: 2;
+    z-index: 3;
     background-color: var(--background-color);
 }
 
 #navbar > img {
-    width: 25px;
+    width: 30px;
     margin-bottom: 10px;
 }
 
@@ -24,14 +24,14 @@
     margin-left: -2px;
 }
 
-#navbar > div:not(:first-child, .separator) {
+#navbar > div:not(.separator) {
     width: 100%;
     text-align: center;
-    padding: 10px 0;
+    padding: 9px 0;
     position: relative;
 }
 
-#navbar > div:not(:first-child, :last-child):hover {
+#navbar > div:not(:last-child):hover {
     background-color: var(--background-hover);
 }
 
@@ -39,7 +39,7 @@
     position: absolute;
     top: 3px;
     right: 5px;
-    background-color: black;
+    background-color: var(--font-color);
     width: 18px;
     height: 18px;
     border-radius: 50%;
@@ -55,5 +55,5 @@
     width: fit-content;
     height: fit-content;
     font-size: 10px;
-    color: white;
+    color: var(--background-color);
 }

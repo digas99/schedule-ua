@@ -124,6 +124,52 @@ const swapColorSchema = schema => {
                 `]
             }
             break;
+        case "Sapphire":
+            if (darkModeIcon) {
+                darkModeIcon.title = "Light Mode";
+                darkModeIcon.querySelector("img").src = "images/icons/sun.png";
+            }
+
+            options = {
+                backgroundColor: "#1f234c",
+                backgroundHover: "#364672",
+                fontColor: "#b9ffe6",
+                tableBorders: "#b9ffe6",
+                active: "#69ab93",
+                checkboxBall: "#b9ffe6",
+                checkboxBackground: "#69ab93",
+                selectFont: "black",
+                styles: [`
+                    body .icon {
+                        filter: invert(86%) sepia(34%) saturate(277%) hue-rotate(96deg) brightness(104%) contrast(101%) !important;
+                        opacity: 0.8 !important;
+                    }
+                `]
+            }
+            break;
+        case "Ambar":
+            if (darkModeIcon) {
+                darkModeIcon.title = "Light Mode";
+                darkModeIcon.querySelector("img").src = "images/icons/sun.png";
+            }
+
+            options = {
+                backgroundColor: "#2c2c2c",
+                backgroundHover: "#766648",
+                fontColor: "#ecc377",
+                tableBorders: "#ecc377",
+                active: "#766648",
+                checkboxBall: "#ecc377",
+                checkboxBackground: "#766648",
+                selectFont: "black",
+                styles: [`
+                    body .icon {
+                        filter: invert(81%) sepia(15%) saturate(1079%) hue-rotate(357deg) brightness(97%) contrast(91%) !important;
+                        opacity: 0.8 !important;
+                    }
+                `]
+            }
+            break;
     }
 
     if (colorSchema) colorSchema.value = schema;
@@ -133,14 +179,21 @@ const swapColorSchema = schema => {
     chrome.storage.sync.set({"color_schema": schema});
 }
 
+// check for color theme from url
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.get('theme'))
+    swapColorSchema(urlParams.get('theme'));
+
 chrome.storage.sync.get(["color_schema", "schedule", "subject_colors"], result => {
-    if (result["color_schema"] !== undefined && result["color_schema"] !== "System")
-        swapColorSchema(result["color_schema"]);
-    else {
-        // check for user's OS preferences
-        // https://stackoverflow.com/a/57795518/11488921
-        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
-            swapColorSchema("Dark Mode");
+    if (!urlParams.get('theme')) {
+        if (result["color_schema"] !== undefined && result["color_schema"] !== "System")
+            swapColorSchema(result["color_schema"]);
+        else {
+            // check for user's OS preferences
+            // https://stackoverflow.com/a/57795518/11488921
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
+                swapColorSchema("Dark Mode");
+        }
     }
 
     // put closest class in the badge text
@@ -149,7 +202,8 @@ chrome.storage.sync.get(["color_schema", "schedule", "subject_colors"], result =
         const todaySubjects = result["schedule"][getDayFromIndex(now.getDay(), DAYS_INDEX)];
         updateClassBadge(todaySubjects, result["subject_colors"], parseInt(now.getHours()), parseInt(now.getMinutes()));
     }
-});
+});    
+
 
 const updateClassBadge = (todaySubjects, subjectColors, hours, minutes) => {
     if (todaySubjects && todaySubjects.length > 0) {

@@ -34,7 +34,10 @@ chrome.storage.sync.get([...SCHEDULE_CONFIGS, "email"], result => {
                     if (inputs.length == 2 && inputsFilled(inputs)) {
                         // add loading
                         document.body.appendChild(loading("Loading schedule..."));
-            
+
+                        // make sure password is always hidden on loading
+                        inputs[1].type = "password";
+
                         const email = inputs[0].value;
                         const password = inputs[1].value;
                         const encoded = btoa(email+":"+password);

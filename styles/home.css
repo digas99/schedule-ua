@@ -49,6 +49,22 @@ table > tbody > tr > th:not(:first-child, :last-child) {
     cursor: pointer;
 }
 
+.floating-info-panel {
+    position: absolute;
+    top: 0;
+    z-index: 2;
+    background-color: var(--background-color);
+    height: 100%;
+    padding: 0 10px;
+    box-shadow: -2px 0px 4px -2px black;
+    overflow: auto;
+    scroll-behavior: smooth;
+}
+
+.floating-info-panel .info-panel {
+    width: unset !important;
+}
+
 .info-panel {
     width: 1020px;
     padding: 20px 10px;
@@ -63,9 +79,16 @@ table > tbody > tr > th:not(:first-child, :last-child) {
     text-align: center;
 }
 
-.info-panel > div {
+.info-panel > div:last-child ,.info-panel > div:last-child > div {
     display: flex;
     flex-direction: column;
+}
+
+.info-panel > div:last-child {
+    row-gap: 25px;
+}
+
+.info-panel > div:last-child > div {
     row-gap: 10px;
 }
 
@@ -75,6 +98,23 @@ table > tbody > tr > th:not(:first-child, :last-child) {
     flex-direction: row;
     column-gap: 10px;
     margin: 10px auto;
+}
+
+.info-panel .day-chooser {
+    display: flex;
+    margin: 5px 0;
+}
+
+.info-panel .day-chooser > div {
+    width: 100%;
+    text-align: center;
+    padding: 5px;
+    background-color: var(--font-color);
+    color: var(--background-color);
+}
+
+.info-panel .day-chooser > div:not(:last-child) {
+    border-right: 2px solid var(--background-color);
 }
 
 .subject-info > div:nth-child(1) {
@@ -173,7 +213,7 @@ table > tbody > tr > th:not(:first-child, :last-child) {
     background-color: var(--background-color);
     width: fit-content !important;
     padding: unset !important;
-    top: 50px;
+    top: 20px;
     border: 1px solid silver;
     z-index: 1;
 }

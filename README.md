@@ -4,7 +4,7 @@
 
 ## SchedUA - Schedule for Universidade de Aveiro
 
-![Latest Release](https://img.shields.io/github/v/release/digas99/schedule-ua?label=Latest%20Version)
+[![Latest Release](https://img.shields.io/github/v/release/digas99/schedule-ua?label=Latest%20Version)](https://img.shields.io/github/v/release/digas99/schedule-ua?label=Latest%20Version) [![Chrome Users](https://img.shields.io/chrome-web-store/users/hdidghpdffhhefdafcajajjocjbmbnml?color=yellow&label=Chrome%20Users)](https://img.shields.io/chrome-web-store/users/hdidghpdffhhefdafcajajjocjbmbnml?color=yellow&label=Chrome%20Users)
 
 Browser Extension for easy access to your Schedule from Universidade de Aveiro. This extension uses the [PACO-UA API](https://github.com/digas99/paco-ua-api) to fetch the data from the schedule and present it in the Extension Popup.
 
@@ -24,16 +24,19 @@ Browser Extension for easy access to your Schedule from Universidade de Aveiro. 
 
 ## Latest Features
 
-# [Changelog v1.2.0](https://github.com/digas99/schedule-ua/releases/tag/v1.2.0) 
+## [Changelog v1.2.1](https://github.com/digas99/schedule-ua/releases/tag/v1.2.1) 
 
-## Popup
-- Added Dark Mode
-- Added Changelog to about page
+### Bug Fixes
+- Fixed bug of Changelog not loading in about page
+- Changing pages within the extension while using a color theme doesn't flicker white anymore
+- Fixed issue where choosing a subject color with the color picker on settings would break if many colors were clicked within the color picker (now, the color is only saved when the color picker is closed)
+- Clicking on a class from a subject that has only one day on the schedule now shows the info panel on the right, instead of showing just one full sized schedule with one single day
+
+### Popup
+- Added button to lateral navbar to list all the subjects from the current schedule
 - Color Themes:
-    - Light Mode
-    - Light High Contrast
-    - Dark Mode
-    - Dark High Contrast
+    - Sapphire
+    - Ambar
 
 [(All changelogs)](CHANGELOG.md)
 
@@ -120,6 +123,8 @@ There is a page that provides ways of customizing your experience with the app. 
         - Light High Contrast
         - Dark Mode
         - Dark High Contrast
+        - Sapphire
+        - Ambar
 - **PACO**
     - **Download and Upload buttons:** extra buttons above the schedule in the schedule page in PACO - Secretaria Virtual.
 

@@ -155,6 +155,10 @@ window.addEventListener("click", e => {
             const selected = target.innerText; 
             switch(selected) {
                 case "Week":
+                    const listSubjectsButton = document.getElementById("list-subjects");
+                    if (listSubjectsButton)
+                        listSubjectsButton.classList.replace("button-inactive", "clickable");
+
                     scheduleWrapper.firstChild?.remove();
                     scheduleWrapper.querySelector(".info-panel")?.remove();
 
@@ -219,6 +223,10 @@ window.addEventListener("click", e => {
     }
 
     if (target.closest(".class")) {
+        const listSubjectsButton = document.getElementById("list-subjects");
+        if (listSubjectsButton)
+            listSubjectsButton.classList.replace("button-inactive", "clickable");
+
         const targetSubject = target.closest(".class").innerText.split(" - ")[0];
         const days = Object.entries(storage["schedule"])
             .filter(([day, subjects]) => subjects.some(subject => subject["subject"]["abbrev"] == targetSubject))
@@ -233,30 +241,37 @@ window.addEventListener("click", e => {
             scheduleWrapper.firstChild?.remove();
             scheduleWrapper.querySelector(".info-panel")?.remove();
         
-            // adjust schedule
-            const newSchedule = JSON.parse(JSON.stringify(storage["schedule"])); // deep clone schedule
-            Object.keys(DAYS_INDEX).forEach(day => {
-                if (!days.includes(day))
-                    delete newSchedule[day];
-            });
+            if (days.length == 1)
+                createDaySchedule(scheduleWrapper, days[0]);
+            else {
+                // adjust schedule
+                const newSchedule = JSON.parse(JSON.stringify(storage["schedule"])); // deep clone schedule
+                Object.keys(DAYS_INDEX).forEach(day => {
+                    if (!days.includes(day))
+                        delete newSchedule[day];
+                });
 
-            mySchedule = new Schedule(scheduleWrapper, {
-                "hours": defaultHours,
-                "days": days,
-                "schedule": newSchedule,
-                "colors": mySchedule.subjectColors,
-                "trimmed": mySchedule.trimmed,
-                "limitTrimming": mySchedule.limitTrimming,
-                "soonest": mySchedule.soonest,
-                "latest": mySchedule.latest
-            });
-        
-            mySchedule.create();
-            mySchedule.setupOverlappedSubjects();
+                mySchedule = new Schedule(scheduleWrapper, {
+                    "hours": defaultHours,
+                    "days": days,
+                    "schedule": newSchedule,
+                    "colors": mySchedule.subjectColors,
+                    "trimmed": mySchedule.trimmed,
+                    "limitTrimming": mySchedule.limitTrimming,
+                    "soonest": mySchedule.soonest,
+                    "latest": mySchedule.latest
+                });
             
-            highlightNowCell();
+                mySchedule.create();
+                mySchedule.setupOverlappedSubjects();
+                
+                highlightNowCell();
+            }
         }
     }
+
+    if (!target.closest(".floating-info-panel") && !target.closest("#list-subjects") && !target.closest("#darkmode") && document.querySelector(".floating-info-panel"))
+        document.querySelector("#list-subjects").click();
 });
 
 window.addEventListener("mouseover", e => {
@@ -369,6 +384,9 @@ window.addEventListener("mouseout", e => {
 const createDaySchedule = (scheduleWrapper, scheduleDay) => {
     scheduleWrapper.firstChild?.remove();
     scheduleWrapper.querySelector(".info-panel")?.remove();
+    const listSubjectsButton = document.getElementById("list-subjects");
+    if (listSubjectsButton)
+        listSubjectsButton.classList.replace("clickable", "button-inactive");
 
     mySchedule = new Schedule(scheduleWrapper, {
         "hours": defaultHours,
@@ -434,68 +452,107 @@ const infoPanel = schedule => {
     const title = document.createElement("h2");
     wrapper.appendChild(title);
     title.appendChild(document.createTextNode("Your classes"));
-    
-    // general data
-    const genDataWrapper = document.createElement("div");
-    wrapper.appendChild(genDataWrapper);
 
-    const subjectsWrapper = document.createElement("div");
-    wrapper.appendChild(subjectsWrapper);
-    const subjects = Object.values(schedule).flat(1);
-    let pract = 0, theor = 0, hoursTotal = 0;
-    if (subjects) {
-        subjects.forEach(subject => {
-            if (subject) {
-                const subjectWrapper = document.createElement("div");
-                subjectsWrapper.appendChild(subjectWrapper);
-                subjectWrapper.classList.add("subject-info");
-                const classTitle = document.createElement("div");
-                subjectWrapper.appendChild(classTitle);
-                classTitle.appendChild(document.createTextNode(`${subject["subject"]["abbrev"]} - ${subject["subject"]["name"]}`));
-                classTitle.style.backgroundColor = mySchedule.subjectColors[subject["subject"]["abbrev"]];
-                const infoWrapper = document.createElement("div");
-                subjectWrapper.appendChild(infoWrapper);
-                const classNumberWrapper = document.createElement("div");
-                infoWrapper.appendChild(classNumberWrapper);
-                const classNumber = document.createElement("div");
-                classNumberWrapper.appendChild(classNumber);
-                classNumber.appendChild(document.createTextNode(subject["class"]));
-                const info = document.createElement("div");
-                infoWrapper.appendChild(info);
-                const start = parseFloat(subject["start"].replace(",", "."));
-                const duration = parseFloat(subject["duration"].replace(",", "."));
-                const end = start+duration;
-                subject["time"] = `${start}h - ${end}h`;
-                ["time" ,"duration", "room", "capacity"].forEach(type => {
-                    const rowWrapper = document.createElement("div");
-                    info.appendChild(rowWrapper);
-                    rowWrapper.title = type.charAt(0).toUpperCase()+type.slice(1);
-                    const rowIcon = document.createElement("img");
-                    rowWrapper.appendChild(rowIcon);
-                    rowIcon.src = `images/icons/${type}.png`;
-                    rowIcon.classList.add("icon");
-                    const rowContent = document.createElement("div");
-                    rowWrapper.appendChild(rowContent);
-                    rowContent.appendChild(document.createTextNode(subject[type]));
+    if (schedule) {
+        const scheduleSize = Object.keys(schedule).length;
+
+        // summary
+        const genDataWrapper = document.createElement("div");
+        wrapper.appendChild(genDataWrapper);
+
+        let dayChooser;
+        if (scheduleSize > 1) {
+            // day chooser
+            dayChooser = document.createElement("div");
+            wrapper.appendChild(dayChooser);
+            dayChooser.classList.add("day-chooser");
+        }
+
+        const subjectsWrapper = document.createElement("div");
+        wrapper.appendChild(subjectsWrapper);
+        let pract = 0, theor = 0, hoursTotal = 0;
+
+        Object.entries(schedule).forEach(([day, subjects]) => {
+            if (subjects) {
+                const container = document.createElement("div");
+                subjectsWrapper.appendChild(container);
+                container.setAttribute("day", day);
+                subjects.forEach(subject => {
+                    if (subject) {
+                        const subjectWrapper = document.createElement("div");
+                        container.appendChild(subjectWrapper);
+                        subjectWrapper.classList.add("subject-info");
+                        const classTitle = document.createElement("div");
+                        subjectWrapper.appendChild(classTitle);
+                        classTitle.appendChild(document.createTextNode(`${subject["subject"]["abbrev"]} - ${subject["subject"]["name"]}`));
+                        classTitle.style.backgroundColor = mySchedule.subjectColors[subject["subject"]["abbrev"]];
+                        const infoWrapper = document.createElement("div");
+                        subjectWrapper.appendChild(infoWrapper);
+                        const classNumberWrapper = document.createElement("div");
+                        infoWrapper.appendChild(classNumberWrapper);
+                        const classNumber = document.createElement("div");
+                        classNumberWrapper.appendChild(classNumber);
+                        classNumber.appendChild(document.createTextNode(subject["class"]));
+                        const info = document.createElement("div");
+                        infoWrapper.appendChild(info);
+                        const start = parseFloat(subject["start"].replace(",", "."));
+                        const duration = parseFloat(subject["duration"].replace(",", "."));
+                        const end = start+duration;
+                        subject["time"] = `${start}h - ${end}h`;
+                        subject["day"] = day.slice(0, 3).toUpperCase();
+                        const keys = ["day", "time" ,"duration", "room", "capacity"];
+                        if (scheduleSize == 1)
+                            delete keys[0];
+
+                        keys.forEach(type => {
+                            const rowWrapper = document.createElement("div");
+                            info.appendChild(rowWrapper);
+                            rowWrapper.title = type.charAt(0).toUpperCase()+type.slice(1);
+                            const rowIcon = document.createElement("img");
+                            rowWrapper.appendChild(rowIcon);
+                            rowIcon.src = `images/icons/${type}.png`;
+                            rowIcon.classList.add("icon");
+                            const rowContent = document.createElement("div");
+                            rowWrapper.appendChild(rowContent);
+                            rowContent.appendChild(document.createTextNode(subject[type]));
+                        });
+            
+                        if (subject["class"].charAt(0) == "P") pract++;
+                        else theor++;
+            
+                        hoursTotal += parseFloat(subject["duration"].replace(",", "."));
+                    }
                 });
-    
-                if (subject["class"].charAt(0) == "P") pract++;
-                else theor++;
-    
-                hoursTotal += parseFloat(subject["duration"].replace(",", "."));
-            }
+            } 
+        }); 
+     
+        // summary
+        const data = [scheduleSize, pract+theor, pract, theor, hoursTotal+"h"];
+        const titles = ["Days", "Classes", "Pract.", "Theor.", "Hours Total"];
+        if (scheduleSize == 1) {
+            delete data[0];
+            delete titles[0];
+        }
+        titles.forEach((title, i) => {
+            const wrapper = document.createElement("div");
+            genDataWrapper.appendChild(wrapper);
+            const titleElem = document.createElement("b");
+            wrapper.appendChild(titleElem);
+            titleElem.appendChild(document.createTextNode(title));
+            wrapper.appendChild(document.createTextNode(` ${data[i]}`));
         });
-    }
 
-    const data = [pract+theor, pract, theor, hoursTotal+"h"];
-    ["Classes", "Pract.", "Theor.", "Hours Total"].forEach((title, i) => {
-        const wrapper = document.createElement("div");
-        genDataWrapper.appendChild(wrapper);
-        const titleElem = document.createElement("b");
-        wrapper.appendChild(titleElem);
-        titleElem.appendChild(document.createTextNode(title));
-        wrapper.appendChild(document.createTextNode(` ${data[i]}`));
-    });
+        // day chooser
+        if (scheduleSize > 1) {
+            Object.keys(schedule).forEach(dayString => {
+                const dayWrapper = document.createElement("div");
+                dayChooser.appendChild(dayWrapper);
+                dayWrapper.appendChild(document.createTextNode(dayString));
+                dayWrapper.classList.add("clickable");
+                dayWrapper.addEventListener("click", () => wrapper.parentElement.scrollTo(0, subjectsWrapper.querySelector(`div[day="${dayString}"]`).offsetTop));
+            });
+        }
+    }
 
     return wrapper;
 }
