@@ -28,17 +28,15 @@ Browser Extension for easy access to your Schedule from Universidade de Aveiro. 
 
 ### Bug Fixes
 - Fixed bug of Changelog not loading in about page
-
-## [Changelog v1.2.0](https://github.com/digas99/schedule-ua/releases/tag/v1.2.0) 
+- Changing pages within the extension while using a color theme doesn't flicker white anymore
+- Fixed issue where choosing a subject color with the color picker on settings would break if many colors were clicked within the color picker (now, the color is only saved when the color picker is closed)
+- Clicking on a class from a subject that has only one day on the schedule now shows the info panel on the right, instead of showing just one full sized schedule with one single day
 
 ### Popup
-- Added Dark Mode
-- Added Changelog to about page
+- Added button to lateral navbar to list all the subjects from the current schedule
 - Color Themes:
-    - Light Mode
-    - Light High Contrast
-    - Dark Mode
-    - Dark High Contrast
+    - Sapphire
+    - Ambar
 
 [(All changelogs)](CHANGELOG.md)
 

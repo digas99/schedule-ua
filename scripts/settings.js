@@ -19,9 +19,16 @@ chrome.storage.sync.get(SETTINGS_KEYS, result => {
             colorPicker.type = "color";
             colorPicker.value = color;
 
-            colorPicker.addEventListener("input", () => {
-                subjectColors[subject] = colorPicker.value;
-                chrome.storage.sync.set({"subject_colors": subjectColors});
+            let choosingColor = false;
+            colorPicker.addEventListener("click", () => choosingColor = true);
+
+            colorPicker.addEventListener("input", () => subjectColors[subject] = colorPicker.value);
+
+            colorPicker.addEventListener("mouseout", () => {
+                if (choosingColor) {
+                    chrome.storage.sync.set({"subject_colors": subjectColors});
+                    choosingColor = false;
+                }
             });
         });
     }
