@@ -185,7 +185,7 @@ const urlParams = new URLSearchParams(window.location.search);
 if (urlParams.get('theme'))
     swapColorSchema(urlParams.get('theme'));
 
-chrome.storage.sync.get(["color_schema", "schedule", "subject_colors"], result => {
+chrome.storage.sync.get(["color_schema", "schedule", "subject_colors", "closest_class_icon"], result => {
     if (!urlParams.get('theme')) {
         if (result["color_schema"] !== undefined && result["color_schema"] !== "System")
             swapColorSchema(result["color_schema"]);
@@ -198,7 +198,7 @@ chrome.storage.sync.get(["color_schema", "schedule", "subject_colors"], result =
     }
 
     // put closest class in the badge text
-    if (result["schedule"]) {
+    if (result["schedule"] && result["closest_class_icon"] !== false) {
         const now = new Date();
         const todaySubjects = result["schedule"][getDayFromIndex(now.getDay(), DAYS_INDEX)];
         updateClassBadge(todaySubjects, result["subject_colors"], parseInt(now.getHours()), parseInt(now.getMinutes()));

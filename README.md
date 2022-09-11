@@ -116,7 +116,7 @@ There is a page that provides ways of customizing your experience with the app. 
     - **Highlight Cell of Now:** Highlight the cell in the schedule that corresponds to the current time.
     - **Limit Schedule Trim:** limit min and max hours of the trim. This values are taken from the schedule itself.
     - **Show Popup with Information on a Class on hover:** show popup with information when hovering over a class wihtin the schedule.
-- **Account**
+- **General**
     - **Remember Email:** remember email the next time you logout.
     - **Color Theme:** app color theme.
         - Light Mode
@@ -125,6 +125,7 @@ There is a page that provides ways of customizing your experience with the app. 
         - Dark High Contrast
         - Sapphire
         - Ambar
+    - **Show Current/Next Class on the Extension Icon:** Show current/next class of the day on the extension icon.
 - **PACO**
     - **Download and Upload buttons:** extra buttons above the schedule in the schedule page in PACO - Secretaria Virtual.
 

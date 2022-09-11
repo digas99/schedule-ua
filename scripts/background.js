@@ -24,6 +24,13 @@ chrome.alarms.onAlarm.addListener(alarm => {
         updateClass();
 });
 
+chrome.storage.sync.get("closest_class_icon", result => {
+    if (result["closest_class_icon"] == false) {
+        chrome.alarms.clear("update-class-badge");
+        chrome.action.setBadgeText({text: ''});
+    }
+});
+
 const updateClassBadge = (todaySubjects, subjectColors, hours, minutes) => {
     if (todaySubjects && todaySubjects.length > 0) {
         let closestClass = todaySubjects[0];

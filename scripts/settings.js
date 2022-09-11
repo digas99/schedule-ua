@@ -108,4 +108,7 @@ window.addEventListener("input", e => {
 
     if (target.closest("#color-schema"))
         swapColorSchema(target.value);
+
+    if (target.closest("#closest-class-icon") && !target.checked)
+        chrome.action.setBadgeText({text: ''});
 });
