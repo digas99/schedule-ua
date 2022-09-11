@@ -5,30 +5,32 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 const updateClass = () => {
-    chrome.storage.sync.get(["schedule", "subject_colors"], result => {
-        // put closest class in the badge text
-        if (result["schedule"]) {
-            const now = new Date();
-            const todaySubjects = result["schedule"][getDayFromIndex(now.getDay(), DAYS_INDEX)];
-            updateClassBadge(todaySubjects, result["subject_colors"], parseInt(now.getHours()), parseInt(now.getMinutes()));
+    chrome.storage.sync.get(["schedule", "subject_colors", "closest_class_icon"], result => {
+        if (result["closest_class_icon"] == false) {
+            chrome.alarms.clear("update-class-badge");
+            chrome.action.setBadgeText({text: ''});
+        }
+        else {
+            // put closest class in the badge text
+            if (result["schedule"]) {
+                const now = new Date();
+                const todaySubjects = result["schedule"][getDayFromIndex(now.getDay(), DAYS_INDEX)];
+                updateClassBadge(todaySubjects, result["subject_colors"], parseInt(now.getHours()), parseInt(now.getMinutes()));
+            }
         }
     });
 }
 
 updateClass();
 
-chrome.alarms.create("update-class-badge", {delayInMinutes: 1});
+chrome.alarms.create("update-class-badge", {
+    delayInMinutes: 1,
+    periodInMinutes: 1
+});
 
 chrome.alarms.onAlarm.addListener(alarm => {
     if (alarm.name === "update-class-badge")
         updateClass();
-});
-
-chrome.storage.sync.get("closest_class_icon", result => {
-    if (result["closest_class_icon"] == false) {
-        chrome.alarms.clear("update-class-badge");
-        chrome.action.setBadgeText({text: ''});
-    }
 });
 
 const updateClassBadge = (todaySubjects, subjectColors, hours, minutes) => {

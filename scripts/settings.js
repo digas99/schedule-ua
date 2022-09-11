@@ -113,6 +113,25 @@ window.addEventListener("input", e => {
     if (target.closest("#color-schema"))
         swapColorSchema(target.value);
 
-    if (target.closest("#closest-class-icon") && !target.checked)
-        chrome.action.setBadgeText({text: ''});
+    if (target.closest("#closest-class-icon")) {
+        if (!target.checked) {
+            chrome.action.setBadgeText({text: ''});
+            chrome.alarms.clear("update-class-badge");
+        }
+        else {
+            chrome.storage.sync.get(["schedule", "subject_colors", "closest_class_icon"], result => {      
+                // put closest class in the badge text
+                if (result["schedule"] && result["closest_class_icon"] !== false) {
+                    const now = new Date();
+                    const todaySubjects = result["schedule"][getDayFromIndex(now.getDay(), DAYS_INDEX)];
+                    updateClassBadge(todaySubjects, result["subject_colors"], parseInt(now.getHours()), parseInt(now.getMinutes()));
+
+                    chrome.alarms.create("update-class-badge", {
+                        delayInMinutes: 1,
+                        periodInMinutes: 1
+                    });
+                }
+            });                
+        }
+    }
 });

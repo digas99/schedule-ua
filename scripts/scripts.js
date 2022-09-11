@@ -206,7 +206,6 @@ chrome.storage.sync.get(["color_schema", "schedule", "subject_colors", "closest_
     }
 });    
 
-
 const updateClassBadge = (todaySubjects, subjectColors, hours, minutes) => {
     if (todaySubjects && todaySubjects.length > 0) {
         let closestClass = todaySubjects[0];
