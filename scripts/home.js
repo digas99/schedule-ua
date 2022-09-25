@@ -295,9 +295,11 @@ window.addEventListener("mouseover", e => {
             const start = parseFloat(subjectInfo["start"].replace(",", "."));
             const duration = parseFloat(subjectInfo["duration"].replace(",", "."));
             const end = start+duration;
-            const popup = classInfoPopup(subjectInfo["subject"]["name"], start, end, mySchedule.subjectColors ? mySchedule.subjectColors[targetSubject] : null);
-            popup.style.top = (subject.offsetHeight - 5)+"px";
-            subject.appendChild(popup);
+            if (!document.querySelector(".class-popup")) {
+                const popup = classInfoPopup({name: subjectInfo["subject"]["name"], code: subjectInfo["subject"]["code"]}, start, end, mySchedule.subjectColors ? mySchedule.subjectColors[targetSubject] : null);
+                popup.style.top = (subject.offsetHeight - 5)+"px";
+                subject.appendChild(popup);
+            }
         }
     }
 
@@ -606,16 +608,56 @@ const highlightNowCell = (day, hours, minutes) => {
     }
 }
 
-const classInfoPopup = (className, start, end, color) => {
+const classInfoPopup = (info, start, end, color) => {
     const wrapper = document.createElement("div");
-    wrapper.classList.add("class-info-popup");
+    wrapper.classList.add("class-popup", "class-info-popup");
     if (color)
         wrapper.style.borderBottom = "4px solid "+color;
     const name = document.createElement("div");
     wrapper.appendChild(name);
-    name.appendChild(document.createTextNode(className));
-    const time = document.createElement("div");
-    wrapper.appendChild(time);
-    time.appendChild(document.createTextNode(`${start}h - ${end}h`));
+    name.appendChild(document.createTextNode(info["name"]));
+
+    const infoRow = (icon, text) => {
+        const rowWrapper = document.createElement("div");
+        const img = document.createElement("img");
+        rowWrapper.appendChild(img);
+        img.src = icon;
+        img.classList.add("icon");
+        const textElem = document.createElement("div");
+        rowWrapper.appendChild(textElem);
+        textElem.appendChild(document.createTextNode(text));
+        return rowWrapper;
+    }
+
+    if (info["code"])
+        wrapper.appendChild(infoRow("images/icons/key.png", info["code"]));
+
+    wrapper.appendChild(infoRow("images/icons/time.png", `${start}h - ${end}h`));
+    return wrapper;
+}
+
+window.addEventListener('contextmenu', e => {
+    const target = e.target;
+
+    if (target.closest(".class")) {
+        // prevent default context menu
+        e.preventDefault();
+
+        if (document.querySelector(".class-popup"))
+            document.querySelector(".class-popup").remove();
+        
+        target.closest(".class").appendChild(contextMenu(["Complete Schedule", "Remove Class", "Remove Subject"]));
+    }
+});
+
+const contextMenu = options => {
+    const wrapper = document.createElement("div");
+    wrapper.classList.add("class-popup", "class-context-menu");
+    options.forEach(option => {
+        const opt = document.createElement("div");
+        wrapper.appendChild(opt);
+        opt.classList.add("clickable");
+        opt.appendChild(document.createTextNode(option));
+    });
     return wrapper;
 }

@@ -79,8 +79,11 @@ chrome.storage.sync.get([...SCHEDULE_CONFIGS, "email"], result => {
                             else chrome.storage.sync.remove("email");
 
                             chrome.storage.sync.set(data, () => {
-                                if (success)
-                                    window.location.href = "/home.html";
+                                if (success) {
+                                    const subjectCodes = Array.from(new Set(Object.entries(data["schedule"]).map(([_, classes]) => classes.map(data => data["subject"]["code"])).flat(1)));
+                                    chrome.runtime.sendMessage({codes: subjectCodes, auth: encoded});
+                                    window.location.href = "/home.html?bottom_info=Waiting for subject schedules to start loading...";
+                                }
                             });
                         })
                         .catch(() => {

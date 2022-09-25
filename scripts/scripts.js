@@ -217,3 +217,39 @@ const loading = text => {
     
     return wrapper;
 }
+
+const bottomInfo = text => {
+    const wrapper = document.createElement("div");
+    document.querySelector("#main").appendChild(wrapper);
+    wrapper.classList.add("bottom-info");
+    const img = document.createElement("img");
+    wrapper.appendChild(img);
+    img.classList.add("icon");
+    img.src = "images/icons/refresh.png";
+    let degs = 0;
+    setInterval(() => img.style.rotate = (degs+=20)+"deg", 100);
+    wrapper.appendChild(document.createTextNode(text));
+    return wrapper;
+}
+
+if (urlParams.get('bottom_info')) {
+    if (document.querySelector(".bottom-info"))
+        document.querySelector(".bottom-info").remove();
+    document.querySelector("#main").appendChild(bottomInfo(urlParams.get('bottom_info')));
+}
+
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.loadingCode) {
+        if (document.querySelector(".bottom-info"))
+            document.querySelector(".bottom-info").remove();
+        document.querySelector("#main").appendChild(bottomInfo("Loaded schedule for subject "+request.loadingCode));
+        sendResponse({code: request.loadingCode});
+    }
+
+    if (request.bottomInfo) {
+        if (request.bottomInfo == "close") {
+            if (document.querySelector(".bottom-info"))
+                document.querySelector(".bottom-info").remove();
+        }
+    }
+});

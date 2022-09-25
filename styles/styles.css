@@ -106,3 +106,20 @@ h2 {
     width: fit-content;
     height: fit-content;
 }
+
+.bottom-info {
+    position: absolute;
+    bottom: 0;
+    padding: 10px;
+    background-color: var(--background-color);
+    border-top: 1px solid var(--table-borders);
+    width: 100%;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    column-gap: 8px;
+}
+
+.bottom-info img {
+    width: 10px;
+}

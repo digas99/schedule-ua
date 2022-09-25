@@ -175,16 +175,22 @@ table > tbody > tr > th:not(:first-child, :last-child) {
     position: absolute;
 }
 
-.class-info-popup {
+.class-popup {
     position: absolute;
-    text-align: left;
-    padding: 10px;
     background-color: var(--background-color);
     z-index: 12;
+    box-shadow: 0px 2px 3px -1px #919191;
+}
+
+.class-info-popup {
+    text-align: left;
     width: fit-content;
     min-width: 140px;
-    box-shadow: 0px 2px 3px -1px #919191;
     pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    row-gap: 3px;
+    padding: 10px;
 }
 
 .class-info-popup * {
@@ -193,6 +199,17 @@ table > tbody > tr > th:not(:first-child, :last-child) {
 
 .class-info-popup > div:nth-child(1) {
     font-weight: bold;
+}
+
+.class-info-popup > div:not(:nth-child(1)) {
+    display: flex;
+    column-gap: 5px;
+    align-items: center;
+}
+
+.class-info-popup > div:not(:nth-child(1)) img {
+    width: 12px;
+    height: 12px;
 }
 
 .class-info-popup:before {
@@ -205,6 +222,19 @@ table > tbody > tr > th:not(:first-child, :last-child) {
     left: 5px;
     transform: rotate(45deg);
     z-index: -1;
+}
+
+.class-context-menu {
+    display: flex;
+    flex-direction: column;
+    left: 20px;
+    text-align: left;
+}
+
+.class-context-menu > div {
+    white-space: nowrap;
+    padding: 10px;
+    font-weight: normal !important;
 }
 
 .day-selector {
