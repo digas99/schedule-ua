@@ -101,7 +101,7 @@ const highlightTester = (day, hours, k, speed) => {
     }, speed);
 }
 
-window.addEventListener("click", e => {
+document.addEventListener("click", e => {
     const target = e.target;
 
     if (target.closest("#download")) {
@@ -222,7 +222,8 @@ window.addEventListener("click", e => {
         }
     }
 
-    if (target.closest(".class")) {
+    // class cell
+    if (target.closest(".class") &&  !target.closest(".class-context-menu")) {
         const listSubjectsButton = document.getElementById("list-subjects");
         if (listSubjectsButton)
             listSubjectsButton.classList.replace("button-inactive", "clickable");
@@ -275,13 +276,249 @@ window.addEventListener("click", e => {
 
     if (document.querySelector(".day-selector") && !target.closest(".day-selector") && window.getComputedStyle(document.querySelector(".day-selector"))["display"] !== "none")
         document.querySelector(".day-selector").style.display = "none";
+
+    // clicked on class context menu
+    if (target.closest(".class-context-menu")) {
+        const cell = target.closest(".class");
+        switch(target.closest(".clickable").innerText) {
+            case "Complete Schedule":
+                const scheduleWrapper = document.querySelector("#main > div");
+                const subjectCode = target.closest(".class").getAttribute("code");
+                if (scheduleWrapper && subjectCode) {
+                    const key = subjectCode+"_schedule";
+                    chrome.storage.sync.get(key, result => {
+                        if (result[key]) {
+                            scheduleWrapper.firstChild?.remove();
+                            scheduleWrapper.querySelector(".info-panel")?.remove();
+
+                            const schedule = result[key]["schedule"];
+
+                            mySchedule = new Schedule(scheduleWrapper, {
+                                "hours": defaultHours,
+                                "days": defaultDays,
+                                "schedule": schedule,
+                                "colors": mySchedule.subjectColors,
+                                "trimmed": mySchedule.trimmed,
+                                "limitTrimming": mySchedule.limitTrimming,
+                            });
+
+                            mySchedule.create();
+                            mySchedule.setupOverlappedSubjects();
+                            mySchedule.removeSaturday();
+                            
+                            highlightNowCell();
+                        }
+                    });
+                }
+                break;
+            case "Remove Class":
+                if (cell) {
+                    chrome.storage.sync.get("schedule", result => removeCell(cell, result["schedule"]));
+                    
+                    // clear all shadowed-class
+                    Array.from(mySchedule.table.querySelectorAll(".shadowed-class")).forEach(cell => cell.classList.remove("shadowed-class"));
+                }
+                
+                break;
+            case "Remove Subject":
+                if (cell) {
+                    const subject = cell.getAttribute("subject");
+                    if (subject) {
+                        chrome.storage.sync.get("schedule", result => Array.from(mySchedule.table.querySelectorAll(`td[subject="${subject}"]`)).forEach(classCell => removeCell(classCell, result["schedule"])));
+                    
+                        // clear all shadowed-class
+                        Array.from(mySchedule.table.querySelectorAll(".shadowed-class")).forEach(cell => cell.classList.remove("shadowed-class"));
+                    }
+                }
+        }
+    }
+
+    // clicked outside class context menu
+    if (document.querySelector(".class-context-menu") && !target.closest(".class-context-menu"))
+        document.querySelector(".class-context-menu").remove();
+
+    // empty cell        
+    let cell;
+    if ((cell = target.closest("table tr > td")) && !cell.style.display && !cell.getAttribute("type")) {
+        const x = parseInt(Array.from(cell.parentElement.children).indexOf(cell));
+        const y = parseInt(Array.from(cell.parentElement.parentElement.children).indexOf(cell.parentElement));
+        const day = mySchedule.table.querySelector(`th:nth-of-type(${x+1})`).innerText;
+        let time = parseInt((y % 2 == 0 ? cell.parentElement.previousElementSibling : cell.parentElement).firstElementChild.innerText);
+        if (y % 2 == 0)
+            time+=",5";
+
+        const pp = popup({
+            "close": true,
+            "title": "Add subject"
+        });
+        document.body.appendChild(pp);
+        const popupWindow = pp.querySelector("div:nth-child(2)");
+        popupWindow.classList.add("add-class-menu");
+        
+        const subjectSection = document.createElement("div");
+        popupWindow.appendChild(subjectSection);
+        subjectSection.classList.add("item-check");
+        const subjectLabel = document.createElement("label");
+        subjectSection.appendChild(subjectLabel);
+        subjectLabel.appendChild(document.createTextNode("Subject *"));
+        subjectLabel.setAttribute("for", "add-subject");
+        if (mySchedule.subjects && mySchedule.subjectsData && mySchedule.schedule) {
+            const subjectSelect = document.createElement("select");
+            subjectSection.appendChild(subjectSelect);
+            subjectSelect.id = "add-subject";
+            subjectSelect.setAttribute("name", "add-subject");
+            ["", ...mySchedule.subjects.sort((a, b) => a.localeCompare(b))].forEach(subject => {
+                const subjectOption = document.createElement("option");
+                subjectSelect.appendChild(subjectOption);
+                subjectOption.appendChild(document.createTextNode(subject));
+                if (mySchedule.subjectColors) {
+                    subjectOption.style.backgroundColor = mySchedule.subjectColors[subject];
+                    subjectOption.style.color = "white";
+                }
+            });
+
+            const startWrapper = document.createElement("div");
+            popupWindow.appendChild(startWrapper);
+            startWrapper.classList.add("item-check");
+            const startIcon = document.createElement("img");
+            startWrapper.appendChild(startIcon);
+            startIcon.classList.add("icon");
+            startIcon.src = "images/icons/time.png";
+            const startLabel = document.createElement("label");
+            startWrapper.appendChild(startLabel);
+            startLabel.appendChild(document.createTextNode("Start *"));
+            const startTimeInput = document.createElement("input");
+            startWrapper.appendChild(startTimeInput);
+            startTimeInput.id = "add-start-time";
+            startTimeInput.setAttribute("name", "add-start-time");
+            startTimeInput.type = "text";
+            startTimeInput.value = time;
+            startTimeInput.style.width = "25%";
+            startTimeInput.style.marginRight = "-10px";
+            const startH = document.createElement("div");
+            startWrapper.appendChild(startH);
+            startH.innerText = "h";
+            startH.style.fontSize = "16px";
+            startH.style.paddingLeft = "3px";
+            const startDayInput = document.createElement("input");
+            startWrapper.appendChild(startDayInput);
+            startDayInput.id = "add-start-day";
+            startDayInput.setAttribute("name", "add-start-day");
+            startDayInput.type = "text";
+            startDayInput.value = day;
+            startDayInput.style.width = "55%";
+
+            const sections = [
+                {
+                    title: "Duration *",
+                    placeholder: "1,5",
+                    icon: "images/icons/duration.png"
+                },
+                {
+                    title: "Class",
+                    placeholder: "TP1",
+                    icon: "images/icons/schedule.png"
+                },
+                {
+                    title: "Room",
+                    placeholder: "4.1.10",
+                    icon: "images/icons/room.png"
+                },
+                {
+                    title: "Capacity",
+                    placeholder: "30",
+                    icon: "images/icons/capacity.png"
+                }
+            ];
+
+            sections.forEach(section => {
+                const wrapper = document.createElement("div");
+                popupWindow.appendChild(wrapper);
+                wrapper.classList.add("item-check");
+                const img = document.createElement("img");
+                wrapper.appendChild(img);
+                img.classList.add("icon");
+                img.src = section["icon"];
+                const label = document.createElement("label");
+                wrapper.appendChild(label);
+                label.appendChild(document.createTextNode(section["title"]));
+                label.setAttribute("for", "add-"+section["title"].replace(" *", "").toLowerCase());
+                const input = document.createElement("input");
+                wrapper.appendChild(input);
+                input.id = "add-"+section["title"].replace(" *", "").toLowerCase();
+                input.setAttribute("name", "add-"+section["title"].replace(" *", "").toLowerCase());
+                input.type = "text";
+                input.placeholder = section["placeholder"];
+            });
+
+            const durationWrapper = document.querySelector("#add-duration").parentElement;
+            durationWrapper.querySelector("input").style.marginRight = "-10px";
+            const h = document.createElement("div");
+            durationWrapper.appendChild(h);
+            h.innerText = "h";
+            h.style.marginRight = "-12px";
+            h.style.fontSize = "16px";
+            h.style.paddingLeft = "3px";
+
+            const addButton = document.createElement("div");
+            popupWindow.appendChild(addButton);
+            addButton.classList.add("button");
+            addButton.appendChild(document.createTextNode("Add Subject"));
+            addButton.addEventListener("click", () => {
+                if (subjectSelect.value && startTimeInput.value && startDayInput.value && document.querySelector("#add-duration").value) {
+                    const daySubjects = mySchedule.schedule[startDayInput.value.replaceAll(/<>/g, "")];
+                    if (daySubjects) {
+                        const subjectData = mySchedule.subjectsData.filter(subject => subject["abbrev"] === subjectSelect.value)[0];
+                        daySubjects.push({
+                            capacity: parseInt(document.querySelector("#add-capacity").value),
+                            class: document.querySelector("#add-class").value,
+                            duration: document.querySelector("#add-duration").value.replace(".", ",")+"h",
+                            room: document.querySelector("#add-room").value,
+                            start: startTimeInput.value.replace(".", ",")+"h",
+                            subject: subjectData
+                        });
+
+                        chrome.storage.sync.set({"schedule": mySchedule.schedule}, () => window.location.reload());
+                    }
+                }
+            });
+        }
+    }
 });
 
-window.addEventListener("mouseover", e => {
+const removeCell = (cell, schedule) => {
+    const day = cell.getAttribute("day");
+    const subject = cell.getAttribute("subject");
+    const classGroup = cell.getAttribute("class-group");
+    const dayObject = schedule[day];
+    let indexToDelete;
+    for (const [i, classValue] of dayObject.entries()) {
+        if (classValue["subject"]["abbrev"] === subject && classValue["class"] === classGroup) {
+            indexToDelete = i;
+            break;
+        }
+    }
+
+    if (indexToDelete !== undefined) {
+        dayObject.splice(indexToDelete, 1);
+        chrome.storage.sync.set({schedule: schedule});
+    }
+
+    mySchedule.removeClassCell(cell);
+}
+
+document.addEventListener("mouseover", e => {
     const target = e.target;
     
     if (target.closest(".class")) {
         const subject = target.closest(".class");
+
+        // remove z-index from others
+        Array.from(document.querySelectorAll(".class")).forEach(cell => {
+            if (target.closest(".class") !== cell)
+                cell.style.removeProperty("z-index");
+        });
+
         subject.style.zIndex = "3";
         const targetSubject = subject.innerText.split(" - ")[0];
         Array.from(mySchedule.table.querySelectorAll(".class")).forEach(subject => {
@@ -352,12 +589,18 @@ window.addEventListener("mouseover", e => {
     }
 });
 
-window.addEventListener("mouseout", e => {
+document.addEventListener("mouseout", e => {
     const target = e.target;
     
     if (target.closest(".class")) {
         const subject = target.closest(".class");
+        
         subject.style.removeProperty("z-index");
+        // add z-index to the subject with context menu active
+        const classWithContextMenu = Array.from(document.querySelectorAll(".class")).filter(cell => cell.querySelector(".class-context-menu"))[0];
+        if (classWithContextMenu)
+            classWithContextMenu.style.zIndex = "3";
+
         const targetSubject = subject.innerText.split(" - ")[0];
         Array.from(mySchedule.table.querySelectorAll(".class")).forEach(subject => {
             if (subject.getAttribute("subject") !== targetSubject)
@@ -636,18 +879,27 @@ const classInfoPopup = (info, start, end, color) => {
     return wrapper;
 }
 
-window.addEventListener('contextmenu', e => {
+document.addEventListener('contextmenu', e => {
     const target = e.target;
 
-    if (target.closest(".class")) {
+    if (target.closest(".class") && !target.closest(".class-context-menu")) {
         // prevent default context menu
         e.preventDefault();
 
         if (document.querySelector(".class-popup"))
             document.querySelector(".class-popup").remove();
         
-        target.closest(".class").appendChild(contextMenu(["Complete Schedule", "Remove Class", "Remove Subject"]));
+        target.closest(".class").appendChild(contextMenu([
+            {title: "Complete Schedule", icon: "images/icons/schedule.png"},
+            {title: "Edit Class", icon: "images/icons/edit.png"},
+            {title: "Remove Class", icon: "images/icons/bin.png"},
+            {title: "Remove Subject", icon: "images/icons/bin.png"},
+        ]));
     }
+
+    // clicked outside context menu
+    if (document.querySelector(".class-context-menu") && !target.closest(".class"))
+        document.querySelector(".class-context-menu").remove();
 });
 
 const contextMenu = options => {
@@ -657,7 +909,11 @@ const contextMenu = options => {
         const opt = document.createElement("div");
         wrapper.appendChild(opt);
         opt.classList.add("clickable");
-        opt.appendChild(document.createTextNode(option));
+        const img = document.createElement("img");
+        opt.appendChild(img);
+        img.classList.add("icon");
+        img.src = option["icon"];
+        opt.appendChild(document.createTextNode(option["title"]));
     });
     return wrapper;
 }

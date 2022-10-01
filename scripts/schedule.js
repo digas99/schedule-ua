@@ -19,8 +19,10 @@ const Schedule = function(container, config) {
 
     if (Object.values(this.schedule)[0] == undefined || Object.values(this.schedule).flat(1).length == 0) this.empty = true;
 
-    if (this.empty !== true && this.schedule)
+    if (this.empty !== true && this.schedule) {
         this.subjects = [...new Set(Object.entries(this.schedule).map(([key, value]) => value.map(obj => obj["subject"]["abbrev"])).flat(1))];
+        this.subjectsData = [...new Set(Object.entries(this.schedule).map(([key, value]) => value.map(obj => obj["subject"])).flat(1))];
+    }
 }
 
 Schedule.prototype = {
@@ -126,6 +128,7 @@ Schedule.prototype = {
             cell.classList.add("class");
             cell.setAttribute("id", subject["id"]);
             cell.setAttribute("subject", subject["subject"]["abbrev"]);
+            cell.setAttribute("code", subject["subject"]["code"]);
             cell.setAttribute("class-group", subject["class"]);
             cell.setAttribute("day", day);
             cell.setAttribute("type", "master");
@@ -160,6 +163,15 @@ Schedule.prototype = {
             infoWrapper.appendChild(roomName);
             roomName.appendChild(document.createTextNode(subject["room"]));
         }
+    },
+    removeClassCell: function(cell) {
+        const id = cell.getAttribute("id");
+        // remove inner text
+        Array.from(cell.children).forEach(child => child.remove());
+        // remove attributes
+        ["class", "id", "subject", "code", "class-group", "day", "type", "rowspan", "style"].forEach(attribute => cell.removeAttribute(attribute));
+        // clean slaves
+        Array.from(mySchedule.table.querySelectorAll(`td[id="${id}"]`)).forEach(slave => ["type", "id", "style"].forEach(attribute => slave.removeAttribute(attribute)));
     },
     highlight: function(day, hours, minutes, text) {
         let y = (hours-this.hours[0]+1)*2;

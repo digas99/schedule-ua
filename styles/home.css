@@ -235,6 +235,18 @@ table > tbody > tr > th:not(:first-child, :last-child) {
     white-space: nowrap;
     padding: 10px;
     font-weight: normal !important;
+    display: flex;
+    align-items: center;
+    column-gap: 5px;
+    color: var(--font-color) !important;
+}
+
+.class-context-menu > div:hover {
+    background-color: var(--background-hover);
+}
+
+.class-context-menu > div > img {
+    width: 15px;
 }
 
 .day-selector {
@@ -270,4 +282,45 @@ table > tbody > tr > th:not(:first-child, :last-child) {
 
 .cell-now, .cell-now * {
     color: black !important;
+}
+
+.add-class-menu {
+    width: 300px;
+    height: fit-content;
+    background-color: var(--background-color);
+    padding: 60px 40px 20px 40px;
+    row-gap: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.add-class-menu .icon {
+    width: 20px;
+}
+
+.add-class-menu label {
+    font-size: 20px;
+}
+
+.add-class-menu select {
+    font-size: 16px;
+    width: 100%;
+}
+
+.add-class-menu input[type="text"] {
+    border: none;
+    border-bottom: 1px solid var(--font-color);
+    background-color: unset;
+    text-align: right;
+    width: 100%;
+    font-size: 16px;
+}
+
+.add-class-menu .item-check {
+    column-gap: 10px;
+}
+
+.add-class-menu .button {
+    font-size: 14px;
+    border: 2px solid;
 }

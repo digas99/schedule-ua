@@ -202,19 +202,46 @@ chrome.storage.sync.get(["color_schema", "extension_badge"], result => {
 });
 
 const loading = text => {
-    const wrapper = document.createElement("div");
+    const wrapper = popup();
     wrapper.classList.add("loading");
+    const popupContainer = wrapper.querySelector("div:nth-child(2)");
+
+    const textNode = document.createElement("div");
+    popupContainer.appendChild(textNode);
+    textNode.appendChild(document.createTextNode(text));
+
+    return wrapper;
+}
+
+const popup = settings => {
+    const wrapper = document.createElement("div");
+    wrapper.classList.add("popup");
 
     // add gray back
     wrapper.appendChild(document.createElement("div"));
 
-    // add popup
-    const textWrapper = document.createElement("div");
-    wrapper.appendChild(textWrapper);
-    const textNode = document.createElement("div");
-    textWrapper.appendChild(textNode);
-    textNode.appendChild(document.createTextNode(text));
-    
+    // popup container
+    const container = document.createElement("div");
+    wrapper.appendChild(container);
+
+    if (settings) {
+        if (settings["title"]) {
+            const title = document.createElement("div");
+            container.appendChild(title);
+            title.appendChild(document.createTextNode(settings["title"]));    
+        }
+
+        if (settings["close"]) {
+            const close = document.createElement("div");
+            container.appendChild(close);
+            close.classList.add("cross", "clickable");
+            for (let i = 0; i < 2; i++)
+                close.appendChild(document.createElement("div"));
+
+            close.addEventListener("click", () => wrapper.remove());
+        }
+    }
+
     return wrapper;
 }
 

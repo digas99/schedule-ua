@@ -61,18 +61,6 @@ body {
     text-align: center;
 }
 
-.button {
-    padding: 7px 15px;
-    border: 1px solid silver;
-    border-radius: 20px;
-    margin: 10px auto;
-    text-align: center;
-}
-
-.button:hover {
-    background-color: var(--background-hover);
-}
-
 #remember-email {
     display: flex;
     align-items: center;
