@@ -1,3 +1,9 @@
+## [Changelog v1.2.2](https://github.com/digas99/schedule-ua/releases/tag/v1.2.2) 
+
+### Bug Fixes
+- Fixed issue where schedules with overalapping classes couldn't be fetched
+
+
 # [Changelog v1.2.1](https://github.com/digas99/schedule-ua/releases/tag/v1.2.1) 
 
 ## Bug Fixes
