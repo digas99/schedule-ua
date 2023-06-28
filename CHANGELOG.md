@@ -13,6 +13,11 @@
 - Clicking on an empty cell in the schedule allows to add a new class
 
 ---
+# [Changelog v1.2.2](https://github.com/digas99/schedule-ua/releases/tag/v1.2.2) 
+
+## Bug Fixes
+- Fixed issue where schedules with overalapping classes couldn't be fetched
+
 
 # [Changelog v1.2.1](https://github.com/digas99/schedule-ua/releases/tag/v1.2.1) 
 Released on 11/09/2022

@@ -24,6 +24,7 @@ Browser Extension for easy access to your Schedule from Universidade de Aveiro. 
 
 ## Latest Features
 
+<<<<<<< HEAD
 # [Changelog v1.3.0](https://github.com/digas99/schedule-ua/releases/tag/v1.3.0)
 
 ## Popup
@@ -37,6 +38,12 @@ Browser Extension for easy access to your Schedule from Universidade de Aveiro. 
     - Remove Class: remove that class from the schedule
     - Remove Subject: remove all classes from that subject from the schedule
 - Clicking on an empty cell in the schedule allows to add a new class
+=======
+## [Changelog v1.2.2](https://github.com/digas99/schedule-ua/releases/tag/v1.2.2) 
+
+### Bug Fixes
+- Fixed issue where schedules with overalapping classes couldn't be fetched
+>>>>>>> 9359ccda8e343ed52c6e290e8acf621fef7403d9
 
 [(All changelogs)](CHANGELOG.md)
 
