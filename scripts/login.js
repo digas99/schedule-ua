@@ -58,7 +58,6 @@ chrome.storage.sync.get([...SCHEDULE_CONFIGS, "email"], result => {
                                     break;
                             }
 
-                            document.querySelector(".loading").remove();
                             const text = document.querySelector("#main > div > div");
                             if (text && message) {
                                 text.innerText = message;
@@ -81,8 +80,11 @@ chrome.storage.sync.get([...SCHEDULE_CONFIGS, "email"], result => {
                             chrome.storage.sync.set(data, () => {
                                 if (success) {
                                     const subjectCodes = Array.from(new Set(Object.entries(data["schedule"]).map(([_, classes]) => classes.map(data => data["subject"]["code"])).flat(1)));
-                                    chrome.runtime.sendMessage({codes: subjectCodes, auth: encoded});
-                                    window.location.href = "/home.html?bottom_info=Waiting for subject schedules to start loading...";
+                                    chrome.runtime.sendMessage({codes: subjectCodes, auth: encoded}, response => console.log(response));
+                                    setTimeout(() => {
+                                        document.querySelector(".loading").remove();
+                                        window.location.href = "/home.html?bottom_info=Waiting for subject schedules to be loaded...";
+                                    }, 1000);
                                 }
                             });
                         })

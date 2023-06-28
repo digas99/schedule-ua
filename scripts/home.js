@@ -155,29 +155,33 @@ document.addEventListener("click", e => {
             const selected = target.innerText; 
             switch(selected) {
                 case "Week":
-                    const listSubjectsButton = document.getElementById("list-subjects");
-                    if (listSubjectsButton)
-                        listSubjectsButton.classList.replace("button-inactive", "clickable");
+                    chrome.storage.sync.get(["schedule"], storage => {
+                        const listSubjectsButton = document.getElementById("list-subjects");
+                        if (listSubjectsButton)
+                            listSubjectsButton.classList.replace("button-inactive", "clickable");
 
-                    scheduleWrapper.firstChild?.remove();
-                    scheduleWrapper.querySelector(".info-panel")?.remove();
+                        scheduleWrapper.firstChild?.remove();
+                        scheduleWrapper.querySelector(".info-panel")?.remove();
 
-                    mySchedule = new Schedule(scheduleWrapper, {
-                        "hours": defaultHours,
-                        "days": defaultDays,
-                        "schedule": storage["schedule"],
-                        "colors": mySchedule.subjectColors,
-                        "trimmed": mySchedule.trimmed,
-                        "limitTrimming": mySchedule.limitTrimming,
-                        "soonest": mySchedule.soonest,
-                        "latest": mySchedule.latest
+
+                        mySchedule = new Schedule(scheduleWrapper, {
+                            "hours": defaultHours,
+                            "days": defaultDays,
+                            "schedule": storage["schedule"],
+                            "colors": mySchedule.subjectColors,
+                            "trimmed": mySchedule.trimmed,
+                            "limitTrimming": mySchedule.limitTrimming,
+                            "soonest": mySchedule.soonest,
+                            "latest": mySchedule.latest
+                        });
+
+                        mySchedule.create();
+                        mySchedule.removeSaturday();
+                        mySchedule.setupOverlappedSubjects();
+
+                        highlightNowCell();
+                        
                     });
-
-                    mySchedule.create();
-                    mySchedule.removeSaturday();
-                    mySchedule.setupOverlappedSubjects();
-
-                    highlightNowCell();
 
                     letter = "W";
 
@@ -280,7 +284,8 @@ document.addEventListener("click", e => {
     // clicked on class context menu
     if (target.closest(".class-context-menu")) {
         const cell = target.closest(".class");
-        switch(target.closest(".clickable").innerText) {
+        const option = target.closest(".clickable")?.innerText;
+        switch(option) {
             case "Complete Schedule":
                 const scheduleWrapper = document.querySelector("#main > div");
                 const subjectCode = target.closest(".class").getAttribute("code");
@@ -311,11 +316,31 @@ document.addEventListener("click", e => {
                     });
                 }
                 break;
+            case "Edit Class":
+                const classInfo = {
+                    subject: cell.getAttribute("subject"),
+                    day: cell.getAttribute("day"),
+                    start: cell.getAttribute("start"),
+                    duration: cell.getAttribute("duration"),
+                }
+                if (cell.getAttribute("class-group"))
+                    classInfo["class"] = cell.getAttribute("class-group");
+                if (cell.getAttribute("room"))
+                    classInfo["room"] = cell.getAttribute("room");
+                if (cell.getAttribute("capacity"))
+                    classInfo["capacity"] = cell.getAttribute("capacity");
+
+                document.body.appendChild(editClass("Edit Class", (e, popup, values) => {
+                    if (editClassUpdate(e, popup, values)) {
+                        chrome.storage.sync.get("schedule", result => removeCell(cell, result["schedule"]));
+                        Array.from(mySchedule.table.querySelectorAll(".shadowed-class")).forEach(cell => cell.classList.remove("shadowed-class"));
+                    }
+                }, classInfo));
+
+                break;
             case "Remove Class":
                 if (cell) {
                     chrome.storage.sync.get("schedule", result => removeCell(cell, result["schedule"]));
-                    
-                    // clear all shadowed-class
                     Array.from(mySchedule.table.querySelectorAll(".shadowed-class")).forEach(cell => cell.classList.remove("shadowed-class"));
                 }
                 
@@ -325,8 +350,6 @@ document.addEventListener("click", e => {
                     const subject = cell.getAttribute("subject");
                     if (subject) {
                         chrome.storage.sync.get("schedule", result => Array.from(mySchedule.table.querySelectorAll(`td[subject="${subject}"]`)).forEach(classCell => removeCell(classCell, result["schedule"])));
-                    
-                        // clear all shadowed-class
                         Array.from(mySchedule.table.querySelectorAll(".shadowed-class")).forEach(cell => cell.classList.remove("shadowed-class"));
                     }
                 }
@@ -347,144 +370,189 @@ document.addEventListener("click", e => {
         if (y % 2 == 0)
             time+=",5";
 
-        const pp = popup({
-            "close": true,
-            "title": "Add subject"
+        document.body.appendChild(editClass("Add Class", editClassUpdate, {
+            start: time,
+            day: day
+        }));
+    }
+});
+
+const editClassUpdate = (e, popup, values) => {
+    console.log(values);
+    const subjectSelect = popup.querySelector("#add-subject");
+    const startTimeInput = popup.querySelector("#add-start-time");
+    const startDayInput = popup.querySelector("#add-start-day");
+    const duration = popup.querySelector("#add-duration");
+    if (subjectSelect.value && startTimeInput.value && startDayInput.value && duration.value) {
+        const daySubjects = mySchedule.schedule[startDayInput.value.replaceAll(/<>/g, "")];
+        if (daySubjects) {
+            const subjectData = mySchedule.subjectsData.filter(subject => subject["abbrev"] === values.subject)[0];
+            daySubjects.push({
+                capacity: parseInt(values.capacity),
+                class: values.class,
+                duration: values.duration.replace(".", ",")+"h",
+                room: values.room,
+                start: values.start.replace(".", ",")+"h",
+                subject: subjectData
+            });
+
+            chrome.storage.sync.set({"schedule": mySchedule.schedule}, () => window.location.reload());
+
+            return true;
+        }
+    }
+
+    return false;
+}
+
+const editClass = (title, action, defaults) => {
+    const pp = popup({
+        "close": true,
+        "title": title,
+    });
+
+    console.log(defaults);
+
+    const popupWindow = pp.querySelector("div:nth-child(2)");
+    popupWindow.classList.add("add-class-menu");
+    
+    const subjectSection = document.createElement("div");
+    popupWindow.appendChild(subjectSection);
+    subjectSection.classList.add("item-check");
+    const subjectLabel = document.createElement("label");
+    subjectSection.appendChild(subjectLabel);
+    subjectLabel.appendChild(document.createTextNode("Subject *"));
+    subjectLabel.setAttribute("for", "add-subject");
+    if (mySchedule && mySchedule.subjects) {
+        const subjectSelect = document.createElement("select");
+        subjectSection.appendChild(subjectSelect);
+        subjectSelect.id = "add-subject";
+        subjectSelect.setAttribute("name", "add-subject");
+        ["", ...mySchedule.subjects.sort((a, b) => a.localeCompare(b))].forEach(subject => {
+            const subjectOption = document.createElement("option");
+            subjectSelect.appendChild(subjectOption);
+            subjectOption.appendChild(document.createTextNode(subject));
+            if (mySchedule.subjectColors) {
+                subjectOption.style.backgroundColor = mySchedule.subjectColors[subject];
+                subjectOption.style.color = "white";
+            }
+
+            if (subject === defaults?.subject)
+                subjectOption.selected = true;
         });
-        document.body.appendChild(pp);
-        const popupWindow = pp.querySelector("div:nth-child(2)");
-        popupWindow.classList.add("add-class-menu");
-        
-        const subjectSection = document.createElement("div");
-        popupWindow.appendChild(subjectSection);
-        subjectSection.classList.add("item-check");
-        const subjectLabel = document.createElement("label");
-        subjectSection.appendChild(subjectLabel);
-        subjectLabel.appendChild(document.createTextNode("Subject *"));
-        subjectLabel.setAttribute("for", "add-subject");
-        if (mySchedule.subjects && mySchedule.subjectsData && mySchedule.schedule) {
-            const subjectSelect = document.createElement("select");
-            subjectSection.appendChild(subjectSelect);
-            subjectSelect.id = "add-subject";
-            subjectSelect.setAttribute("name", "add-subject");
-            ["", ...mySchedule.subjects.sort((a, b) => a.localeCompare(b))].forEach(subject => {
-                const subjectOption = document.createElement("option");
-                subjectSelect.appendChild(subjectOption);
-                subjectOption.appendChild(document.createTextNode(subject));
-                if (mySchedule.subjectColors) {
-                    subjectOption.style.backgroundColor = mySchedule.subjectColors[subject];
-                    subjectOption.style.color = "white";
-                }
-            });
 
-            const startWrapper = document.createElement("div");
-            popupWindow.appendChild(startWrapper);
-            startWrapper.classList.add("item-check");
-            const startIcon = document.createElement("img");
-            startWrapper.appendChild(startIcon);
-            startIcon.classList.add("icon");
-            startIcon.src = "images/icons/time.png";
-            const startLabel = document.createElement("label");
-            startWrapper.appendChild(startLabel);
-            startLabel.appendChild(document.createTextNode("Start *"));
-            const startTimeInput = document.createElement("input");
-            startWrapper.appendChild(startTimeInput);
-            startTimeInput.id = "add-start-time";
-            startTimeInput.setAttribute("name", "add-start-time");
-            startTimeInput.type = "text";
-            startTimeInput.value = time;
-            startTimeInput.style.width = "25%";
-            startTimeInput.style.marginRight = "-10px";
-            const startH = document.createElement("div");
-            startWrapper.appendChild(startH);
-            startH.innerText = "h";
-            startH.style.fontSize = "16px";
-            startH.style.paddingLeft = "3px";
-            const startDayInput = document.createElement("input");
-            startWrapper.appendChild(startDayInput);
-            startDayInput.id = "add-start-day";
-            startDayInput.setAttribute("name", "add-start-day");
-            startDayInput.type = "text";
-            startDayInput.value = day;
-            startDayInput.style.width = "55%";
+        const startWrapper = document.createElement("div");
+        popupWindow.appendChild(startWrapper);
+        startWrapper.classList.add("item-check");
+        const startIcon = document.createElement("img");
+        startWrapper.appendChild(startIcon);
+        startIcon.classList.add("icon");
+        startIcon.src = "images/icons/time.png";
+        const startLabel = document.createElement("label");
+        startWrapper.appendChild(startLabel);
+        startLabel.appendChild(document.createTextNode("Start *"));
+        const startTimeInput = document.createElement("input");
+        startWrapper.appendChild(startTimeInput);
+        startTimeInput.id = "add-start-time";
+        startTimeInput.setAttribute("name", "add-start-time");
+        startTimeInput.type = "text";
+        startTimeInput.placeholder = "8,5";
+        if (defaults?.start)
+            startTimeInput.value = defaults.start;
+        startTimeInput.style.width = "25%";
+        startTimeInput.style.marginRight = "-10px";
+        const startH = document.createElement("div");
+        startWrapper.appendChild(startH);
+        startH.innerText = "h";
+        startH.style.fontSize = "16px";
+        startH.style.paddingLeft = "3px";
+        const startDayInput = document.createElement("input");
+        startWrapper.appendChild(startDayInput);
+        startDayInput.id = "add-start-day";
+        startDayInput.setAttribute("name", "add-start-day");
+        startDayInput.type = "text";
+        startDayInput.placeholder = "Segunda";
+        if (defaults?.day)
+            startDayInput.value = defaults.day;
+        startDayInput.style.width = "55%";
 
-            const sections = [
-                {
-                    title: "Duration *",
-                    placeholder: "1,5",
-                    icon: "images/icons/duration.png"
-                },
-                {
-                    title: "Class",
-                    placeholder: "TP1",
-                    icon: "images/icons/schedule.png"
-                },
-                {
-                    title: "Room",
-                    placeholder: "4.1.10",
-                    icon: "images/icons/room.png"
-                },
-                {
-                    title: "Capacity",
-                    placeholder: "30",
-                    icon: "images/icons/capacity.png"
-                }
-            ];
+        const sections = [
+            {
+                title: "Duration *",
+                placeholder: "1,5",
+                icon: "images/icons/duration.png"
+            },
+            {
+                title: "Class",
+                placeholder: "TP1",
+                icon: "images/icons/schedule.png"
+            },
+            {
+                title: "Room",
+                placeholder: "4.1.10",
+                icon: "images/icons/room.png"
+            },
+            {
+                title: "Capacity",
+                placeholder: "30",
+                icon: "images/icons/capacity.png"
+            }
+        ];
 
-            sections.forEach(section => {
-                const wrapper = document.createElement("div");
-                popupWindow.appendChild(wrapper);
-                wrapper.classList.add("item-check");
-                const img = document.createElement("img");
-                wrapper.appendChild(img);
-                img.classList.add("icon");
-                img.src = section["icon"];
-                const label = document.createElement("label");
-                wrapper.appendChild(label);
-                label.appendChild(document.createTextNode(section["title"]));
-                label.setAttribute("for", "add-"+section["title"].replace(" *", "").toLowerCase());
-                const input = document.createElement("input");
-                wrapper.appendChild(input);
-                input.id = "add-"+section["title"].replace(" *", "").toLowerCase();
-                input.setAttribute("name", "add-"+section["title"].replace(" *", "").toLowerCase());
-                input.type = "text";
-                input.placeholder = section["placeholder"];
-            });
+        sections.forEach(section => {
+            const wrapper = document.createElement("div");
+            popupWindow.appendChild(wrapper);
+            wrapper.classList.add("item-check");
+            const img = document.createElement("img");
+            wrapper.appendChild(img);
+            img.classList.add("icon");
+            img.src = section["icon"];
+            const label = document.createElement("label");
+            wrapper.appendChild(label);
+            label.appendChild(document.createTextNode(section["title"]));
+            label.setAttribute("for", "add-"+section["title"].replace(" *", "").toLowerCase());
+            const input = document.createElement("input");
+            wrapper.appendChild(input);
+            input.id = "add-"+section["title"].replace(" *", "").toLowerCase();
+            input.setAttribute("name", "add-"+section["title"].replace(" *", "").toLowerCase());
+            input.type = "text";
+            input.placeholder = section["placeholder"];
 
-            const durationWrapper = document.querySelector("#add-duration").parentElement;
-            durationWrapper.querySelector("input").style.marginRight = "-10px";
-            const h = document.createElement("div");
-            durationWrapper.appendChild(h);
-            h.innerText = "h";
-            h.style.marginRight = "-12px";
-            h.style.fontSize = "16px";
-            h.style.paddingLeft = "3px";
+            // defaults
+            if (defaults && defaults[section["title"].replace(" *", "").toLowerCase()])
+                input.value = defaults[section["title"].replace(" *", "").toLowerCase()];
+        });
 
+        const durationWrapper = popupWindow.querySelector("#add-duration").parentElement;
+        durationWrapper.querySelector("input").style.marginRight = "-10px";
+        const h = document.createElement("div");
+        durationWrapper.appendChild(h);
+        h.innerText = "h";
+        h.style.marginRight = "-12px";
+        h.style.fontSize = "16px";
+        h.style.paddingLeft = "3px";
+
+        if (action) {
             const addButton = document.createElement("div");
             popupWindow.appendChild(addButton);
             addButton.classList.add("button");
-            addButton.appendChild(document.createTextNode("Add Subject"));
-            addButton.addEventListener("click", () => {
-                if (subjectSelect.value && startTimeInput.value && startDayInput.value && document.querySelector("#add-duration").value) {
-                    const daySubjects = mySchedule.schedule[startDayInput.value.replaceAll(/<>/g, "")];
-                    if (daySubjects) {
-                        const subjectData = mySchedule.subjectsData.filter(subject => subject["abbrev"] === subjectSelect.value)[0];
-                        daySubjects.push({
-                            capacity: parseInt(document.querySelector("#add-capacity").value),
-                            class: document.querySelector("#add-class").value,
-                            duration: document.querySelector("#add-duration").value.replace(".", ",")+"h",
-                            room: document.querySelector("#add-room").value,
-                            start: startTimeInput.value.replace(".", ",")+"h",
-                            subject: subjectData
-                        });
-
-                        chrome.storage.sync.set({"schedule": mySchedule.schedule}, () => window.location.reload());
-                    }
-                }
-            });
+            addButton.appendChild(document.createTextNode("Submit"));
+            addButton.addEventListener("click", e => action(e, pp, {
+                subject: subjectSelect.value,
+                start: startTimeInput.value,
+                day: startDayInput.value,
+                duration: durationWrapper.querySelector("input").value,
+                class: popupWindow.querySelector("#add-class").value,
+                room: popupWindow.querySelector("#add-room").value,
+                capacity: popupWindow.querySelector("#add-capacity").value
+            }));
         }
+
+        return pp;
     }
-});
+
+    return null;
+}
 
 const removeCell = (cell, schedule) => {
     const day = cell.getAttribute("day");
@@ -502,6 +570,7 @@ const removeCell = (cell, schedule) => {
     if (indexToDelete !== undefined) {
         dayObject.splice(indexToDelete, 1);
         chrome.storage.sync.set({schedule: schedule});
+        mySchedule.schedule = schedule;
     }
 
     mySchedule.removeClassCell(cell);
@@ -653,7 +722,7 @@ const createDaySchedule = (scheduleWrapper, scheduleDay) => {
     mySchedule = new Schedule(scheduleWrapper, {
         "hours": defaultHours,
         "days": [scheduleDay],
-        "schedule": {[scheduleDay]: storage.schedule[scheduleDay]},
+        "schedule": {[scheduleDay]: mySchedule.schedule[scheduleDay]},
         "colors": mySchedule.subjectColors,
         "trimmed": mySchedule.trimmed,
         "limitTrimming": mySchedule.limitTrimming,
@@ -889,12 +958,19 @@ document.addEventListener('contextmenu', e => {
         if (document.querySelector(".class-popup"))
             document.querySelector(".class-popup").remove();
         
-        target.closest(".class").appendChild(contextMenu([
-            {title: "Complete Schedule", icon: "images/icons/schedule.png"},
-            {title: "Edit Class", icon: "images/icons/edit.png"},
-            {title: "Remove Class", icon: "images/icons/bin.png"},
-            {title: "Remove Subject", icon: "images/icons/bin.png"},
-        ]));
+        const subjectCode = target.closest(".class").getAttribute("code");
+        chrome.storage.sync.get(null, result => {
+            const inactive = [];
+            if (!Object.keys(result).includes(subjectCode+"_schedule"))
+                inactive.push("Complete Schedule");
+        
+            target.closest(".class").appendChild(contextMenu([
+                {title: "Complete Schedule", icon: "images/icons/schedule.png"},
+                {title: "Edit Class", icon: "images/icons/edit.png"},
+                {title: "Remove Class", icon: "images/icons/bin.png"},
+                {title: "Remove Subject", icon: "images/icons/bin.png"},
+            ], inactive));
+        });
     }
 
     // clicked outside context menu
@@ -902,7 +978,7 @@ document.addEventListener('contextmenu', e => {
         document.querySelector(".class-context-menu").remove();
 });
 
-const contextMenu = options => {
+const contextMenu = (options, inactive) => {
     const wrapper = document.createElement("div");
     wrapper.classList.add("class-popup", "class-context-menu");
     options.forEach(option => {
@@ -914,6 +990,12 @@ const contextMenu = options => {
         img.classList.add("icon");
         img.src = option["icon"];
         opt.appendChild(document.createTextNode(option["title"]));
+
+        if (inactive.includes(option["title"])) {
+            opt.style.opacity = "0.5";
+            opt.classList.remove("clickable");
+            opt.style.pointerEvents = "none";
+        }
     });
     return wrapper;
 }

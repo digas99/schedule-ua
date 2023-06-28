@@ -4,7 +4,7 @@
 - The abbreviation for the Current/Next class of the day now shows up on the extension icon
 - Added possibility to highlight mouse target cell on the schedule (can be enabled on settings)
 - Added subject code to paco schedule scraper and to the extension itself
-- Added mechanism to load each subject schedule with all possible classes (with message logging each load for the user)
+- Added mechanism to load each subject schedule with all possible classes (with message logging the progress to the user)
 - Right click on a class cell opens context menu with the following options:
     - Complete Schedule: show all classes for that subject
     - Edit Class: edit class information

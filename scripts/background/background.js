@@ -9,9 +9,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     }
 
     if (request.codes && request.auth) {
+        sendResponse({fetch: "Waiting for subject schedules to be loaded..."});
+
         let counter = 0;
+        const total = request.codes.length;
         const subjectsRequests = setInterval(() => {
             const code = request.codes[counter++];
+            console.log("Fetching schedule for subject "+code);
             fetch("https://pacoua-api.pt/schedule/subject/"+code, {
                 headers: {
                     'Content-Type': 'application/json',
@@ -21,11 +25,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             .then(response => response.json())
             .then(result => chrome.storage.sync.set({[code+"_schedule"]: result["data"]}, () => {
                 console.log("Stored schedule for subject "+code);
-                chrome.runtime.sendMessage({loadingCode: code}, response => {
-                    if (response.code == request.codes[request.codes.length-1] && counter == request.codes.length)
-                        setTimeout(() => chrome.runtime.sendMessage({bottomInfo: "close"}), 500);
-                });
-            }));
+                chrome.runtime.sendMessage({loadingCode: code, progress: counter, total: total, success: true});
+            }))
+            .catch(error => {
+                chrome.runtime.sendMessage({loadingCode: code, progress: counter, total: total, success: false});
+            });
 
             if (counter == request.codes.length) clearInterval(subjectsRequests);
         }, 2000);

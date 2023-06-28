@@ -100,7 +100,7 @@ h2 {
     top: 10px;
 }
 
-.popup .cross > div {
+.cross > div {
     background-color: var(--font-color);
 }
 
@@ -144,6 +144,16 @@ h2 {
 
 .bottom-info img {
     width: 10px;
+}
+
+.bottom-info .cross > div:nth-child(1), .bottom-info .cross > div:nth-child(2) {
+    width: 13px;
+    height: 3px;
+}
+
+.bottom-info .cross {
+    position: absolute;
+    right: 85px;
 }
 
 .cross {
@@ -236,4 +246,18 @@ select > option {
 
 .button:hover {
     background-color: var(--background-hover);
+}
+
+.progress {
+    width: 50px;
+    border: 1px solid silver;
+}
+
+.progress > .bar {
+    height: 10px;
+    background-color: white;
+}
+
+.progress > .failed {
+    background-color: #f76868;
 }

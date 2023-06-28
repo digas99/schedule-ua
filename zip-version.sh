@@ -16,8 +16,8 @@ if [ -f "$FILENAME" ]; then
 	# get version number from line 'version'
 	tag=\"version\"
 	if [ "$key" == "$tag" ]; then
-		# delete old zip files
-		rm schedua_*
+		# delete old zip files if they exist
+		rm -f schedua_*
 
 		# format version string from '"0.0.1",' to '001'
 		formated=$(echo "$value" | sed 's/[\.\,\ "]//g') 

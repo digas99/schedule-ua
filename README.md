@@ -26,11 +26,17 @@ Browser Extension for easy access to your Schedule from Universidade de Aveiro. 
 
 # [Changelog v1.3.0](https://github.com/digas99/schedule-ua/releases/tag/v1.3.0)
 
-***Classes notices!***
-
 ## Popup
 - The abbreviation for the Current/Next class of the day now shows up on the extension icon
 - Added possibility to highlight mouse target cell on the schedule (can be enabled on settings)
+- Added subject code to paco schedule scraper and to the extension itself
+- Added mechanism to load each subject schedule with all possible classes (with message logging the progress to the user)
+- Right click on a class cell opens context menu with the following options:
+    - Complete Schedule: show all classes for that subject
+    - Edit Class: edit class information
+    - Remove Class: remove that class from the schedule
+    - Remove Subject: remove all classes from that subject from the schedule
+- Clicking on an empty cell in the schedule allows to add a new class
 
 [(All changelogs)](CHANGELOG.md)
 

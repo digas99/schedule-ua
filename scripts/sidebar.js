@@ -1,9 +1,13 @@
 window.addEventListener("click", e => {
     const target = e.target;
 
-    chrome.storage.sync.get("color_schema", result => {
-        if (target.closest("#exit"))
-            chrome.storage.sync.remove([...SCHEDULE_CONFIGS, "subject_colors"]).then(() => window.location.href = `/login.html?theme=${result["color_schema"]}`);
+    chrome.storage.sync.get(null, result => {
+        if (target.closest("#exit")) {
+            // get schedules to delete
+            const schedules = Object.keys(result).filter(key => key.endsWith("_schedule"));
+            
+            chrome.storage.sync.remove([...SCHEDULE_CONFIGS, ...schedules, "subject_colors", "subjects"]).then(() => window.location.href = `/login.html?theme=${result["color_schema"]}`);
+        }
 
         if (target.closest("#schedule") && !target.closest("#schedule").classList.contains("button-inactive")) window.location.href = `/home.html?theme=${result["color_schema"]}`;
 

@@ -129,8 +129,15 @@ Schedule.prototype = {
             cell.setAttribute("id", subject["id"]);
             cell.setAttribute("subject", subject["subject"]["abbrev"]);
             cell.setAttribute("code", subject["subject"]["code"]);
-            cell.setAttribute("class-group", subject["class"]);
             cell.setAttribute("day", day);
+            cell.setAttribute("start", subject["start"].replace("h", ""));
+            cell.setAttribute("duration", subject["duration"].replace("h", ""));
+            if (subject["class"])
+                cell.setAttribute("class-group", subject["class"]);
+            if (subject["capacity"])
+                cell.setAttribute("capacity", subject["capacity"]);
+            if (subject["room"])
+                cell.setAttribute("room", subject["room"]);
             cell.setAttribute("type", "master");
     
             // number of rows the subject will fill

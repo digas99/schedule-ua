@@ -218,7 +218,9 @@ const popup = settings => {
     wrapper.classList.add("popup");
 
     // add gray back
-    wrapper.appendChild(document.createElement("div"));
+    const grayBack = document.createElement("div");
+    wrapper.appendChild(grayBack);
+    grayBack.addEventListener("click", () => wrapper.remove());
 
     // popup container
     const container = document.createElement("div");
@@ -256,6 +258,16 @@ const bottomInfo = text => {
     let degs = 0;
     setInterval(() => img.style.rotate = (degs+=20)+"deg", 100);
     wrapper.appendChild(document.createTextNode(text));
+
+    // close button
+    const close = document.createElement("div");
+    wrapper.appendChild(close);
+    close.classList.add("cross", "clickable");
+    for (let i = 0; i < 2; i++)
+        close.appendChild(document.createElement("div"));
+
+    close.addEventListener("click", () => wrapper.remove());
+
     return wrapper;
 }
 
@@ -265,18 +277,51 @@ if (urlParams.get('bottom_info')) {
     document.querySelector("#main").appendChild(bottomInfo(urlParams.get('bottom_info')));
 }
 
+let progressCounter = 0;
+let failedCounter = 0;
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.loadingCode) {
+        if (request.success) progressCounter++;
+        else failedCounter++;
+
         if (document.querySelector(".bottom-info"))
             document.querySelector(".bottom-info").remove();
-        document.querySelector("#main").appendChild(bottomInfo("Loaded schedule for subject "+request.loadingCode));
-        sendResponse({code: request.loadingCode});
-    }
+        
+        let message = request.success ? " Loaded schedule for subject "+request.loadingCode : " Failed to load schedule for subject "+request.loadingCode;
+        message += " ("+progressCounter+"/"+request.total+")";
+        const bottom = bottomInfo(message);
+        document.querySelector("#main").appendChild(bottom);
 
-    if (request.bottomInfo) {
-        if (request.bottomInfo == "close") {
-            if (document.querySelector(".bottom-info"))
-                document.querySelector(".bottom-info").remove();
+        // progress bar
+        const progress = document.createElement("div");
+        bottom.insertBefore(progress, bottom.childNodes[1]);
+        progress.classList.add("progress");
+        const bar = document.createElement("div");
+        progress.appendChild(bar);
+        bar.classList.add("bar");
+        if (!request.success)
+            bar.classList.add("failed");
+        bar.style.width = (((progressCounter+failedCounter)/request.total)*100)+"%";
+
+        sendResponse({code: request.loadingCode});
+
+        if (progressCounter+failedCounter == request.total) {
+            if (failedCounter > 0) {
+                if (document.querySelector(".bottom-info"))
+                    document.querySelector(".bottom-info").remove();
+
+                document.querySelector("#main").appendChild(bottomInfo("Failed to load "+failedCounter+" subjects"));
+            }
+
+            const timer = failedCounter > 0 ? 3000 : 1000;
+
+            setTimeout(() => {
+                if (document.querySelector(".bottom-info"))
+                    document.querySelector(".bottom-info").remove();
+
+                failedCounter = 0;
+                progressCounter = 0;
+            }, timer);
         }
     }
 });
