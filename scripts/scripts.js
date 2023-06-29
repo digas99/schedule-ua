@@ -315,51 +315,57 @@ if (urlParams.get('bottom_info')) {
     document.querySelector("#main").appendChild(bottomInfo(urlParams.get('bottom_info')));
 }
 
-let progressCounter = 0;
-let failedCounter = 0;
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.loadingCode) {
-        if (request.success) progressCounter++;
-        else failedCounter++;
+        chrome.storage.sync.get("subjects_schedule_progress", result => {
+            const progress = result["subjects_schedule_progress"] || {success: 0, failed: 0};
 
-        if (document.querySelector(".bottom-info"))
-            document.querySelector(".bottom-info").remove();
-        
-        let message = request.success ? " Loaded schedule for subject "+request.loadingCode : " Failed to load schedule for subject "+request.loadingCode;
-        message += " ("+progressCounter+"/"+request.total+")";
-        const bottom = bottomInfo(message);
-        document.querySelector("#main").appendChild(bottom);
+            if (request.success) progress["success"]++;
+            else progress["failed"]++;
 
-        // progress bar
-        const progress = document.createElement("div");
-        bottom.children[0].insertBefore(progress, bottom.children[0].childNodes[1]);
-        progress.classList.add("progress");
-        const bar = document.createElement("div");
-        progress.appendChild(bar);
-        bar.classList.add("bar");
-        if (!request.success)
-            bar.classList.add("failed");
-        bar.style.width = (((progressCounter+failedCounter)/request.total)*100)+"%";
+            // update progress to storage
+            chrome.storage.sync.set({"subjects_schedule_progress": progress});
 
-        sendResponse({code: request.loadingCode});
+            if (document.querySelector(".bottom-info"))
+                document.querySelector(".bottom-info").remove();
+            
+            let message = request.success ? " Loaded schedule for subject "+request.loadingCode : " Failed to load schedule for subject "+request.loadingCode;
+            message += " ("+progress["success"]+"/"+request.total+")";
+            const bottom = bottomInfo(message);
+            document.querySelector("#main").appendChild(bottom);
 
-        if (progressCounter+failedCounter == request.total) {
-            if (failedCounter > 0) {
-                if (document.querySelector(".bottom-info"))
-                    document.querySelector(".bottom-info").remove();
+            // progress bar
+            const progressBar = document.createElement("div");
+            bottom.children[0].insertBefore(progressBar, bottom.children[0].childNodes[1]);
+            progressBar.classList.add("progress");
+            const bar = document.createElement("div");
+            progressBar.appendChild(bar);
+            bar.classList.add("bar");
+            if (!request.success)
+                bar.classList.add("failed");
+            bar.style.width = (((progress["success"]+progress["failed"])/request.total)*100)+"%";
 
-                document.querySelector("#main").appendChild(bottomInfo("Failed to load "+failedCounter+" subjects"));
+            sendResponse({code: request.loadingCode});
+
+            if (progress["success"]+progress["failed"] == request.total) {
+                let timer = 1000;
+
+                if (progress["failed"] > 0) {
+                    if (document.querySelector(".bottom-info"))
+                        document.querySelector(".bottom-info").remove();
+
+                    document.querySelector("#main").appendChild(bottomInfo("Failed to load "+progress["failed"]+" subjects"));
+                    
+                    timer = 3000;
+                }
+
+                setTimeout(() => {
+                    if (document.querySelector(".bottom-info"))
+                        document.querySelector(".bottom-info").remove();
+
+                    chrome.storage.sync.set({"subjects_schedule_progress": {success: 0, failed: 0}});
+                }, timer);
             }
-
-            const timer = failedCounter > 0 ? 3000 : 1000;
-
-            setTimeout(() => {
-                if (document.querySelector(".bottom-info"))
-                    document.querySelector(".bottom-info").remove();
-
-                failedCounter = 0;
-                progressCounter = 0;
-            }, timer);
-        }
+        });
     }
 });

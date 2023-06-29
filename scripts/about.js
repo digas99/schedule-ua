@@ -50,10 +50,8 @@ const mdToHTML = lineText => {
         elem.classList.add("md-extra-highlighted");
     }
 
-    console.log(line);
     line = line.replaceAll('*', '');
 
-    console.log(line);
 
     elem.appendChild(document.createTextNode(line));
 

@@ -28,6 +28,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 chrome.runtime.sendMessage({loadingCode: code, progress: counter, total: total, success: true});
             }))
             .catch(error => {
+                console.log("Failed to fetch schedule for subject "+code);
                 chrome.runtime.sendMessage({loadingCode: code, progress: counter, total: total, success: false});
             });
 

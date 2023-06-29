@@ -273,12 +273,12 @@ select > option {
 
 .progress {
     width: 50px;
-    border: 1px solid silver;
+    border: 1px solid var(--checkbox-background);
 }
 
 .progress > .bar {
     height: 10px;
-    background-color: white;
+    background-color: var(--font-color);
 }
 
 .progress > .failed {

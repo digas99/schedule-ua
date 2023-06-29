@@ -1,3 +1,10 @@
+# [Changelog v1.3.1](https://github.com/digas99/schedule-ua/releases/tag/v1.3.1)
+
+## Bug Fixes
+- Fixed minor bugs on bottom message bar
+- Fixed bug when adding a new class on an expanded day (with overlapping classes) that would cause the new class to be added to the wrong day
+- Limited expansion of days with overlapping classes to one day at a time (expanding a day will now collapse any other expanded day)
+
 # [Changelog v1.3.0](https://github.com/digas99/schedule-ua/releases/tag/v1.3.0)
 Released on 29/06/2023
 

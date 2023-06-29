@@ -388,7 +388,18 @@ document.addEventListener("click", e => {
     if ((cell = target.closest("table tr > td")) && !cell.style.display && !cell.getAttribute("type")) {
         const x = parseInt(Array.from(cell.parentElement.children).indexOf(cell));
         const y = parseInt(Array.from(cell.parentElement.parentElement.children).indexOf(cell.parentElement));
-        const day = mySchedule.table.querySelector(`th:nth-of-type(${x+1})`).innerText;
+
+        let trueX = 0;
+        for (let i = 0; i < x+1; i++) {
+            trueX++;
+            let colspan = mySchedule.table.querySelector(`th:nth-of-type(${i+1})`).getAttribute("colspan");
+            colspan = colspan ? parseInt(colspan) : 1;
+            if (colspan > 1) {
+                i += colspan-1;
+            }
+        }
+
+        const day = mySchedule.table.querySelector(`th:nth-of-type(${trueX})`).innerText.replaceAll(/[<>\n]/g, "");
         let time = parseInt((y % 2 == 0 ? cell.parentElement.previousElementSibling : cell.parentElement).firstElementChild.innerText);
         if (y % 2 == 0)
             time+=",5";
@@ -433,8 +444,6 @@ const editClass = (title, action, defaults) => {
         "close": true,
         "title": title,
     });
-
-    console.log(defaults);
 
     const popupWindow = pp.querySelector("div:nth-child(2)");
     popupWindow.classList.add("add-class-menu");
@@ -612,7 +621,7 @@ document.addEventListener("mouseover", e => {
         });
 
         subject.style.zIndex = "3";
-        const targetSubject = subject.innerText.split(" - ")[0];
+        const targetSubject = subject.innerText.split(" - ")[0].replaceAll(/[ \-\n]/g, "");
         Array.from(mySchedule.table.querySelectorAll(".class")).forEach(subject => {
             if (subject.getAttribute("subject") !== targetSubject)
                 subject.classList.add("shadowed-class");
@@ -620,7 +629,7 @@ document.addEventListener("mouseover", e => {
 
         // info popup
         if (storage["class_popup_info"] !== false) {
-            const subjectInfo = mySchedule.schedule[subject.getAttribute("day")].filter(subj => subj["subject"]["abbrev"] === subject.getAttribute("subject") && subj["class"] === subject.getAttribute("class-group"))[0];
+            const subjectInfo = mySchedule.schedule[subject.getAttribute("day")].filter(subj => subj["subject"]["abbrev"] === subject.getAttribute("subject") && subj["start"] === (subject.getAttribute("start")+"h"))[0];
             const start = parseFloat(subjectInfo["start"].replace(",", "."));
             const duration = parseFloat(subjectInfo["duration"].replace(",", "."));
             const end = start+duration;
@@ -859,16 +868,18 @@ const infoPanel = schedule => {
                             delete keys[0];
 
                         keys.forEach(type => {
-                            const rowWrapper = document.createElement("div");
-                            info.appendChild(rowWrapper);
-                            rowWrapper.title = type.charAt(0).toUpperCase()+type.slice(1);
-                            const rowIcon = document.createElement("img");
-                            rowWrapper.appendChild(rowIcon);
-                            rowIcon.src = `images/icons/${type}.png`;
-                            rowIcon.classList.add("icon");
-                            const rowContent = document.createElement("div");
-                            rowWrapper.appendChild(rowContent);
-                            rowContent.appendChild(document.createTextNode(subject[type]));
+                            if (subject[type]) {
+                                const rowWrapper = document.createElement("div");
+                                info.appendChild(rowWrapper);
+                                rowWrapper.title = type.charAt(0).toUpperCase()+type.slice(1);
+                                const rowIcon = document.createElement("img");
+                                rowWrapper.appendChild(rowIcon);
+                                rowIcon.src = `images/icons/${type}.png`;
+                                rowIcon.classList.add("icon");
+                                const rowContent = document.createElement("div");
+                                rowWrapper.appendChild(rowContent);
+                                rowContent.appendChild(document.createTextNode(subject[type]));
+                            }
                         });
             
                         if (subject["class"].charAt(0) == "P") pract++;

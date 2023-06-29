@@ -14,13 +14,8 @@
                 if (table) {
                     // info
                     const scheduleInfoElem = table.querySelector("tr").children[0];
-<<<<<<< HEAD
                     let scheduleType, subjectsList; 
 
-=======
-                    let scheduleType, subjectsList;
-    
->>>>>>> 9359ccda8e343ed52c6e290e8acf621fef7403d9
                     // subject schedule
                     if (scheduleInfoElem.childNodes.length == 1) {
                         scheduleType = "subject";
@@ -34,18 +29,12 @@
                         const scheduleInfo = scheduleInfoElem.childNodes[2].wholeText;
                         data["school_year"] = scheduleInfo.split(" - ")[1].split("AnoLectivo: ")[1];
                         data["semester"] = Number(scheduleInfo.split(" - ")[2].split("º")[0]);
-<<<<<<< HEAD
-
-                        // subjects list
-                        subjectsList = Array.from(new Set(Array.from(table.nextElementSibling.querySelectorAll("tr > td:nth-of-type(2)")).map(info => info.innerText.split(" (")[0].trim())));
-=======
     
                         // subjects list
                         subjectsTable = table.nextElementSibling;
                         while (subjectsTable && subjectsTable.tagName != "TABLE") subjectsTable = subjectsTable.nextElementSibling;
                         
                         subjectsList = Array.from(new Set(Array.from(subjectsTable.querySelectorAll("tr > td:nth-of-type(2)")).map(info => info.innerText.split(" (")[0].trim())));
->>>>>>> 9359ccda8e343ed52c6e290e8acf621fef7403d9
                     }
         
                     // subjects

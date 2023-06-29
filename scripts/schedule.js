@@ -373,6 +373,19 @@ Schedule.prototype = {
                     // prevent context menu
                     e.preventDefault();
 
+                    // shrink all other days that might be expanded
+                    const expandedDays = this.table.querySelectorAll("th[overlap='expanded']");
+                    if (expandedDays) {
+                        Array.from(expandedDays)
+                            .filter(th => th.childNodes[0].nodeValue != day)
+                            .forEach(th => {
+                                const expandedDay = th.childNodes[0].nodeValue;
+                                this.removeExtraColumns(expandedDay, 1);
+                                th.setAttribute("overlap", "shrinked");
+                                dayArrows(th, ["<", ">"]);
+                            });
+                    }
+
                     if (header.getAttribute("overlap") === "shrinked") {
                         this.addExtraColumns(day, 1);
                         this.fillColumn(day, 1, subjects);
