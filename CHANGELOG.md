@@ -1,4 +1,5 @@
 # [Changelog v1.3.0](https://github.com/digas99/schedule-ua/releases/tag/v1.3.0)
+Released on 29/06/2023
 
 ## Popup
 - The abbreviation for the Current/Next class of the day now shows up on the extension icon
