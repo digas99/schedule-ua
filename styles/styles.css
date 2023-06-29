@@ -132,18 +132,41 @@ h2 {
 .bottom-info {
     position: absolute;
     bottom: 0;
-    padding: 10px;
     background-color: var(--background-color);
     border-top: 1px solid var(--table-borders);
     width: 100%;
     z-index: 2;
+}
+
+.bottom-info > div {
     display: flex;
     align-items: center;
     column-gap: 8px;
+    padding: 10px;
+}
+
+.bottom-info > div:not(:first-child) {
+    opacity: 0.5;
+    border-top: 1px solid var(--font-color);
 }
 
 .bottom-info img {
     width: 10px;
+}
+
+.bottom-info .primary-wrapper {
+    width: 81%;
+    overflow: hidden;
+}
+
+.bottom-info .primary-wrapper > div {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.bottom-info .secondary-wrapper > div {
+    width: 90%;
 }
 
 .bottom-info .cross > div:nth-child(1), .bottom-info .cross > div:nth-child(2) {
@@ -153,7 +176,7 @@ h2 {
 
 .bottom-info .cross {
     position: absolute;
-    right: 85px;
+    right: 65px;
 }
 
 .cross {

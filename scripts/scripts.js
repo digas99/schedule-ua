@@ -4,6 +4,8 @@ const DEFAULT_TRUE_SETTINGS = ["paco_buttons", "highlight_now", "limit_trimming"
 const DEFAULT_FALSE_SETTINGS = ["highlight_mouse_target_cell"];
 const SETTINGS_KEYS = ["subjects", "subject_colors", "trimmed", "email", "selected", "color_schema", ...DEFAULT_TRUE_SETTINGS, ...DEFAULT_FALSE_SETTINGS];
 
+const MESSAGE_TAGS = ["missing_subject_schedules"];
+
 const setupColorSchema = (config) => {
     ["background-color", "background-hover", "font-color", "table-borders", "active", "checkbox-ball", "checkbox-background", "select-font"].forEach(property => {
         const split = property.split("-");
@@ -247,26 +249,62 @@ const popup = settings => {
     return wrapper;
 }
 
-const bottomInfo = text => {
+const bottomInfo = (text, subtext) => {
     const wrapper = document.createElement("div");
-    document.querySelector("#main").appendChild(wrapper);
     wrapper.classList.add("bottom-info");
+
+    // primary wrapper
+    const primary = document.createElement("div");
+    wrapper.appendChild(primary);
     const img = document.createElement("img");
-    wrapper.appendChild(img);
+    primary.appendChild(img);
     img.classList.add("icon");
     img.src = "images/icons/refresh.png";
     let degs = 0;
-    setInterval(() => img.style.rotate = (degs+=20)+"deg", 100);
-    wrapper.appendChild(document.createTextNode(text));
+    setInterval(() => img.style.rotate = ((degs+=20)%360)+"deg", 75);
+
+    const textWrapper = document.createElement("div");
+    textWrapper.classList.add("primary-wrapper");
+    primary.appendChild(textWrapper);
+    const textNode = document.createElement("div");
+    textWrapper.appendChild(textNode);
+    textNode.appendChild(document.createTextNode(text));
 
     // close button
     const close = document.createElement("div");
-    wrapper.appendChild(close);
+    primary.appendChild(close);
     close.classList.add("cross", "clickable");
     for (let i = 0; i < 2; i++)
         close.appendChild(document.createElement("div"));
+    
+    wrapper.addEventListener("click", e => {
+        if (e.target.closest(".cross")) {
+            wrapper.remove();
+            chrome.storage.sync.get("messages", result => {
+                const messages = result["messages"] || {};
+                messages["missing_subject_schedules"] = false;
+                chrome.storage.sync.set({"messages": messages});
+            });
+        }
+    });
 
-    close.addEventListener("click", () => wrapper.remove());
+    // secondary wrapper
+    let secondary;
+    if (subtext) {
+        secondary = document.createElement("div");
+        secondary.style.display = "none";
+        secondary.classList.add("secondary-wrapper");
+        wrapper.appendChild(secondary);
+        const secondaryText = document.createElement("div");
+        secondary.appendChild(secondaryText);
+        secondaryText.appendChild(document.createTextNode(subtext));
+    }
+
+    if (secondary) {
+        wrapper.addEventListener("mouseover", () => secondary.style.removeProperty("display"));
+        wrapper.addEventListener("mouseout", () => secondary.style.display = "none");
+    }
+
 
     return wrapper;
 }
@@ -294,7 +332,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
         // progress bar
         const progress = document.createElement("div");
-        bottom.insertBefore(progress, bottom.childNodes[1]);
+        bottom.children[0].insertBefore(progress, bottom.children[0].childNodes[1]);
         progress.classList.add("progress");
         const bar = document.createElement("div");
         progress.appendChild(bar);

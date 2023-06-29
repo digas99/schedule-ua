@@ -4,7 +4,7 @@ const defaultHours = [8,9,10,11,12,13,14,15,16,17,18,19,20], defaultDays = ["Seg
 const loadingData = loading("Loading data...");
 document.body.appendChild(loadingData);
 
-chrome.storage.sync.get([...SCHEDULE_CONFIGS, ...SETTINGS_KEYS], result => {
+chrome.storage.sync.get(null, result => {
     // if schedule data exists
     if (SCHEDULE_CONFIGS.every(key => Object.keys(result).includes(key))) {
         storage = result;
@@ -15,6 +15,16 @@ chrome.storage.sync.get([...SCHEDULE_CONFIGS, ...SETTINGS_KEYS], result => {
         let allHours;
         if (storage["limit_trimming"] !== false)
             allHours = Object.values(storage["schedule"]).map(subjects => subjects.map(subject => [parseFloat(subject["start"]), parseFloat(subject["start"])+parseFloat(subject["duration"])])).flat(2);
+
+        // setup message tags default
+        if (!storage["messages"]) {
+            const messageTags = {};
+            MESSAGE_TAGS.forEach(tag => {
+                messageTags[tag] = true;
+            });
+            storage["messages"] = messageTags;
+            chrome.storage.sync.set({"messages": messageTags});
+        }
 
         // create schedule table
         mySchedule = new Schedule(document.querySelector("#main > div"), {
@@ -68,6 +78,19 @@ chrome.storage.sync.get([...SCHEDULE_CONFIGS, ...SETTINGS_KEYS], result => {
                 if (elem) elem.click();
             }
         }
+
+        // warn for missing schedules of subjects
+        const subjectCodes = Array.from(new Set(Object.entries(mySchedule.schedule).map(([_, classes]) => classes.map(data => data["subject"]["code"])).flat(1))); 
+        const subjectsWithoutSchedules = [];
+        subjectCodes.forEach(code => {
+            // if the subject doesn't have a schedule yet
+            if (!Object.keys(storage).includes(code+"_schedule"))
+                subjectsWithoutSchedules.push(code);
+
+        });
+        
+        if (subjectsWithoutSchedules.length > 0 && !window.location.search.includes("bottom_info") && storage["messages"]["missing_subject_schedules"])
+            document.body.appendChild(bottomInfo("Missing schedules for the following subjects: "+ subjectsWithoutSchedules.join(","), "Some schedules could not be loaded due to some issue. To try to load them, login again. If you didn't login in the first place, please ignore this message."));
     }
     else
         window.location.href = "/login.html";

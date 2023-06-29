@@ -6,7 +6,7 @@ window.addEventListener("click", e => {
             // get schedules to delete
             const schedules = Object.keys(result).filter(key => key.endsWith("_schedule"));
             
-            chrome.storage.sync.remove([...SCHEDULE_CONFIGS, ...schedules, "subject_colors", "subjects"]).then(() => window.location.href = `/login.html?theme=${result["color_schema"]}`);
+            chrome.storage.sync.remove([...SCHEDULE_CONFIGS, ...schedules, "subject_colors", "subjects", "messages"]).then(() => window.location.href = `/login.html?theme=${result["color_schema"]}`);
         }
 
         if (target.closest("#schedule") && !target.closest("#schedule").classList.contains("button-inactive")) window.location.href = `/home.html?theme=${result["color_schema"]}`;
