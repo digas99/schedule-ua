@@ -1,4 +1,5 @@
 # [Changelog v1.3.1](https://github.com/digas99/schedule-ua/releases/tag/v1.3.1)
+Released on 30/06/2023
 
 ## Bug Fixes
 - Fixed minor bugs on bottom message bar
