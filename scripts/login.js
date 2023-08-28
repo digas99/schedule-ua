@@ -41,7 +41,7 @@ chrome.storage.sync.get([...SCHEDULE_CONFIGS, "email"], result => {
                         const email = inputs[0].value;
                         const password = inputs[1].value;
                         const encoded = btoa(email+":"+password);
-                        fetch("https://pacoua-api.pt/schedule", {
+                        fetch("https://pacoua-api.herokuapp.com/schedule", {
                             headers: {
                                 'Content-Type': 'application/json',
                                 'Authorization': `Basic ${encoded}`
@@ -85,7 +85,8 @@ chrome.storage.sync.get([...SCHEDULE_CONFIGS, "email"], result => {
                                         document.querySelector(".loading").remove();
                                         window.location.href = "/home.html?bottom_info=Waiting for subject schedules to be loaded...";
                                     }, 1000);
-                                }
+                                } else
+                                    document.querySelector(".loading").remove();
                             });
                         })
                         .catch(() => {

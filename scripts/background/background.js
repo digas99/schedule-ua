@@ -16,7 +16,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         const subjectsRequests = setInterval(() => {
             const code = request.codes[counter++];
             console.log("Fetching schedule for subject "+code);
-            fetch("https://pacoua-api.pt/schedule/subject/"+code, {
+            fetch("https://pacoua-api.herokuapp.com/schedule/subject/"+code, {
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Basic ${request.auth}`
